@@ -1,0 +1,13 @@
+Material: fused silica
+Fiber type: step
+core NA: 0.08000
+clad NA: 0.22000
+core diameter:  10.00um
+clad diameter: 125.00um
+boundary: 0000
+field: EX
+
+Nx: 800
+spatial_window: 30um
+
+save_midx: 1 2 3 
