@@ -1,0 +1,29 @@
+function A = add_D_and_rmc(use_pos,... % use the positive dispersion term
+                           D,rmc_D,... % dispersion terms
+                           A0,...      % input fields
+                           N, num_modes, M,...
+                           cuda_mypagemtimes) % cuda
+%ADD_D_AND_RMC It computes exp((D+rmc_matrix)*z)*A ~ exp(D)*exp(rmc_matrix)*A
+
+if use_pos
+    A0 = D.pos(:,:,end-M+1:end).*A0;
+    
+    A = complex(zeros(N, num_modes, M, 'gpuArray'));
+    A = feval(cuda_mypagemtimes, A,...
+                                 complex(A0),...
+                                 rmc_D.pos(:,:,end-M+1:end),...
+                                 N,M,...
+                                 num_modes);
+else
+    A = complex(zeros(N, num_modes, M, 'gpuArray'));
+    A = feval(cuda_mypagemtimes, A,...
+                                 complex(A0),...
+                                 rmc_D.neg(:,:,end-M+1:end),...
+                                 N,M,...
+                                 num_modes);
+    
+    A = D.neg(:,:,end-M+1:end).*A;
+end
+
+end
+
