@@ -24,7 +24,6 @@ gain_rate_eqn.absorption_to_get_N_total = 110; % dB/m
 gain_rate_eqn.pump_wavelength = 976; % nm
 gain_rate_eqn.copump_power = 0.1; % W
 gain_rate_eqn.counterpump_power = 0; % W
-gain_rate_eqn.midx = 1; % the mode index
 gain_rate_eqn.tau = 9e-3; % lifetime of Yb in F_(5/2) state (Paschotta et al., "Lifetme quenching in Yb-doped fibers"); in "s"
 gain_rate_eqn.export_N2 = true; % whether to export N2, the ion density in the upper state or not
 gain_rate_eqn.ignore_ASE = true;
