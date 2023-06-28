@@ -1,0 +1,11 @@
+Material: fused silica
+Fiber type: GRIN
+NA: 0.27500
+diameter:  62.50um
+boundary: 0000
+field: EX
+
+Nx: 400
+spatial_window: 100um
+
+extra_params.alpha: 2.00000
