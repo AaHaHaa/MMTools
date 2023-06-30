@@ -3,7 +3,7 @@ function damped_freq_window = create_damped_freq_window(Nt)
 % around the edges, especially the high-frequency edge of the window.
 % I use a super-Gaussian function here.
 
-f = fftshift((1:Nt)',1);
+f = ifftshift((1:Nt)',1);
 fc = floor(Nt/2)+1;
 ffwhm = Nt*0.9;
 f0 = ffwhm/(2*sqrt(log(2))); % 2*sqrt(log(2))=1.665

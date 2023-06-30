@@ -1,5 +1,23 @@
 function sponRS = spontaneous_Raman(Nt,dt,sim,fiber,num_modes)
 %SPONTANEOUS_RAMAN It computes the spontaneous Raman term.
+%
+%   It creates the spontaneous-Raman counterpart of SR*|A|^2, A: the pulse field
+%
+%   I consider one-photon noise per frequency band.
+%   spectral noise field = counterpart of SR*|A|^2
+%                        = sponRS_prefactor{1}.*randn(size(sponRS_prefactor{1})).*exp(1i*2*pi*rand(size(sponRS_prefactor{1})))
+%   noise temporal intensity = abs( fft(spectral noise field) ).^2
+%   Transform into the spectral domain for convolution = ifft( noise temporal intensity ).*sponRS_prefactor{2}
+%   sponRS_prefactor{2} modifies the spectral noise according to the Bose-Einstein distribution and Stokes generation.
+%   sponRS_Gamma = fft(haw.*sponRS) finishes the spontaneous-Raman convolution
+%       such that
+%   sponRS_Gamma*A is the spontaneous-Raman field in the GMMNLSE/UPPE.
+%
+% -------------------------------------------------------------------------
+%   They're summarized and implemented as the following the stepping functions:
+%
+%      sponRS = ifft(abs(fft(sponRS_prefactor{1}.*randn(size(sponRS_prefactor{1})).*exp(1i*2*pi*rand(size(sponRS_prefactor{1}))))).^2).*sponRS_prefactor{2};
+%      sponRS_Gamma = fft(haw.*sponRS);
 
 h = 6.62607015e-34; % J*s
 hbar = h/(2*pi); % J*s
