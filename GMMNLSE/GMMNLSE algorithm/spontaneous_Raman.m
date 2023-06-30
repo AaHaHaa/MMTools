@@ -4,7 +4,7 @@ function sponRS = spontaneous_Raman(Nt,dt,sim,fiber,num_modes)
 %   It creates the spontaneous-Raman counterpart of SR*|A|^2, A: the pulse field
 %
 %   I consider one-photon noise per frequency band.
-%   spectral noise field = counterpart of SR*|A|^2
+%   spectral noise field = counterpart of sqrt( SR*|A|^2 )
 %                        = sponRS_prefactor{1}.*randn(size(sponRS_prefactor{1})).*exp(1i*2*pi*rand(size(sponRS_prefactor{1})))
 %   noise temporal intensity = abs( fft(spectral noise field) ).^2
 %   Transform into the spectral domain for convolution = ifft( noise temporal intensity ).*sponRS_prefactor{2}
