@@ -258,8 +258,6 @@ for n_it = 1:sim.MPA.n_tot_max
         Ra = fft(haw.*ifft(Ra));
 
         if ~anisotropic_Raman_included
-            % 7) Finish the sum for the Raman term, and add everything together
-            %    nonlinear(:, :, midx1) = nonlinear(:, :, midx1) + Ra(:, :, midx1, midx2).*A_t(:, :, midx2);
             nonlinear = Kerr + sum(Ra.*permute(A_t,[1 2 4 3]),4) + sponRS_Gamma.*A_t;
         else % polarized fields with an anisotropic Raman
             Rb = fft(hbw.*ifft(Rb));
@@ -290,8 +288,7 @@ for n_it = 1:sim.MPA.n_tot_max
     % "psi" is calculated with a multistep Adams-Moulton method for each parallelization plane.
     % A M-step Adams-Moulton method (with the summation of M's derivatives) has a (M+1)th-order accuracy.
     % With it, the latter psi will not have a bigger error.
-    % The typical trapezoidal quadrature is based on Euler method which has only a first-order accuracy.
-    % The error builds up for latter parallization planes.
+    % The error builds up for latter parallization planes in the typical trapezoidal quadrature.
     % The highest-order accuracy is 2nd order O(h^2) from
     %   y(n+1)=y(n)+1/2*h*( f(t(n+1),y(n+1)) + f(t(n),y(n)) ),
     % so the error estimate of adaptive-step-size control uses cubic root: error = O(h^3).

@@ -264,8 +264,6 @@ if sim.Raman_model ~= 0
     Ra = fft(haw.*ifft(Ra));
 
     if ~anisotropic_Raman_included
-        % Finish the sum for the Raman term, and add eveything together
-        %    Kerr(:, midx1) = Kerr(:, midx1) + Ra(:, midx1, midx2).*A_t(:, midx2);
         nonlinear = Kerr + sum(Ra.*permute(A_t,[1 3 2]),3) + sponRS_Gamma.*A_t;
     else % polarized fields with an anisotropic Raman
         Rb = fft(hbw.*ifft(Rb));
