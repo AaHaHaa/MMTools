@@ -23,7 +23,7 @@
 *
 * Input related arguments:
 *    psi:  (N, NUM_MODES, M+1)
-*    nonlinear: (NUM_MODES, NUM_MODES, M+1); linear operator
+*    nonlinear: (N, NUM_MODES, M+1); nonlinear term in GMMNLSE
 *    MPA_coeff: coefficients for doing the summation in the Adam-Moulton method
 *    N: a scalar integer; the number of time/frequency points
 *    M: a scalar integer; the number of parallelization of the MPA stepping algorithm
