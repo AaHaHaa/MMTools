@@ -273,7 +273,7 @@ for n_it = 1:sim.MPA.n_tot_max
     % Multiply the nonlinear factor
     nonlinear = prefactor.*permute(ifft(nonlinear),[1 3 2]); % (N,num_modes,M+1)
     
-    % Incorporate deltaZ and D.neg term for trapezoidal integration
+    % Incorporate deltaZ and D.neg term for the integration
     %zero_idx = (max(abs(A0))==0);
     %gain_term(:,zero_idx,:) = 0; % clear effects from the gain model by making them all zeros
     nonlinear = D.neg.*(sim.small_deltaZ*nonlinear + gain_term); % (N, num_modes, M+1)
