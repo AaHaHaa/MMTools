@@ -360,7 +360,7 @@ for n_it = 1:sim.MPA.n_tot_max
                                             N,sim.MPA.M+1,num_modes);
     else
         for Midx = 1:sim.MPA.M
-            psi(:,:,Midx+1) = psi(:,:,1) + sum(nonlinear.*sim.MPA.coeff(Midx,:,1:Midx+1),3);
+            psi(:,:,Midx+1) = psi(:,:,1) + sum(nonlinear(:,:,1:Midx+1).*sim.MPA.coeff(Midx,:,1:Midx+1),3);
         end
     end
 
