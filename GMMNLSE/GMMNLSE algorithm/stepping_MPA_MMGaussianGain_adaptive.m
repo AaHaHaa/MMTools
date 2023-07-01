@@ -333,7 +333,7 @@ for n_it = 1:sim.MPA.n_tot_max
     % Multiply the nonlinear factor
     nonlinear = prefactor.*ifft(nonlinear);
     
-    % Incorporate deltaZ and D.neg term for trapezoidal integration.
+    % Incorporate deltaZ and D.neg term for the integration.
     nonlinear = permute(nonlinear + gain_term,[1,3,2]); % (N,num_modes,M+1)
     nonlinear = small_deltaZ*D.neg.*nonlinear; % (N, num_modes, M+1)
 
