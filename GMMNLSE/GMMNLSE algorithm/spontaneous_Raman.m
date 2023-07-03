@@ -54,6 +54,6 @@ nth = 1./(exp(h*abs(f*1e12)./k/temperature)-1); % phonon number based on Bose-Ei
 nth(isinf(nth)) = 0; % if f=0
 Heaviside = double(f<0); % Stokes wave
 
-sponRS = {sqrt(hbar*real_omegas.*SR/(time_window*1e-12)),...
+sponRS = {sqrt(fiber.fr*hbar*real_omegas.*SR/(time_window*1e-12)),...
           nth+Heaviside};
 end
