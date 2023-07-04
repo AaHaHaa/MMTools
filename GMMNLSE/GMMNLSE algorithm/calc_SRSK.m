@@ -1,14 +1,5 @@
 function [SK_info, SRa_info, SRb_info] = calc_SRSK(fiber,sim,num_spatial_modes)
 %CALC_SRSK It computes the SR and SK values required for the GMMNLSE
-%
-%   mode_info.nonzero_midx1234s - a (4,?) matrix
-%   mode_info.SRa - a (num_nonzeros_midx1234s,number_frequency_points) array
-%
-%   ellipticity - the ellipticity of the polarization modes; Please refer to "Nonlinear Fiber Optics, eq (6.1.18) Agrawal" for the equations.
-%                 0: linear polarization   -> (+,-)=(x,y)
-%                 1: circular polarization -> (+,-)=(right,left)
-%
-%   include_anisotropic_Raman - true or false
 
 % Because of the symmetry, there are possibly zeros in SR. To improve the
 % performance, store only the indices of each nonzero elements and their
