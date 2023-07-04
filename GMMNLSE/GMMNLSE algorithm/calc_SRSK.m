@@ -54,17 +54,10 @@ else
     [SK_info, SRa_info, SRb_info] = calc_polarized_SRSK(SRa_info,sim.ellipticity,num_spatial_modes*2,sim.Raman_model==2,sim.gpu_yes);
 end
 
-% Incoporate (1-fiber.fr) and fiber.fr into SRa, SRb, and SK to save the computational time
+% Incoporate (1-fiber.fr) into SK to save the computational time
+% fiber.fr has been incorporated into haw and hbw already.
 if sim.Raman_model ~= 0
     SK_info.SK = (1-fiber.fr)*SK_info.SK;
-    
-    if sim.Raman_model ~= 0
-        SRa_info.SRa = fiber.fr*SRa_info.SRa;
-        
-        if ~isempty(SRb_info)
-            SRb_info.SRb = fiber.fr*SRb_info.SRb;
-        end
-    end
 end
 
 % Set up dummy outputs for the cuda file to run normally, but it won't be

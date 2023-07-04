@@ -137,5 +137,11 @@ else
     hbw = [];
 end
 
+% Incoporate fiber.fr into haw and hbw to save the computational time
+haw = fiber.fr*haw;
+if ~isempty(hb)
+    hbw = fiber.fr*hbw;
+end
+
 end
 

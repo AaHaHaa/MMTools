@@ -20,13 +20,7 @@ if sim.gain_model == 1
     if length(sim.midx) == 1 % single-mode
         saturation_parameter = fiber.saturation_energy;
     else
-        % This is to fix that SRa has been multiplied by fiber.fr in
-        % advance, which we need only SRa value for the transfer matrix in
-        % the multimode-Gaussian-gain model.
         saturation_parameter = fiber.saturation_intensity;
-        if sim.Raman_model ~= 0
-            saturation_parameter = saturation_parameter*fiber.fr;
-        end
     end
     if sim.gpu_yes
         saturation_parameter = gpuArray(saturation_parameter);
