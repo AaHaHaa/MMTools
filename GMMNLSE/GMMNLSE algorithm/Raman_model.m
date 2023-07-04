@@ -9,7 +9,7 @@ function [fiber,haw,hbw] = Raman_model( fiber,sim,Nt,dt)
 %           sim.ellipticity
 %           sim.gpu_yes
 %       Nt: the number of time points in the simulation
-%       dt: the time interval (N*dt=time window)
+%       dt: the time interval (Nt*dt=time window)
 %
 %   Output:
 %       fiber: Besides "material", "fiber.fr" is included based on the material

@@ -253,18 +253,18 @@ if ~isfield(fiber,'material')
 end
 [fiber,haw,hbw] = Raman_model( fiber,sim,Nt,dt);
 
-%% Work out the overlap tensor details
-[SK_info, SRa_info, SRb_info] = calc_SRSK(fiber,sim,num_spatial_modes);
-
-%% Include the shot noise: one photon per mode
-initial_condition.fields = include_shot_noise(sim,omegas,Nt,dt,initial_condition.fields);
-
 %% Include spontaneous Raman scattering
 if sim.Raman_model ~= 0 && sim.Raman_sponRS
     sponRS_prefactor = spontaneous_Raman(Nt,dt,sim,fiber,num_modes);
 else
     sponRS_prefactor = 0; % dummy variable
 end
+
+%% Work out the overlap tensor details
+[SK_info, SRa_info, SRb_info] = calc_SRSK(fiber,sim,num_spatial_modes);
+
+%% Include the shot noise: one photon per mode
+initial_condition.fields = include_shot_noise(sim,omegas,Nt,dt,initial_condition.fields);
 
 %% Create a damped frequency window to prevent aliasing
 sim.damped_freq_window = create_damped_freq_window(Nt);
