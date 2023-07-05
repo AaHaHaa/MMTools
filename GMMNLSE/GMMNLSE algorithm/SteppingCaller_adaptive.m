@@ -241,7 +241,7 @@ function eff_range_D = find_range_D(spectrum,D)
 % contribution of the weak part of the spectrum.
 
 nonzero_field = max(spectrum)~=0;
-spectrum = spectrum./max(spectrum);
+spectrum = spectrum./max(spectrum(:));
 
 eff_D = D(:,nonzero_field).*(spectrum(:,nonzero_field)).^(1/2); % I use ^(1/2) to emphasize the weak part
 eff_range_D = max(eff_D(:)) - min(eff_D(:));

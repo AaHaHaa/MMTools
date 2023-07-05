@@ -64,9 +64,21 @@ function foutput = GMMNLSE_propagate_with_adaptive(fiber, initial_condition, sim
 %                   that is to say, fiber.betas([1 2],:) = fiber.betas([1 2],:) - sim.betas;
 %                   (2,1) column vector;
 %                   if not set, no "sim.betas", the simulation will be run relative to the first mode
+%           midx - mode index; an integer array
 %           f0 - center frequency, in THz
 %           save_period - spatial period between saves, in m
 %                         0 = only save input and output (save_period = fiber.L0)
+%
+%       MPA -->
+%
+%           MPA.M - parallel extent for MPA;
+%                   1 is no parallelization,
+%                   5-20 is recommended; there are strongly diminishing returns after 5-10.
+%           MPA.n_tot_max - maximum number of iterations for MPA
+%                           This doesn't really matter because if the step size is too large, the algorithm will diverge after a few iterations.
+%           MPA.n_tot_min - minimum number of iterations for MPA
+%           MPA.tol - tolerance for convergence for MPA
+%                     Value of the average NRMSE between consecutive itertaions in MPA at which the step is considered converged.
 %
 %       Polarization included -->
 %

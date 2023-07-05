@@ -13,8 +13,5 @@ gexpo = 2*20; % 10 is to make it a sharp window
 % otherwise, it'll easily remove the long-wavelength signal we want to see.
 damped_freq_window = exp(-(f-fc).^gexpo/(2*f0^gexpo)).^20; % 20 is to make it a sharp window
 damped_freq_window(damped_freq_window>0.99) = 1;
-%damped_freq_window_low = exp(-(f-fc).^(gexpo*2)/(2*f0^(gexpo*2))).^4; % (gexpo*2) and 4 are to make it a much sharper window
-%damped_freq_window(fc:end) = damped_freq_window_low(fc:end);
-%damped_freq_window(fc:end) = 1;
 
 end

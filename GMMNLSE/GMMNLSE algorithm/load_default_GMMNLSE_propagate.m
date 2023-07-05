@@ -232,6 +232,7 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %                   that is to say, fiber.betas([1 2],:) = fiber.betas([1 2],:) - sim.betas;
 %                   (2,1) column vector;
 %                   if not set, no "sim.betas", the simulation will be run relative to the first mode
+%           midx - mode index; an integer array
 %           f0 - center frequency, in THz
 %           deltaZ - step size, in m
 %           save_period - spatial period between saves, in m

@@ -64,8 +64,7 @@ small_deltaZ = sim.deltaZ/sim.MPA.M; % the step size between each parallelizatio
 
 anisotropic_Raman_included = ~sim.scalar & sim.Raman_model==2;
 
-N = size(A0, 1); % number of time/freq points
-num_modes = size(A0, 2);
+[N,num_modes] = size(A0);
 
 % Explanation about the computation of the transfer matrix when considering
 % polarization modes:
