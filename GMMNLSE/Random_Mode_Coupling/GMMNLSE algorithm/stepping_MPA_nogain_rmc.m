@@ -59,8 +59,7 @@ function A1= stepping_MPA_nogain_rmc(A0, dummy_dt,...
 
 anisotropic_Raman_included = ~sim.scalar & sim.Raman_model==2;
 
-N = size(A0, 1); % number of time/freq points
-num_modes = size(A0, 2);
+[N,num_modes] = size(A0);
 
 % Spontaneous Raman scattering
 if sim.Raman_model ~= 0 && sim.Raman_sponRS
