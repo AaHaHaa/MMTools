@@ -73,8 +73,7 @@ function [A1,...
 
 Power_ASE_forward0 = Power_ASE_forward;
 
-N = size(A0, 1); % number of time/freq points
-num_modes = size(A0, 2);
+[N,num_modes] = size(A0);
 
 anisotropic_Raman_included = ~sim.scalar & sim.Raman_model==2;
 

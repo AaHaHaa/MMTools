@@ -70,8 +70,7 @@ function [A1, a5,...
 %    success - whether the current step size is sufficiently small for the required tolerance
 %    N2 - (Nx,Nx); the ion density of the upper state
 
-N = size(A0, 1); % number of time/freq points
-num_modes = size(A0, 2);
+[N,num_modes] = size(A0);
 
 anisotropic_Raman_included = ~sim.scalar & sim.Raman_model==2;
 
