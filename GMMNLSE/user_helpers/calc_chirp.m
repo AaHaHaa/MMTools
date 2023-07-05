@@ -11,16 +11,15 @@ function func = calc_chirp
 %
 %       chirp_sign = 1; % for positive chirp (normal dispersive delay)
 %
-%       % For a Gaussian pulse,
-%       duration = ?; % ps
-%       bandwidth = ?; % THz
-%       chirp = func.Gaussian( duration,bandwidth,chirp_sign );
-%       
-%       % For some known non-Gaussian pulse,
 %       duration = ?; % ps
 %       time_window = ?; % ps
 %       omega = ifftshift(2*pi*(-N/2:N/2-1)'/time_window,1); % 2*pi*THz
 %       spectrum_amplitude = ifft(E); % E is the electric field
+%       
+%       For a Gaussian pulse,
+%       [chirp,chirped_pulse] = func.Gaussian( duration,omega,spectrum_amplitude,chirp_sign );
+%       
+%       For a random pulse,
 %       [chirp,chirped_pulse] = func.General( duration,omega,spectrum_amplitude,chirp_sign );
 
 func.Gaussian = @Gaussian;
