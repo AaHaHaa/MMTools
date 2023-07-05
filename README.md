@@ -1,5 +1,5 @@
 # MMTools
-This is the shared package to simulate pulse propagation in a fiber with GMMNLSE/UPPE with MATLAB.
+This is the shared package to simulate pulse propagation in a solid-core fiber with GMMNLSE/UPPE with MATLAB.
 
 It solves the pulse propagation with RK4IP if single mode and MPA if multimode. Besides, it is implemented with an adaptive step-size control for both methods. Both passive and gain fibers can be simulated, where gain model includes Gaussian gain and rate-equation gain, for both single mode and multimode. Random mode coupling can be included as well.
 
