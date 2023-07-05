@@ -1,5 +1,5 @@
 function output = build_MMgaussian(tfwhm, time_window, total_energy, num_modes, N, varargin)
-%BUILD_MMGAUSSIAN Build a multimode supergaussian temporal pulse using the following parameters:
+%BUILD_MMGAUSSIAN Build a multimode temporally-supergaussian pulse using the following parameters:
 %
 % tfwhm - full width at half maximum of pulse, in ps
 % time_window - width of entire time window, in ps

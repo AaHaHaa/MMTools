@@ -1,5 +1,5 @@
 function output = build_MMspectralGaussian(ffwhm, time_window, total_energy, num_modes, N, varargin)
-%BUILD_MMSPECTRALGAUSSIAN Build a multimode supergaussian temporal pulse using the following parameters:
+%BUILD_MMSPECTRALGAUSSIAN Build a multimode spectrally-supergaussian pulse using the following parameters:
 %
 % ffwhm - full width at half maximum of pulse, in nm
 % time_window - width of entire time window, in ps

@@ -1,5 +1,5 @@
 function output = build_MMparabolic(tfwhm, time_window, total_energy, num_modes, N, varargin)
-%BUILD_MMPARABOLIC Build a multimode supergaussian temporal pulse using the following parameters:
+%BUILD_MMPARABOLIC Build a multimode temporally-parabolic pulse using the following parameters:
 %
 % tfwhm - full width at half maximum of pulse, in ps
 % time_window - width of entire time window, in ps

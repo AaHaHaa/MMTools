@@ -1,5 +1,5 @@
 function output = build_MMsoliton(tfwhm, beta2, fiiii, lambda0, time_window, num_modes, Nt,varargin)
-%BUILD_MMGAUSSIAN Build soliton temporal pulses using the following parameters:
+%BUILD_MMGAUSSIAN Build soliton pulses using the following parameters:
 %
 % tfwhm - full width at half maximum of pulse, in ps; (1,num_modes)
 % beta2 - group velocity dispersion, ps^2/m; (1,num_modes)
