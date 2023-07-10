@@ -27,7 +27,7 @@ end
 
 hb = [];
 switch fiber.material
-    case 'silica'
+    case {'silica','fused silica'}
         switch sim.Raman_model
             case {0,1} % no Raman and isotropic Raman
                    % Ch. 2.3, p.42, Nonlinear Fiber Optics (5th), Agrawal
