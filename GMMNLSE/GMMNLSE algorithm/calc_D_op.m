@@ -16,7 +16,7 @@ if any(size(fiber.betas) == Nt) % the betas is given over different frequencies,
         omegas_idx_near_pulse = fftshift_omegas>omega0-omega_range/5 & fftshift_omegas<omega0+omega_range/5;% pick only the data near the pulse center frequency to find its beta0 and beta1
         clear spectrum omega0 omega_range;
 
-        fit_order = 7;
+        fit_order = max(2,min(7,sum(omegas_idx_near_pulse)-1)); % 2~7
         [betas_Taylor_coeff,~,mu] = polyfit(fftshift_omegas(omegas_idx_near_pulse),real(fiber.betas(omegas_idx_near_pulse,1)),fit_order);
         sim.betas = [betas_Taylor_coeff(end);betas_Taylor_coeff(end-1)];
         sim.betas = [sim.betas(1)-sim.betas(2)*mu(1)/mu(2);...
