@@ -150,6 +150,7 @@ if length(sim.midx) == 1 % single mode
     sim.step_method = 'RK4IP';
 else % multimode
     sim.step_method = 'MPA';
+    sim.MPA.M = ceil(abs(sim.MPA.M)/2)*2; % force M to be even; if odd, make it a larger even number
     sim.MPA.coeff = permute(MPA_AM_coeff(sim.MPA.M),[1,3,2]);
 end
 
