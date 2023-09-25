@@ -27,8 +27,8 @@ __global__ void GMMNLSE_nonlinear_sum(double2* Kerr, double2* Ra,
     if (midx1 == 0) this_A[midx2] = A_t[Nidx+Midx*N+midx2*NM];
     __syncthreads();
 
-    const unsigned int this_beginning_nonzero = beginning_nonzero[midx2+midx1*NUM_MODES];
-    const unsigned int this_ending_nonzero = ending_nonzero[midx2+midx1*NUM_MODES];
+    const unsigned int this_beginning_nonzero = beginning_nonzero[midx1+midx2*NUM_MODES];
+    const unsigned int this_ending_nonzero = ending_nonzero[midx1+midx2*NUM_MODES];
 
     unsigned int midx3, midx4;
     double a, b, c, d, e, f, pcdef;

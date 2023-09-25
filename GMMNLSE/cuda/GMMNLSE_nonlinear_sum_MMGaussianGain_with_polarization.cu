@@ -30,12 +30,12 @@ __global__ void GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization(double2* 
     if (midx1 == 0) this_A[midx2] = A_t[Nidx+Midx*N+midx2*NM];
     __syncthreads();
 
-    const unsigned int this_SK_beginning_nonzero = SK_beginning_nonzero[midx2+midx1*NUM_MODES];
-    const unsigned int this_SK_ending_nonzero = SK_ending_nonzero[midx2+midx1*NUM_MODES];
-    const unsigned int this_SRa_beginning_nonzero = SRa_beginning_nonzero[midx2+midx1*NUM_MODES];
-    const unsigned int this_SRa_ending_nonzero = SRa_ending_nonzero[midx2+midx1*NUM_MODES];
-    const unsigned int this_SRb_beginning_nonzero = SRb_beginning_nonzero[midx2+midx1*NUM_MODES];
-    const unsigned int this_SRb_ending_nonzero = SRb_ending_nonzero[midx2+midx1*NUM_MODES];
+    const unsigned int this_SK_beginning_nonzero = SK_beginning_nonzero[midx1+midx2*NUM_MODES];
+    const unsigned int this_SK_ending_nonzero = SK_ending_nonzero[midx1+midx2*NUM_MODES];
+    const unsigned int this_SRa_beginning_nonzero = SRa_beginning_nonzero[midx1+midx2*NUM_MODES];
+    const unsigned int this_SRa_ending_nonzero = SRa_ending_nonzero[midx1+midx2*NUM_MODES];
+    const unsigned int this_SRb_beginning_nonzero = SRb_beginning_nonzero[midx1+midx2*NUM_MODES];
+    const unsigned int this_SRb_ending_nonzero = SRb_ending_nonzero[midx1+midx2*NUM_MODES];
 
     unsigned int midx3, midx4;
     double a, b, c, d, e, f, pcdef, ncdef;
@@ -57,7 +57,7 @@ __global__ void GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization(double2* 
                     f = this_A[midx4].y;
             
                     pcdef = SK[i]*(c*e+d*f);
-                    if (midx3 == midx4 || (midx3 & 1 != midx4 & 1) ) {
+                    if (midx3 == midx4 || (int(midx3 & 1) != int(midx4 & 1)) ) {
                         if (midx3 == midx4) { // c=e, d=f --> ncdef=0
                             this_Kerr.x += a*pcdef;
                             this_Kerr.y += b*pcdef;
@@ -88,7 +88,7 @@ __global__ void GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization(double2* 
                     e = this_A[midx4].x;
                     f = this_A[midx4].y;
 
-                    if (midx3 == midx4 || (midx3 & 1 != midx4 & 1) ) {
+                    if (midx3 == midx4 || (int(midx3 & 1) != int(midx4 & 1)) ) {
                         if (midx3 == midx4) { // c=e, d=f
                             this_Ra.x += SRa[i]*(c*e+d*f);
                         } else {
@@ -126,7 +126,7 @@ __global__ void GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization(double2* 
                     midx3 = SRa_nonzero_midx1234s[2+i*4]-1;
                     midx4 = SRa_nonzero_midx1234s[3+i*4]-1;
 
-                    if (midx3 == midx4 || (midx3 & 1 != midx4 & 1) ) {
+                    if (midx3 == midx4 || (int(midx3 & 1) != int(midx4 & 1)) ) {
                         // the index related to polarizations
                         polar_idx_B = midx3 % 2;
                         // recovery from total indices back to spatial mode indices
@@ -171,7 +171,7 @@ __global__ void GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization(double2* 
                     e = this_A[midx4].x;
                     f = this_A[midx4].y;
         
-                    if (midx3 == midx4 || (midx3 & 1 != midx4 & 1) ) {
+                    if (midx3 == midx4 || (int(midx3 & 1) != int(midx4 & 1)) ) {
                         if (midx3 == midx4) { // c=e, d=f
                             this_Rb.x += SRb[i]*(c*e+d*f);
                         } else {
