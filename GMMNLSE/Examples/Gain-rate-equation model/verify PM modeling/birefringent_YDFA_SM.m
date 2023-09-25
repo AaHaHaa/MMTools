@@ -8,7 +8,7 @@
 
 close all; clearvars;
 
-addpath('../../GMMNLSE algorithm/','../../user_helpers/'); % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
+addpath('../../../GMMNLSE algorithm/','../../../user_helpers/'); % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
 %% Setup fiber parameters
 % Please find details of all the parameters in "load_default_GMMNLSE_propagate.m".
