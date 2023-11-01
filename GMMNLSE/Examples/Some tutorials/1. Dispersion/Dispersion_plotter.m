@@ -1,6 +1,6 @@
 close all; clearvars;
 
-load('SPM.mat');
+load('Dispersion.mat');
 
 %% Plot
 % Time
