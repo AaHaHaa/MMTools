@@ -8,6 +8,7 @@ For rate-equation-gain modeling, all pumping schemes are implemented: copumping,
 For multimode, GPU computations (with Nvidia cuda) is highly recommended. I have written a lot of cuda files to speed up simulations. It is controlled by "sim.gpu_yes=true or false".
 
 For details, please read the supplement of our paper: https://doi.org/10.1364/JOSAB.500586.
+Please don't forget to cite our paper if you find this code useful in your work. I, the young and early-career researcher, need your support. Similarly, if you need help or have questions about the code, please feel free to send me an email.
 
 There is a readme.pdf in the Documentations/ folder. Please find details of how to use this code in it. However, the fastest way to learn how to use this package is to learn from the examples in the Examples/ folder.
 
