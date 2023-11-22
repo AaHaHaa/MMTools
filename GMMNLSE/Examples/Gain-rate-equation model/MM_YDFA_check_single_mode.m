@@ -10,6 +10,14 @@
 % such that many parameters can be pre-calculated; while for multimode,
 % there's no assumption and the evolution of the spatial profiles needs to
 % be computed.
+%
+% In the results, you'll see small discrepancies between running with a
+% single mode or running with multimode (but only fundamental mode is
+% nonzero). This is due to the fact that I use different models for two
+% cases. In single-mode gain-rate-eqn model, the mode properties are
+% calculated from "Whitley''s Gaussian-mode approximation," while those in
+% multimode simulations are calculated from mode-field data generated from
+% our mode solver, calculated from scripts in "BuildFiber/."
 
 clearvars; close all;
 
