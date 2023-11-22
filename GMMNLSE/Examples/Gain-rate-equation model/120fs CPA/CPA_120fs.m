@@ -83,7 +83,7 @@ ffwhm = 14/3; % THz
 total_energy = 0.2*0.5; % nJ
 initial_pulse = build_MMspectralGaussian(ffwhm, time_window, total_energy, 1, Nt, {'ifft',0}, 1,0,3);
 
-%% Run the cavity simulation
+%% Run the simulations
 prop_output0 = GMMNLSE_propagate(fiber_passive, initial_pulse, sim_passive); 
 prop_output = GMMNLSE_propagate(fiber_Gain, prop_output0, sim_Gain, gain_rate_eqn); 
 
