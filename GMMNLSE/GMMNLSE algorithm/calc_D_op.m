@@ -44,7 +44,7 @@ if any(size(fiber.betas) == Nt) % the betas is given over different frequencies,
     end
     
     D_op = 1i*(ifftshift(fiber.betas,1)-(sim.betas(1)+sim.betas(2)*omegas));
-else
+elseif size(fiber.betas,1) < 20
     % D0_op = sum( i*beta_n/n!*omega^n ,n)
     if ~isfield(sim,'betas')
         sim.betas = real(fiber.betas([1 2],1));
@@ -56,6 +56,9 @@ else
     taylor_power = omegas.^taylor_n;
     D_op = sum( 1i./factorial(taylor_n).*permute(betas,[3 2 1]).*taylor_power,3); % sum(...,3) sums over different "n" adding all Taylor series expansion terms
     clear taylor_n taylor_power
+else
+    error('GMMNLSE_propagate:betasError',...
+          '"fiber.betas" can only have the size of (Nt,num_modes) or (num_Taylor_series_coeff,num_modes),\nwhere num_Taylor_series_coeff<20.');
 end
 
 end
