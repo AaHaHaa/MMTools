@@ -1,3 +1,7 @@
+% This code duplicates the following femtosecond beam cleanup work.
+% Liu et al., "Kerr self-cleaning of femtosecond-pulsed beams in
+% graded-index multimode fiber," Opt. Lett. 41, 3675-3678 (2016)
+
 clearvars; close all;
 
 %% Add the folders of multimode files and others
