@@ -1,5 +1,8 @@
 % This code runs the single-mode Yb-doped fiber amplifier with the gain 
 % rate equation and compare it with the SM Gaussian gain model.
+%
+% The purpose of this code is to see the performance difference between CPU
+% and GPU.
 
 clearvars; close all;
 

@@ -1,5 +1,5 @@
 % This code runs the single-mode Yb-doped fiber amplifier with the gain 
-% rate equation and compare it with the SM Gaussian gain model.
+% rate equation and compare it with the Gaussian gain model.
 
 clearvars; close all;
 

@@ -1,8 +1,5 @@
 % This code runs the multimode Yb-doped fiber amplifier with the rate 
-% equation gain and compare it with SM Gaussian-gain models.
-%
-% Please compare the result of this simulation with the one from
-% "MM_YDFA_strong_waveguide.m"
+% equation gain and compare it with Gaussian-gain models.
 
 clearvars; close all;
 

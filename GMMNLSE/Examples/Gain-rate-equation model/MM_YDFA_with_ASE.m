@@ -1,6 +1,5 @@
 % This code runs the multimode Yb-doped fiber amplifier with the rate 
-% equation gain, including ASE, and compare it with the Gaussian-gain 
-% model.
+% equation gain, including ASE.
 
 clearvars; close all;
 
