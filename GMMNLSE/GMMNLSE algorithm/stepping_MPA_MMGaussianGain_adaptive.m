@@ -386,8 +386,6 @@ psi_full_parallelization = psi(:,:,sim.MPA.M+1);
 A1 = D.pos(:,:,sim.MPA.M+1).*psi_full_parallelization;
 
 % Stepsize control
-% If it's ready to converge, we compute the last psi with half the
-% parallelization planes for adaptive-step-size control.
 err = sqrt(sum(abs(current_psi_half_parallelization-psi_full_parallelization).^2)./energy_current_psi_half_parallelization).*weight;
 err(isnan(err)) = 0; % exclude modes with all zero fields
 err = sum(err);
