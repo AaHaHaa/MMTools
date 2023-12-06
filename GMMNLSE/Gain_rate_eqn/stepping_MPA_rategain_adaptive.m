@@ -331,8 +331,6 @@ Power_pump_forward = Power_pump_forward(:,:,:,:,:,end);
 N2 = N2(:,:,:,:,:,end);
 
 % Stepsize control
-% If it's ready to converge, we compute the last psi with half the
-% parallelization planes for adaptive-step-size control.
 err = sqrt(sum(abs(current_psi_half_parallelization-psi_full_parallelization).^2)./energy_current_psi_half_parallelization).*weight;
 err(isnan(err)) = 0; % exclude modes with all zero fields
 err = sum(err);
