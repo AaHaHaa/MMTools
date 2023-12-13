@@ -356,5 +356,12 @@ end
 if gain_rate_eqn.reuse_data
     foutput.saved_data = saved_data; % the saved data for all pulses, ASE and pump powers for the future oscillator roundtrips
 end
+% Since "linear_oscillator" setting outputs fields.forward and
+% fields.backward, the output of the first roundtrip, run with
+% "SteppingCaller_rategain()" (not "with_linear_oscillator"), is made to
+% generate the same output format as with linear oscillator below.
+if gain_rate_eqn.linear_oscillator
+    foutput.fields = struct('forward',A_out,'backward',zeros(size((A_out))));
+end
 
 end
