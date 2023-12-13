@@ -360,7 +360,7 @@ end
 % fields.backward, the output of the first roundtrip, run with
 % "SteppingCaller_rategain()" (not "with_linear_oscillator"), is made to
 % generate the same output format as with linear oscillator below.
-if gain_rate_eqn.linear_oscillator
+if gain_rate_eqn.linear_oscillator && first_iteration
     foutput.fields = struct('forward',A_out,'backward',zeros(size((A_out))));
 end
 
