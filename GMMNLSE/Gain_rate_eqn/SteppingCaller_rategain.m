@@ -307,7 +307,6 @@ Power_out = struct('pump',struct('forward',Power_pump_forward_out,'backward', Po
                    'ASE' ,struct('forward', Power_ASE_forward_out,'backward', Power_ASE_backward_out));
 
 if gain_rate_eqn.reuse_data
-    %{
     % Reverse the order and save the data for the linear-oscillator scheme for the next round
     if gain_rate_eqn.linear_oscillator
         reverse_direction = @(x) flip(x,3);
@@ -319,7 +318,6 @@ if gain_rate_eqn.reuse_data
         signal_fields_reuse          = signal_fields_backward_reuse; % dummy saved "signal_fields_reuse"
         [Power_pump_forward,Power_pump_backward,Power_ASE_forward,Power_ASE_backward,signal_fields,signal_fields_backward] = deal(Power_pump_forward_reuse,Power_pump_backward_reuse,Power_ASE_forward_reuse,Power_ASE_backward_reuse,signal_fields_reuse,signal_fields_backward_reuse);
     end
-    %}
     saved_data.signal_fields          = signal_fields;
     saved_data.signal_fields_backward = signal_fields_backward;
     saved_data.Power_pump_forward     = Power_pump_forward;
