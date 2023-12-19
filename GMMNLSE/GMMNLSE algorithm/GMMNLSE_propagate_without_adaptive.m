@@ -305,7 +305,7 @@ first_iteration  = ~isfield(gain_rate_eqn,'saved_data') || isempty(gain_rate_eqn
 % Since for a linear oscillator, it's in general a self-consistent system,
 % it's not necessary to get the result of the first propagation really accurately.
 if gain_rate_eqn.linear_oscillator && first_iteration
-    gain_rate_eqn.tol = gain_rate_eqn.tol*10; % the tolerance of the iterations of the gain rate-eqn model is increased
+    gain_rate_eqn.tol = min(gain_rate_eqn.tol*10,0.01); % the tolerance of the iterations of the gain rate-eqn model is increased
 end
 % =====================================================================
 % Run the correct step function depending on the options chosen.
