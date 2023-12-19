@@ -124,7 +124,7 @@ while binary_L == 0 || binary_R == 0
         guess_Power_pump_backward = guess_Power_pump_backward*1.1;
         
         if gain_rate_eqn.verbose
-            fprintf('Gain rate equation, iteration %u: counterpump power (at seed input end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
+            fprintf('Gain rate equation, iteration %u: counterpump power (at seed output end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
             iterations = iterations + 1;
         end
     elseif Power_pump_backward{end} > gain_rate_eqn.counterpump_power
@@ -134,7 +134,7 @@ while binary_L == 0 || binary_R == 0
         guess_Power_pump_backward = guess_Power_pump_backward/2;
         
         if gain_rate_eqn.verbose
-            fprintf('Gain rate equation, iteration %u: counterpump power (at seed input end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
+            fprintf('Gain rate equation, iteration %u: counterpump power (at seed output end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
             iterations = iterations + 1;
         end
     end
@@ -178,7 +178,7 @@ if ~isequal(gain_rate_eqn.pump_direction,'co')
         end
         
         if gain_rate_eqn.verbose
-            fprintf('Gain rate equation, iteration %u: counterpump power (at seed input end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
+            fprintf('Gain rate equation, iteration %u: counterpump power (at seed output end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
         end
         iterations = iterations + 1;
     end

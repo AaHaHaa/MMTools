@@ -229,10 +229,10 @@ if ~isequal(gain_rate_eqn.pump_direction,'co') || gain_rate_eqn.include_ASE
             energy_ASE_backward(i) = sum(Power_ASE_backward{1}(:)) /(Nt*initial_condition.dt); % W
         end
         if gain_rate_eqn.verbose
-            fprintf('Gain rate equation, iteration %u: pulse energy = %7.6g(nJ)\n',i,pulse_energy(i));
+            fprintf('Gain rate equation, iteration %u: output pulse energy = %7.6g(nJ)\n',i,pulse_energy(i));
             if gain_rate_eqn.include_ASE
-                fprintf('                                 forward  ASE power = %7.6g(mW)\n',energy_ASE_forward(i) *1e3);
-                fprintf('                                 backward ASE power = %7.6g(mW)\n',energy_ASE_backward(i)*1e3);
+                fprintf('                                        forward  ASE power (at seed output end) = %7.6g(mW)\n',energy_ASE_forward(i) *1e3);
+                fprintf('                                        backward ASE power (at seed input end)  = %7.6g(mW)\n',energy_ASE_backward(i)*1e3);
             end
         end
         if pulse_energy(i-1)==0 || ... % pulse dies
