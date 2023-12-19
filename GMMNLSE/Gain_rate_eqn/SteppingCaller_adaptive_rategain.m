@@ -121,7 +121,7 @@ while binary_L == 0 || binary_R == 0
         binary_L = guess_Power_pump_backward;
         binary_L_counterpump_power = Power_pump_backward{end};
         
-        guess_Power_pump_backward = guess_Power_pump_backward*1.1;
+        guess_Power_pump_backward = guess_Power_pump_backward*1.5;
         
         if gain_rate_eqn.verbose
             fprintf('Gain rate equation, iteration %u: counterpump power (at seed output end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
@@ -131,14 +131,13 @@ while binary_L == 0 || binary_R == 0
         binary_R = guess_Power_pump_backward;
         binary_R_counterpump_power = Power_pump_backward{end};
         
-        guess_Power_pump_backward = guess_Power_pump_backward/2;
+        guess_Power_pump_backward = guess_Power_pump_backward/4;
         
         if gain_rate_eqn.verbose
             fprintf('Gain rate equation, iteration %u: counterpump power (at seed output end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
             iterations = iterations + 1;
         end
     end
-    
 end
 
 % Use the modified binary search to find the counterpump power at the input 
