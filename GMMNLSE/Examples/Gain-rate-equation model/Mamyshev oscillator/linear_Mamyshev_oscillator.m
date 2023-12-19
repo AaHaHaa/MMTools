@@ -29,7 +29,7 @@ gain_rate_eqn.tau = 840e-6; % lifetime of Yb in F_(5/2) state (Paschotta et al.,
 gain_rate_eqn.export_N2 = true; % whether to export N2, the ion density in the upper state or not
 gain_rate_eqn.ignore_ASE = false;
 gain_rate_eqn.max_iterations = 50; % If there is ASE, iterations are required.
-gain_rate_eqn.tol = 1e-5; % the tolerance for the above iterations
+gain_rate_eqn.tol = 1e-3; % the tolerance for the above iterations
 gain_rate_eqn.verbose = true; % show the information(final pulse energy) during iterations of computing the gain
 
 %% Setup fiber parameters
