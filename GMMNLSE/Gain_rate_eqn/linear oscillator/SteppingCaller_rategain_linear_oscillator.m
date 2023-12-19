@@ -99,9 +99,9 @@ end
 %
 % For other two saved data, backward ASE and backward signal field,
 %       they're always cell arrays of data at all z points.
-Power_pump_backward    = extract_first_content(saved_data.Power_pump_backward);
-Power_ASE_backward     = saved_data.Power_ASE_backward;
-signal_fields_backward = saved_data.signal_fields_backward;
+guess_Power_pump_backward = extract_first_content(saved_data.Power_pump_backward);
+Power_ASE_backward        = saved_data.Power_ASE_backward;
+signal_fields_backward    = saved_data.signal_fields_backward;
 
 % This linear-oscillator algorithm updates only forward signal field,
 % forward and backward pump powers, and forward ASE power.
@@ -115,15 +115,95 @@ end
 % =========================================================================
 % Start the pulse propagation
 % =========================================================================
-[signal_fields,signal_fields_backward,...
- T_delay_out,...
- Power_pump_forward,Power_pump_backward,...
- Power_ASE_forward,Power_ASE_backward,...
- N2] = gain_propagate(sim,gain_rate_eqn,...
-                      num_zPoints,segments,save_points,num_zPoints_persave,...
-                      Nt,prefactor,SRa_info,SRb_info,SK_info,omegas,D_op,haw,hbw,sponRS_prefactor,...
-                      initial_condition,Power_pump_backward,...
-                      signal_fields_backward,Power_ASE_backward);
+% Start the pulse propagation:
+% If it includes counterpumping, we need to find the counterpumping power
+% at the pulse-input end that gives the incident counterpumping power(at  
+% the pulse-output end).
+Power_pump_backward = {0};
+binary_L = 0; binary_R = 0;
+iterations = 1; % the number of iterations under counterpumping and bi-pumping
+while binary_L == 0 || binary_R == 0
+    [signal_fields,signal_fields_backward,...
+     T_delay_out,...
+     Power_pump_forward,Power_pump_backward,...
+     Power_ASE_forward,Power_ASE_backward,...
+     N2] = gain_propagate(sim,gain_rate_eqn,...
+                          num_zPoints,segments,save_points,num_zPoints_persave,...
+                          Nt,prefactor,SRa_info,SRb_info,SK_info,omegas,D_op,haw,hbw,sponRS_prefactor,...
+                          initial_condition,guess_Power_pump_backward,...
+                          signal_fields_backward,Power_ASE_backward);
+
+    if isequal(gain_rate_eqn.pump_direction,'co')
+        break;
+    end
+    % We need to find two counterpump powers at the pulse-input end, which
+    % give pulse-output-end counterpump powers smaller and larger than the
+    % actual counterpump power. Two boundary values are required for the 
+    % binary search afterwards.
+    if Power_pump_backward{end} < gain_rate_eqn.counterpump_power
+        binary_L = guess_Power_pump_backward;
+        binary_L_counterpump_power = Power_pump_backward{end};
+        
+        guess_Power_pump_backward = guess_Power_pump_backward*1.5;
+        
+        if gain_rate_eqn.verbose
+            fprintf('Gain rate equation, iteration %u: counterpump power (at seed output end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
+            iterations = iterations + 1;
+        end
+    elseif Power_pump_backward{end} > gain_rate_eqn.counterpump_power
+        binary_R = guess_Power_pump_backward;
+        binary_R_counterpump_power = Power_pump_backward{end};
+        
+        guess_Power_pump_backward = guess_Power_pump_backward/2;
+        
+        if gain_rate_eqn.verbose
+            fprintf('Gain rate equation, iteration %u: counterpump power (at seed output end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
+            iterations = iterations + 1;
+        end
+    end
+end
+
+% Use the modified binary search to find the counterpump power at the input 
+% end.
+% The middle point is determined based on the computed counterpumping power 
+% at both ends of the interval.
+% Each data point contains counterpumping power at the pulse-input and 
+% output end. We aim to find the counterpumping power at the pulse-input 
+% end such that it gives the user-specified counterpumping power at the 
+% pulse-output end.
+if ~isequal(gain_rate_eqn.pump_direction,'co')
+    while abs(Power_pump_backward{end}-gain_rate_eqn.counterpump_power)/gain_rate_eqn.counterpump_power > min(gain_rate_eqn.tol,0.01) && iterations <= gain_rate_eqn.max_iterations
+        % I call this "modified" binary search because I don't use the
+        % middle point as the next upper or lower boundary value; instead,
+        % I use the linear interpolation to find it. It's just faster!
+        % Traditional binary serarch uses
+        %    binary_m = (binary_L + binary_R)/2;
+        binary_m = binary_L*(binary_R_counterpump_power-gain_rate_eqn.counterpump_power)/(binary_R_counterpump_power-binary_L_counterpump_power) + binary_R*(gain_rate_eqn.counterpump_power-binary_L_counterpump_power)/(binary_R_counterpump_power-binary_L_counterpump_power);
+        
+        [signal_fields,signal_fields_backward,...
+         T_delay_out,...
+         Power_pump_forward,Power_pump_backward,...
+         Power_ASE_forward,Power_ASE_backward,...
+         N2] = gain_propagate(sim,gain_rate_eqn,...
+                              num_zPoints,segments,save_points,num_zPoints_persave,...
+                              Nt,prefactor,SRa_info,SRb_info,SK_info,omegas,D_op,haw,hbw,sponRS_prefactor,...
+                              initial_condition,binary_m,...
+                              signal_fields_backward,Power_ASE_backward);
+        
+        if Power_pump_backward{end} > gain_rate_eqn.counterpump_power
+            binary_R = binary_m;
+            binary_R_counterpump_power = Power_pump_backward{end};
+        else
+            binary_L = binary_m;
+            binary_L_counterpump_power = Power_pump_backward{end};
+        end
+        
+        if gain_rate_eqn.verbose
+            fprintf('Gain rate equation, iteration %u: counterpump power (at seed output end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
+        end
+        iterations = iterations + 1;
+    end
+end
 
 %% Output:
 saved_zPoints = 1:num_zPoints_persave:num_zPoints;
