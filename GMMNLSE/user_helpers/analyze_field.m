@@ -217,9 +217,17 @@ if verbose
 end
 
 % Plot the total spectrum including pulse and ASE.
+% Unit of the ASE spectrum:
+% It is W/THz. However, to plot it with the pulse spectrum, it needs to be 
+% transformed into nJ/nm. Unlike the noisy ASE "field" added to the pulse
+% during pulse evolution (see pulse-propagation codes), the spectrometer
+% measures the "total" ASE power, irrelevant to the numerical time window.
+% Therefore, the energy of each pulse should include the ASE energy 
+% throughout one repetition time:
+%    ASE energy (J/THz) = ASE power (W/THz) * t_rep (s)
 if verbose && ~isempty(ASE)
     fig(4) = figure('Name','Spectrum');
-    spectrum_total = spectrum.*factor + ASE.spectrum(f>0).*(N*dt)*1e9.*factor;
+    spectrum_total = spectrum.*factor + (ASE.spectrum(f>0).*ASE.t_rep*1e9).*factor; % 1e9 in the ASE term is to make it nJ
     plot(299792.458./f(f>0),  spectrum_total,'r','linewidth',2); hold on;
     plot(299792.458./f(f>0),spectrum.*factor,'b','linewidth',2); hold off;
     l = legend('Pulse+ASE','Pulse'); set(l,'fontsize',16);
