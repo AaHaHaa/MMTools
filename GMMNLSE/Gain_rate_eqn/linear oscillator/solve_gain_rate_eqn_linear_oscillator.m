@@ -79,9 +79,9 @@ end
 % Power
 % -------------------------------------------------------------------------
 % Forward (at z+deltaZ):
-Power_pump_forward     = solve_Power( 'pump',  sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.overlap_factor.pump,  gain_rate_eqn.cross_sections_pump,N2,gain_rate_eqn.N_total,Power_pump_forward,        [], gain_rate_eqn.GammaN,    [],          []); % no spontaneous term for pump
+Power_pump_forward     = solve_Power( 'pump',  sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.pump,  gain_rate_eqn.cross_sections_pump,N2,gain_rate_eqn.N_total,Power_pump_forward,        [], gain_rate_eqn.GammaN,    [],          []); % no spontaneous term for pump
 if gain_rate_eqn.include_ASE
-    Power_ASE_forward  = solve_Power( 'ASE',   sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.overlap_factor.signal,gain_rate_eqn.cross_sections,     N2,gain_rate_eqn.N_total,Power_ASE_forward,   E_photon,     [], gain_rate_eqn.FmFnN,          []);
+    Power_ASE_forward  = solve_Power( 'ASE',   sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.signal,gain_rate_eqn.cross_sections,     N2,gain_rate_eqn.N_total,Power_ASE_forward,   E_photon,     [], gain_rate_eqn.FmFnN,          []);
 end
 
 if sim.scalar
@@ -90,10 +90,10 @@ else % polarized fields
     polarized_fields = cat(4,signal_fields(:,1:2:end-1,:),signal_fields(:,2:2:end,:)); % separate the polarization modes
     field_input = permute(polarized_fields,[5 6 2 7 1 3 4]);
 end
-[~,G]                  = solve_Power( 'signal',sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.overlap_factor.signal,gain_rate_eqn.cross_sections,     N2,gain_rate_eqn.N_total,                 [],       [],     [], gain_rate_eqn.FmFnN, field_input); % no spontaneous term for signal
+[~,G]                  = solve_Power( 'signal',sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.signal,gain_rate_eqn.cross_sections,     N2,gain_rate_eqn.N_total,                 [],       [],     [], gain_rate_eqn.FmFnN, field_input); % no spontaneous term for signal
 % -------------------------------------------------------------------------
 % Backward (at z+deltaZ): use -deltaZ here
-Power_pump_backward    = solve_Power( 'pump',  sim.scalar,-deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.overlap_factor.pump,  gain_rate_eqn.cross_sections_pump,N2,gain_rate_eqn.N_total,Power_pump_backward,       [], gain_rate_eqn.GammaN,    [],          []); % no spontaneous term for pump
+Power_pump_backward    = solve_Power( 'pump',  sim.scalar,-deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.pump,  gain_rate_eqn.cross_sections_pump,N2,gain_rate_eqn.N_total,Power_pump_backward,       [], gain_rate_eqn.GammaN,    [],          []); % no spontaneous term for pump
 % -------------------------------------------------------------------------
 
 % Change the size back to (N,num_modes)
@@ -193,7 +193,7 @@ N2 = N_total.*total_absorption./...
 end
 
 %%
-function [Pnext,signal_out] = solve_Power( field_type,isscalar,deltaZ,dx,A_core,num_spatial_modes,overlap_factor,cross_sections,N2,N_total,P0,E_photon,GammaN,FmFnN,Am )
+function [Pnext,signal_out] = solve_Power( field_type,isscalar,deltaZ,dx,A_core,num_spatial_modes,sponASE_spatial_modes,overlap_factor,cross_sections,N2,N_total,P0,E_photon,GammaN,FmFnN,Am )
 %SOLVE_POWER solves Power(z+deltaZ) for pump, ASE, and signal.
 %
 %   deltaZ: um
@@ -205,9 +205,9 @@ signal_out = [];
 if isequal(field_type,'ASE') % ASE
     if isscalar
         % Even in scalar computations, the gain is saturated by the spontaneous emission of two polarizations
-        E_photon = 2*E_photon*1e12; % 1e12 is to transform Hz into THz (J=W/Hz)
+        E_photon = 2*E_photon*1e12*sponASE_spatial_modes; % 1e12 is to transform Hz into THz (J=W/Hz)
     else
-        E_photon = E_photon*1e12; % 1e12 is to transform Hz into THz (J=W/Hz)
+        E_photon = E_photon*1e12*sponASE_spatial_modes; % 1e12 is to transform Hz into THz (J=W/Hz)
     end
 end
 
