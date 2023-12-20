@@ -267,6 +267,19 @@ if tc < gain_rate_eqn.t_rep
     warning('The repetition rate isn''t high enough for this code to be accurate.');
 end
 
+% Number of ASE spatial modes
+% For LMA fibers, there are more than one spatial modes for ASE although
+% the signal field mostly stays only within the fundamental mode. In this
+% situation, the simulations are mostly run with single mode, so
+% consideration of multimode ASE is included with this 
+% sponASE_spatial_modes factor.
+if gain_rate_eqn.include_ASE
+    if gain_rate_eqn.sponASE_spatial_modes < length(sim.midx)
+        error('gain_info:NumASEError',...
+              'The number of ASE spatial modes need to be larger than that of the signal field.');
+    end
+end
+
 %% Pre-compute the integral of "overlap_factor*N_total"
 if gain_rate_eqn.load_profiles && ... % there are loaded mode profiles for multimode, higher-order modes, or user-defined modes
        isequal(sim.step_method,'MPA') % multimode with MPA
