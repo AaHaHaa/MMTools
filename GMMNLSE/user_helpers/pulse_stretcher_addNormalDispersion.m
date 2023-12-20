@@ -270,18 +270,12 @@ if offcenter >0 && offcenter < R
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
 
         % Shift the pulse to where it was before
-        field0 = fft( ifftshift(field_w,1) );
-        [~,pulse_center0] = max(abs(field0));
-        [~,pulse_center] = max(abs(field));
-        index_shift = pulse_center - pulse_center0;
+        field0 = fft( ifftshift(field_w,1) ); field0(abs(field0)<max(abs(field0))/3) = 0; % remove noise for the original field
+        field1 = field; field1(abs(field1)<max(abs(field1))/3) = 0; % remove noise for the stretched field
+        [~,pulse_center0] = calc_RMS((1:length(field0))',abs(field0).^2);
+        [~,pulse_center] = calc_RMS((1:length(field1))',abs(field1).^2);
+        index_shift = round(pulse_center - pulse_center0);
         field = double(circshift(field,-index_shift,1));
-        % Shift the pulse center w.r.t. the average of where the peak and 
-        % the rms center are.
-        [~,tc_max_field] = max(abs(field));
-        [~,tc_rms] = calc_RMS((1:length(field))',abs(field).^2);
-        pulse_center = round((tc_max_field+tc_rms)/2);
-        index_shift = pulse_center - tc_max_field;
-        field = circshift(field,-index_shift,1);
 
         % The leftmost and rightmost positions on the concave mirror
         % Below are to compute the minimum size required for a concave mirror
@@ -344,19 +338,13 @@ if separation > 0 && separation < 2*R
         % Propagate the light through the grating and transform it back to time domain
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
 
-       % Shift the pulse to where it was before
-        field0 = fft( ifftshift(field_w,1) );
-        [~,pulse_center0] = max(abs(field0));
-        [~,pulse_center] = max(abs(field));
-        index_shift = pulse_center - pulse_center0;
+        % Shift the pulse to where it was before
+        field0 = fft( ifftshift(field_w,1) ); field0(abs(field0)<max(abs(field0))/3) = 0; % remove noise for the original field
+        field1 = field; field1(abs(field1)<max(abs(field1))/3) = 0; % remove noise for the stretched field
+        [~,pulse_center0] = calc_RMS((1:length(field0))',abs(field0).^2);
+        [~,pulse_center] = calc_RMS((1:length(field1))',abs(field1).^2);
+        index_shift = round(pulse_center - pulse_center0);
         field = double(circshift(field,-index_shift,1));
-        % Shift the pulse center w.r.t. the average of where the peak and 
-        % the rms center are.
-        [~,tc_max_field] = max(abs(field));
-        [~,tc_rms] = calc_RMS((1:length(field))',abs(field).^2);
-        pulse_center = round((tc_max_field+tc_rms)/2);
-        index_shift = pulse_center - tc_max_field;
-        field = circshift(field,-index_shift,1);
     else
         field = fft( ifftshift(field_w,1) );
     end
@@ -417,18 +405,12 @@ if grating_lens_distance > 0 && grating_lens_distance < focal_length
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
 
         % Shift the pulse to where it was before
-        field0 = fft( ifftshift(field_w,1) );
-        [~,pulse_center0] = max(abs(field0));
-        [~,pulse_center] = max(abs(field));
-        index_shift = pulse_center - pulse_center0;
+        field0 = fft( ifftshift(field_w,1) ); field0(abs(field0)<max(abs(field0))/3) = 0; % remove noise for the original field
+        field1 = field; field1(abs(field1)<max(abs(field1))/3) = 0; % remove noise for the stretched field
+        [~,pulse_center0] = calc_RMS((1:length(field0))',abs(field0).^2);
+        [~,pulse_center] = calc_RMS((1:length(field1))',abs(field1).^2);
+        index_shift = round(pulse_center - pulse_center0);
         field = double(circshift(field,-index_shift,1));
-        % Shift the pulse center w.r.t. the average of where the peak and 
-        % the rms center are.
-        [~,tc_max_field] = max(abs(field));
-        [~,tc_rms] = calc_RMS((1:length(field))',abs(field).^2);
-        pulse_center = round((tc_max_field+tc_rms)/2);
-        index_shift = pulse_center - tc_max_field;
-        field = circshift(field,-index_shift,1);
         
         % The leftmost and rightmost positions on the telescope
         % Below are to compute the minimum size required for the first lens

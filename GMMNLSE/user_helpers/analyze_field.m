@@ -233,6 +233,7 @@ if verbose && ~isempty(ASE)
     l = legend('Pulse+ASE','Pulse'); set(l,'fontsize',16);
     xlabel('Wavelength (nm)');
     ylabel('Spectrum (nJ/nm)');
+    xlim([min(299792.458./f(f>0)),max(299792.458./f(f>0))]);
     set(gca,'fontsize',16);
 end
 
