@@ -93,12 +93,22 @@ guess_Power_pump_backward = max_Power_pump_backward;
 
 % Start the pulse propagation:
 % If it includes counterpumping, we need to find the counterpumping power
-% at the pulse-input end that gives the incident counterpumping power(at  
+% at the pulse-input end that gives the incident counterpumping power (at  
 % the pulse-output end).
 Power_pump_backward = {0};
 binary_L = 0; binary_R = 0;
 iterations = 1; % the number of iterations under counterpumping and bi-pumping
-while binary_L == 0 || binary_R == 0
+% The following counterpump_ratio_L/R restrict the boundaries of the
+% modified binary search within 0.5~2 times the predefined
+% counterpump_power.
+counterpump_ratio = Power_pump_backward{end}/gain_rate_eqn.counterpump_power;
+if isnan(counterpump_ratio)
+    counterpump_ratio = 0;
+end
+counterpump_ratio_L = counterpump_ratio;
+counterpump_ratio_R = counterpump_ratio;
+while (binary_L == 0 || binary_R == 0) || ...
+      (counterpump_ratio_L < 0.5 || counterpump_ratio_R > 2)
     [signal_fields,Power_pump_forward,Power_pump_backward,...
      save_z,save_deltaZ,...
      T_delay_out,...
@@ -117,11 +127,15 @@ while binary_L == 0 || binary_R == 0
     % give pulse-output-end counterpump powers smaller and larger than the
     % actual counterpump power. Two boundary values are required for the 
     % binary search afterwards.
+    extra_ratio = 0.2; % added multiplication ratio for setting the boundaries.
     if Power_pump_backward{end} < gain_rate_eqn.counterpump_power
         binary_L = guess_Power_pump_backward;
         binary_L_counterpump_power = Power_pump_backward{end};
         
-        guess_Power_pump_backward = guess_Power_pump_backward*1.5;
+        counterpump_ratio_L = binary_L_counterpump_power/gain_rate_eqn.counterpump_power;
+        
+        guess_ratio = max((1+extra_ratio)/counterpump_ratio_L,1+extra_ratio);
+        guess_Power_pump_backward = guess_Power_pump_backward*guess_ratio;
         
         if gain_rate_eqn.verbose
             fprintf('Gain rate equation, iteration %u: counterpump power (at seed output end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
@@ -131,7 +145,10 @@ while binary_L == 0 || binary_R == 0
         binary_R = guess_Power_pump_backward;
         binary_R_counterpump_power = Power_pump_backward{end};
         
-        guess_Power_pump_backward = guess_Power_pump_backward/4;
+        counterpump_ratio_R = binary_R_counterpump_power/gain_rate_eqn.counterpump_power;
+        
+        guess_ratio = min(1/counterpump_ratio_R/(1+extra_ratio),1/(1+extra_ratio));
+        guess_Power_pump_backward = guess_Power_pump_backward*guess_ratio;
         
         if gain_rate_eqn.verbose
             fprintf('Gain rate equation, iteration %u: counterpump power (at seed output end) = %7.6g(W)\n',iterations,Power_pump_backward{end});
