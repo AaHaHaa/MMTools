@@ -26,6 +26,7 @@ gain_rate_eqn.t_rep = 1/15e6; % assume 15 MHz here; s; the time required to fini
 gain_rate_eqn.tau = 840e-6; % lifetime of Yb in F_(5/2) state (Paschotta et al., "Lifetme quenching in Yb-doped fibers"); in "s"
 gain_rate_eqn.export_N2 = false; % whether to export N2, the ion density in the upper state or not
 gain_rate_eqn.ignore_ASE = true;
+gain_rate_eqn.sponASE_spatial_modes = []; % In LMA fibers, the number of ASE modes can be larger than one as the signal field, so this factor is used to correctly considered ASE. If empty like [], it's length(sim.midx).
 gain_rate_eqn.max_iterations = 10; % If there is ASE, iterations are required.
 gain_rate_eqn.tol = 1e-5; % the tolerance for the iteration
 gain_rate_eqn.verbose = true; % show the information(final pulse energy) during iterations
