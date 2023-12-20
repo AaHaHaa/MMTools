@@ -4,7 +4,7 @@
 % including both the forward and backward propagating pulses.
 close all; clearvars;
 
-filename = 'linear_Mamyshev_oscillator.mat';
+filename = 'linear_Mamyshev_oscillator_withASE.mat';
 
 load(filename);
 
