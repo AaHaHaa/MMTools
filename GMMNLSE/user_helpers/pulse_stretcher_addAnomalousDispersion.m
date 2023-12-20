@@ -240,19 +240,19 @@ if separation > 0
 
     % Shift the pulse to where it was before
     field0 = fft( ifftshift(field_w,1) ); field0(abs(field0)<max(abs(field0))/3) = 0; % remove noise for the original field
-    field1 = field; field1(abs(field1)<max(abs(field1))/3) = 0; % remove noise for the stretched field
     % 1. Shift the pulse to where the previous peak is first:
     % This initial step is important in case the stretched pulse goes
     % beyond the time window and fails the intensity-weighted
     % computation.
     [~,pulse_center0] = max(abs(field0).^2);
-    [~,pulse_center] = max(abs(field1).^2);
+    [~,pulse_center] = max(abs(field).^2);
     index_shift = round(pulse_center - pulse_center0);
     field = double(circshift(field,-index_shift,1));
     % 2. Then shift the pulse according to intensity-weighted pulse
     % center.
     % This assumes that the input doesn't have a field that wrap around
     % the time window.
+    field1 = field; field1(abs(field1)<max(abs(field1))/3) = 0; % remove noise for the stretched field
     [~,pulse_center0] = calc_RMS((1:length(field0))',abs(field0).^2);
     [~,pulse_center] = calc_RMS((1:length(field1))',abs(field1).^2);
     index_shift = round(pulse_center - pulse_center0);
@@ -318,19 +318,19 @@ if grating_lens_distance > focal_length
 
         % Shift the pulse to where it was before
         field0 = fft( ifftshift(field_w,1) ); field0(abs(field0)<max(abs(field0))/3) = 0; % remove noise for the original field
-        field1 = field; field1(abs(field1)<max(abs(field1))/3) = 0; % remove noise for the stretched field
         % 1. Shift the pulse to where the previous peak is first:
         % This initial step is important in case the stretched pulse goes
         % beyond the time window and fails the intensity-weighted
         % computation.
         [~,pulse_center0] = max(abs(field0).^2);
-        [~,pulse_center] = max(abs(field1).^2);
+        [~,pulse_center] = max(abs(field).^2);
         index_shift = round(pulse_center - pulse_center0);
         field = double(circshift(field,-index_shift,1));
         % 2. Then shift the pulse according to intensity-weighted pulse
         % center.
         % This assumes that the input doesn't have a field that wrap around
         % the time window.
+        field1 = field; field1(abs(field1)<max(abs(field1))/3) = 0; % remove noise for the stretched field
         [~,pulse_center0] = calc_RMS((1:length(field0))',abs(field0).^2);
         [~,pulse_center] = calc_RMS((1:length(field1))',abs(field1).^2);
         index_shift = round(pulse_center - pulse_center0);
