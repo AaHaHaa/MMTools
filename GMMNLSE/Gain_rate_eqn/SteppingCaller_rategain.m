@@ -235,11 +235,11 @@ if ~isequal(gain_rate_eqn.pump_direction,'co') || gain_rate_eqn.include_ASE
                 fprintf('                                        backward ASE power (at seed input end)  = %7.6g(mW)\n',energy_ASE_backward(i)*1e3);
             end
         end
-        if pulse_energy(i-1)==0 || ... % pulse dies
+        if pulse_energy(i-1)==0 || ... % no propagating pulse; this is to check the validity of the following pulse_energy convergence check due to the 1/pulse_energy(i-1) factor
            abs((pulse_energy(i)-pulse_energy(i-1))./pulse_energy(i-1)) < gain_rate_eqn.tol % pulse reaches a steady state
             if gain_rate_eqn.include_ASE % Both ASEs reach a steady state
-                ASE_converged = ( energy_ASE_forward (i-1) == 0 || abs((energy_ASE_forward (i)-energy_ASE_forward (i-1))./energy_ASE_forward (i-1)) < gain_rate_eqn.tol ) && ...
-                                ( energy_ASE_backward(i-1) == 0 || abs((energy_ASE_backward(i)-energy_ASE_backward(i-1))./energy_ASE_backward(i-1)) < gain_rate_eqn.tol );
+                ASE_converged = ( energy_ASE_forward (i-1) ~= 0 && abs((energy_ASE_forward (i)-energy_ASE_forward (i-1))./energy_ASE_forward (i-1)) < gain_rate_eqn.tol ) && ...
+                                ( energy_ASE_backward(i-1) ~= 0 && abs((energy_ASE_backward(i)-energy_ASE_backward(i-1))./energy_ASE_backward(i-1)) < gain_rate_eqn.tol );
             else % ignore ASE
                 ASE_converged = true;
             end
