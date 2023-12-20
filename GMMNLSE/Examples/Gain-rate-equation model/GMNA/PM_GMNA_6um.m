@@ -45,7 +45,7 @@ gain_rate_eqn.core_NA = 0.12;
 gain_rate_eqn.absorption_wavelength_to_get_N_total = 920; % nm
 gain_rate_eqn.absorption_to_get_N_total = 0.55; % dB/m
 gain_rate_eqn.pump_wavelength = 976; % nm
-gain_rate_eqn.copump_power = 1.3; % W
+gain_rate_eqn.copump_power = 1; % W
 gain_rate_eqn.counterpump_power = 0; % W
 gain_rate_eqn.reuse_data = false; % For a ring or linear cavity, the pulse will enter a steady state eventually.
                                   % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.
@@ -56,6 +56,7 @@ gain_rate_eqn.t_rep = 1/15e6; % Assume 15 MHz here; s; the time required to fini
 gain_rate_eqn.tau = 840e-6; % lifetime of Yb in F_(5/2) state (Paschotta et al., "Lifetme quenching in Yb-doped fibers"); in "s"
 gain_rate_eqn.export_N2 = true; % whether to export N2, the ion density in the upper state or not
 gain_rate_eqn.ignore_ASE = true;
+gain_rate_eqn.sponASE_spatial_modes = []; % In LMA fibers, the number of ASE modes can be larger than one as the signal field, so this factor is used to correctly considered ASE. If empty like [], it's length(sim.midx).
 gain_rate_eqn.max_iterations = 50; % If there is ASE, iterations are required.
 gain_rate_eqn.tol = 1e-5; % the tolerance for the above iterations
 gain_rate_eqn.verbose = false; % show the information(final pulse energy) during iterations of computing the gain
