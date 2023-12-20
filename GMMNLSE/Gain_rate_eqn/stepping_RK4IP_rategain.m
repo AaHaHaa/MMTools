@@ -123,12 +123,14 @@ A1 = expDG.*(A_IP + (a1+2*a2+2*a3)*(sim.deltaZ/6)) + a4*(sim.deltaZ/6);
 % twice besides the Power_ASE_forward term.
 % It's continuous light, so the inclusion needs to add a random spectral
 % phase.
+% If the signal field is zero, we don't need to compute ASE effect to the
+% field. All we need is then the Power_ASE_forward.
 %
 % Unit:
 %   Power_ASE_forward: W/THz
-%       ASE spectral energy = Power_ASE_forward*(t_rep*1e12): pJ/THz
+%       ASE spectral energy = Power_ASE_forward*(N*dt*1e12): pJ/THz
 %   Spectral energy = abs(A1)^2*(N*dt)^2: pJ/THz
-if gain_rate_eqn.include_ASE
+if gain_rate_eqn.include_ASE && any(abs(A1(:)))
     dP_ASE = permute(abs(Power_ASE_forward-Power_ASE_forward0),[5,3,1,2,4])/(N*dt);
     A1 = A1 + sqrt(dP_ASE).*exp(1i*2*pi*rand(N,num_modes));
 end
