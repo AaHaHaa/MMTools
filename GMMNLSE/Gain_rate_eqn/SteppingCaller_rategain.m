@@ -257,8 +257,17 @@ if ~isequal(gain_rate_eqn.pump_direction,'co') || gain_rate_eqn.include_ASE
                 fig_gain_iterations = figure('Name','Gain iterations');
             end
             figure(fig_gain_iterations);
+            if gain_rate_eqn.include_ASE
+                yyaxis left;
+            end
             plot(1:i,pulse_energy(1:i),'linewidth',2,'Color','b');
+            set(gca,'YColor','b');
             xlabel('Iterations'); ylabel('Pulse energy (nJ)');
+            if gain_rate_eqn.include_ASE
+                yyaxis right;
+                plot(1:i,energy_ASE_forward(1:i),'linewidth',2);
+                ylabel('Forward power (mW)');
+            end
             set(gca,'fontsize',20);
             drawnow;
             % Close the convergence plot when it's done
