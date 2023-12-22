@@ -274,9 +274,13 @@ end
 % consideration of multimode ASE is included with this 
 % sponASE_spatial_modes factor.
 if gain_rate_eqn.include_ASE
-    if gain_rate_eqn.sponASE_spatial_modes < length(sim.midx)
-        error('gain_info:NumASEError',...
-              'The number of ASE spatial modes need to be larger than that of the signal field.');
+    if isempty(gain_rate_eqn.sponASE_spatial_modes)
+        gain_rate_eqn.sponASE_spatial_modes = length(sim.midx);
+    else
+        if gain_rate_eqn.sponASE_spatial_modes < length(sim.midx)
+            error('gain_info:NumASEError',...
+                  'The number of ASE spatial modes need to be larger than that of the signal field.');
+        end
     end
 end
 
