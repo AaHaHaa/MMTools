@@ -15,3 +15,7 @@ There is a readme.pdf in the Documentations/ folder. Please find details of how 
 I'm Yi-Hao Chen, the author of the code and from Frank Wise's group at Cornell Applied Physics. This code is basically an upgraded and highly-optimized version of our "WiseLabAEP/GMMNLSE-Solver-FINAL" from "https://github.com/WiseLabAEP/GMMNLSE-Solver-FINAL," with much more functionalities, which however might overwhelm users and thus require more fiber-optic background. It can run order-of-magnitude faster than our old code due to optimizing with CUDA+shared memory, as well as reducing the usage of for-loops. Although our old one claims to be fast with GPU, its CUDA implementation is not optimized, let alone its CPU implementation with a lot of slow for-loops. Besides, this package includes adaptive step-size control, which improves the performance significantly and allows users to be free from worrying the reliability of a simulation. For optimization details, please see the supplement of our paper mentioned previously. 
 
 If you have questions, feel free to ask them here or send me an email (email address is in my paper).
+
+Note (12/22/2023):
+I've been constantly modifying it, especially the ASE part, these days.
+If you find a bug, download the latest one since I've been changing it often. If it still exists, let me know.
