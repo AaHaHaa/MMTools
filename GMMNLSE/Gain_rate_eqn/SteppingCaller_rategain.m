@@ -266,7 +266,7 @@ if ~isequal(gain_rate_eqn.pump_direction,'co') || gain_rate_eqn.include_ASE
             if gain_rate_eqn.include_ASE
                 yyaxis right;
                 plot(1:i,energy_ASE_forward(1:i),'linewidth',2);
-                ylabel('Forward power (mW)');
+                ylabel('Forward ASE power (mW)');
             end
             set(gca,'fontsize',20);
             drawnow;
