@@ -1,14 +1,20 @@
 function [converged_yes,fig] = check_convergence( energy,field,freq,t,varargin)
 %CHECK_CONVERGENCE Check the convergence of energies
 %
+% Input arguments:
 %   energy - a (1,rt_max)-array of energies
 %   field - the field for the last entry in "energy" array
 %   freq - an array of frequency of the field (THz)
 %   t - an array of time of the field (ps)
-%   fig - figure handles for "energy" and "pulse, spectrum" plots
+%
+% Optional input arguments:
 %   tol_convergence - tolerance for the convergence; (default: 1e-5)
 %   plot_yes - true(1) or false(0); whether to plot the field or not (default: true)
 %   reset_idx
+%
+% Output arguments:
+%   converged_yes - whether the energy indicates convergence; true or false
+%   fig - figure handles for "energy" and "pulse, spectrum" plots
 
 converged_yes = false;
 
