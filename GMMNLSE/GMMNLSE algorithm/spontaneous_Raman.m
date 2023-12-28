@@ -1,5 +1,7 @@
 function sponRS = spontaneous_Raman(Nt,dt,sim,fiber,num_modes)
 %SPONTANEOUS_RAMAN It computes the spontaneous Raman term.
+% Spontaneous Raman scattering is equivalent to scattering with a field
+% with one photon per frequency band.
 %
 %   It creates the spontaneous-Raman counterpart of SR*|A|^2, A: the pulse field
 %
@@ -54,6 +56,6 @@ nth = 1./(exp(h*abs(f*1e12)./k/temperature)-1); % phonon number based on Bose-Ei
 nth(isinf(nth)) = 0; % if f=0
 Heaviside = double(f<0); % Stokes wave
 
-sponRS = {sqrt(fiber.fr*hbar*real_omegas.*SR/(time_window*1e-12)),...
+sponRS = {sqrt(fiber.fr*SR*hbar.*real_omegas/(time_window*1e-12)),...
           nth+Heaviside};
 end
