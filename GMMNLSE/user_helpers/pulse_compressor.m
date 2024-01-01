@@ -198,7 +198,7 @@ if global_opt
             'x0',initial_guess,...
             'lb',min_separation,...
             'options',optimoptions(@fmincon,'Display','off','TolX',1e-20));
-        gs = GlobalSearch('MaxTime',60,'NumTrialPoints',130,'NumStageOnePoints',20,'MaxWaitCycle',5,'Display','off');
+        gs = GlobalSearch('MaxTime',120,'NumTrialPoints',130,'NumStageOnePoints',20,'MaxWaitCycle',5,'Display','off');
         %gs = MultiStart('MaxTime',120,'Display','off','UseParallel',true,'StartPointsToRun','bounds-ineqs');
         %[optimal_separation2,feval2] = run(gs,problem,20);
         [optimal_separation2,feval2] = run(gs,problem);

@@ -30,6 +30,8 @@ function [Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power,fig] = a
 %           ASE.t_rep: the repetition rate of the pulse in gain-rate-eqn model (s).
 %                      This is used to compute the correct unit for the ASE spectrum.
 %           ASE.spectrum: the ASE spectrum; a column vector
+%   assumed_dechirped_duration: assumed pulse duration of the dechirped pulse.
+%                               This is used to help interpolate the field such that the temporal sampling is high enough to resolute the duration after dechirped.
 
 %% Move the required input arguments out of the optional input arguments, varargin
 switch compressor_type
@@ -51,9 +53,9 @@ end
 %% Default optional input arguments
 % Accept only 4 optional inputs at most
 numvarargs = length(varargin);
-if numvarargs > 9
+if numvarargs > 3
     error('analyze_field:TooManyInputs', ...
-          'It takes only at most 9 optional inputs');
+          'It takes only at most 3 optional inputs');
 end
 
 % Set defaults for optional inputs
@@ -137,15 +139,27 @@ if verbose
 end
 
 %% Dechirped and Transform-limited
+increase_sampling = true;
 num_interp = 5;
+FWHM_sampling_num = 50;
+% Guess the required number of sampling points from the transform-limited pulse duration
+while increase_sampling
+    insert_idx = [linspace(1,N,(num_interp+1)*(N-1)+1)'; N+(1:num_interp)'/(num_interp+1)];
+    t_interp = interp1(t,insert_idx,'linear','extrap');
 
-insert_idx = [linspace(1,N,(num_interp+1)*(N-1)+1)'; N+(1:num_interp)'/(num_interp+1)];
-t_interp = interp1(t,insert_idx,'linear','extrap');
+    field_f = ifft(field);
+    field_f = cat(1,field_f(1:ceil(N/2),:),zeros(N*num_interp,1),field_f(ceil(N/2)+1:end,:));
+    f_interp = (-floor(N/2):ceil(N/2)-1)'/(N*dt) + f(floor(N/2)+1);
+    field_interp = fft(field_f);
+    
+    [transform_limited_field,~,transform_limited_FWHM,pulse_FWHM] = calc_transform_limited( field_interp,0,t_interp );
+    if transform_limited_FWHM/(dt*1e3/(1+num_interp)) < FWHM_sampling_num
+        num_interp = max(5,ceil(dt*1e3/(transform_limited_FWHM/FWHM_sampling_num) - 1)); % "FWHM_sampling_num" sampling points for FWHM; lower-bound this value to 5
+    else
+        increase_sampling = false;
+    end
+end
 
-field_f = ifft(field);
-field_f = cat(1,field_f(1:ceil(N/2),:),zeros(N*num_interp,1),field_f(ceil(N/2)+1:end,:));
-f_interp = (-floor(N/2):ceil(N/2)-1)'/(N*dt) + f(floor(N/2)+1);
-field_interp = fft(field_f);
 % Dechirp the pulse
 switch compressor_type
     case {'Treacy-t','Treacy-r','Treacy-beta2'}
@@ -155,10 +169,8 @@ switch compressor_type
     case 'Offner2'
         [~,dechirped_FWHM,dechirped_field] = pulse_compressor(compressor_type,grating_incident_angle,feval(@(x)x(1),ifftshift(c./f_interp,1)),t_interp,field_interp,grating_spacing,R,offcenter,false,global_opt,-1);
 end
-% -------------------------------------------------------------------------
 
-% Transform-limited pulse
-[transform_limited_field,~,transform_limited_FWHM,pulse_FWHM] = calc_transform_limited( field_interp,0,t_interp );
+% -------------------------------------------------------------------------
 
 % Strehl ratio
 peak_power = max(abs(dechirped_field).^2);
