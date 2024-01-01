@@ -3,7 +3,8 @@ function [A1, dummy_a5,...
                                                                      sim, prefactor,...
                                                                      SRa_info, SRb_info, SK_info,...
                                                                      D_op,...
-                                                                     haw, hbw, sponRS_prefactor,...
+                                                                     haw, hbw,...
+                                                                     haw_sponRS, hbw_sponRS, sponRS_prefactor,...
                                                                      dummy_a5_1,...
                                                                      G, saturation_intensity)
 %STEPPING_MPA_MMGAUSSIANGAIN_ADAPTIVE Take one step with MPA with a 
@@ -371,14 +372,14 @@ for n_it = 1:sim.MPA.n_tot_max
         Ra = fft(haw.*ifft(Ra));
         
         if sim.include_sponRS % spontaneous Raman scattering
-            Ra_sponRS = fft(haw.*ifft(Ra_sponRS).*sponRS_prefactor{2});
+            Ra_sponRS = fft(haw_sponRS.*ifft(Ra_sponRS).*sponRS_prefactor{2});
         end
         
         if anisotropic_Raman_included % polarized fields with an anisotropic Raman
             Rb = fft(hbw.*ifft(Rb));
 
             if sim.include_sponRS % spontaneous Raman scattering
-                Rb_sponRS = fft(hbw.*ifft(Rb_sponRS).*sponRS_prefactor{2});
+                Rb_sponRS = fft(hbw_sponRS.*ifft(Rb_sponRS).*sponRS_prefactor{2});
             end
         end
         

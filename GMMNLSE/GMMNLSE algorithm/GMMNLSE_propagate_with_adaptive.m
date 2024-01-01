@@ -244,8 +244,12 @@ end
 sim.include_sponRS = (sim.Raman_model ~= 0 && sim.include_sponRS);
 if sim.include_sponRS
     sponRS_prefactor = spontaneous_Raman(Nt,dt,sim);
+    haw_sponRS = haw; haw_sponRS = 1i*imag(haw_sponRS); haw_sponRS(1:ceil(Nt/2)) = -haw_sponRS(1:ceil(Nt/2));
+    hbw_sponRS = haw; hbw_sponRS = 1i*imag(hbw_sponRS); hbw_sponRS(1:ceil(Nt/2)) = -hbw_sponRS(1:ceil(Nt/2));
 else
     sponRS_prefactor = 0; % dummy variable
+    haw_sponRS = [];
+    hbw_sponRS = [];
 end
 
 %% Pre-calculate the Gaussian gain term if necessary
@@ -288,7 +292,8 @@ if sim.gain_model == 2 % rate-equation-gain model
                                             prefactor,...
                                             omegas, D_op,...
                                             SK_info, SRa_info, SRb_info,...
-                                            haw, hbw, sponRS_prefactor);
+                                            haw, hbw,...
+                                            haw_sponRS, hbw_sponRS, sponRS_prefactor);
 % -------------------------------------------------------------------------
 else % No gain, Gaussian gain
     [A_out,...
@@ -300,7 +305,8 @@ else % No gain, Gaussian gain
                                             prefactor,...
                                             D_op,...
                                             SK_info, SRa_info, SRb_info,...
-                                            haw, hbw, sponRS_prefactor);
+                                            haw, hbw,...
+                                            haw_sponRS, hbw_sponRS, sponRS_prefactor);
 end
 
 % -------------------------------------------------------------------------
