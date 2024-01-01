@@ -42,14 +42,14 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %
 %       sim.adaptive_deltaZ.threshold = 1e-6;
 %
-%       sim.Raman_sponRS = true; % include spontaneous Raman scattering
+%       sim.include_sponRS = true; % include spontaneous Raman scattering
 %
 %       sim.gpu_yes = true;
 %       sim.Raman_model = 1;
 %       sim.gain_model = 0;
 %
 %       sim.pulse_centering = true;
-%       sim.num_photon_noise_per_band = 0;
+%       sim.num_photon_noise_per_bin = 0;
 %       sim.gpuDevice.Index = 1;
 %       sim.progress_bar = true;
 %       sim.progress_bar_name = '';
@@ -282,7 +282,7 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %                                 ("Ch. 2.3, p.43" and "Ch. 8.5, p.340", Nonlinear Fiber Optics (5th), Agrawal)
 %                                 For more details, please read "Raman response function for silica fibers", by Q. Lin and Govind P. Agrawal (2006)
 %
-%               Raman_sponRS - true or false; whether to include spontaneous Raman term or not
+%               include_sponRS - true or false; whether to include spontaneous Raman term or not
 %
 %           gain_model - 0 = no gain
 %                        1 = Gaussian-gain model
@@ -292,7 +292,7 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %
 %           pulse_centering - 1(true) = center the pulse according to the time window, 0(false) = do not
 %                             The time delay will be stored in time_delay after running GMMNLSE_propagate().
-%           num_photon_noise_per_band - a scalar; include photon noise (typically one photon per frequency band)
+%           num_photon_noise_per_bin- a scalar; include photon noise (typically one photon per spectral discretization bin)
 %           gpuDevice.Index - a scalar; the GPU to use
 %           gpuDevice.Device - the output of MATLAB "gpuDevice(gpu_index)"
 %           cuda_dir_path - path to the cuda directory into which ptx files will be compiled and stored
@@ -563,8 +563,8 @@ default_sim.rmc.downsampling_factor = 1; % downsamplig factor of the eigenmode f
 
 % Others
 default_sim.pulse_centering = true; % center the pulse according to the time window
-default_sim.Raman_sponRS = true; % include spontaneous Raman scattering
-default_sim.num_photon_noise_per_band = 0; % don't include photon noise
+default_sim.include_sponRS = true; % include spontaneous Raman scattering
+default_sim.num_photon_noise_per_bin = 0; % don't include photon noise
 default_sim.gpuDevice.Index = 1; % the gpuDevice to use
 default_sim.progress_bar = true;
 default_sim.progress_bar_name = '';

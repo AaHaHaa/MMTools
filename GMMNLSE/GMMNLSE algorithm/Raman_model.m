@@ -1,4 +1,4 @@
-function [fiber,haw,hbw] = Raman_model( fiber,sim,Nt,dt)
+function [fiber,haw,hbw] = Raman_model(fiber,sim,Nt,dt)
 %RAMAN_MODEL It calculates the Raman response of several materials.
 %   Input:
 %       fiber.material: a string; the type of the fiber;

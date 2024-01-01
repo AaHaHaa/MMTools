@@ -88,13 +88,13 @@ function foutput = GMMNLSE_propagate_without_adaptive(fiber, initial_condition, 
 %                                 ("Ch. 2.3, p.43" and "Ch. 8.5, p.340", Nonlinear Fiber Optics (5th), Agrawal)
 %                                 For more details, please read "Raman response function for silica fibers", by Q. Lin and Govind P. Agrawal (2006)
 %
-%               Raman_sponRS - true or false; whether to include spontaneous Raman term or not
+%               include_sponRS - true or false; whether to include spontaneous Raman term or not
 %
 %       Others -->
 %
 %           pulse_centering - 1(true) = center the pulse according to the time window, 0(false) = do not
 %                             The time delay will be stored in time_delay after running GMMNLSE_propagate().
-%           num_photon_noise_per_band - a scalar; include photon noise (typically one photon per frequency band)
+%           num_photon_noise_per_bin - a scalar; include photon noise (typically one photon per spectral discretization bin)
 %           gpuDevice.Index - a scalar; the GPU to use
 %           gpuDevice.Device - the output of MATLAB "gpuDevice(gpu_index)"
 %           cuda_dir_path - path to the cuda directory into which ptx files will be compiled and stored
@@ -203,7 +203,8 @@ fiber = betas_expansion_including_polarization_modes(sim,fiber,num_modes);
 %% Set up the GPU details
 if sim.gpu_yes
     [sim.gpuDevice.Device,...
-     sim.cuda_SRSK,sim.cuda_num_operations,...
+     sim.cuda_SRSK,sim.cuda_num_operations_SRSK,...
+     sim.cuda_sponRS,sim.cuda_num_operations_sponRS,...
      sim.cuda_MPA_psi_update] = setup_stepping_kernel(sim,Nt,num_modes);
 end
 
@@ -256,8 +257,9 @@ end
 [fiber,haw,hbw] = Raman_model( fiber,sim,Nt,dt);
 
 %% Include spontaneous Raman scattering
-if sim.Raman_model ~= 0 && sim.Raman_sponRS
-    sponRS_prefactor = spontaneous_Raman(Nt,dt,sim,fiber,num_modes);
+sim.include_sponRS = (sim.Raman_model ~= 0 && sim.include_sponRS);
+if sim.include_sponRS
+    sponRS_prefactor = spontaneous_Raman(Nt,dt,sim);
 else
     sponRS_prefactor = 0; % dummy variable
 end
