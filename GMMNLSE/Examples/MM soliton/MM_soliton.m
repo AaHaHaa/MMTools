@@ -31,7 +31,7 @@ fiber.L0 = 10; % m
 sim.save_period = fiber.L0/num_save;
 
 %% Setup general parameters
-Nt = 2^9; % the number of time points
+Nt = 2^10; % the number of time points
 time_window = 10; % ps
 dt = time_window/Nt;
 f = sim.f0+(-Nt/2:Nt/2-1)'/(Nt*dt); % THz
@@ -40,7 +40,7 @@ c = 299792458; % m/s
 lambda = c./(f*1e12)*1e9; % nm
 
 %% Initial condition
-total_energy = 3; % nJ
+total_energy = 5; % nJ
 tfwhm = 0.5; % ps
 input_field = build_MMgaussian(tfwhm, time_window, total_energy, length(sim.midx), Nt, {'ifft',0}, ones(1,length(sim.midx)), -time_window/2*0.4);
 input_field.fields = input_field.fields.*exp(1i*2*pi*rand(1,length(sim.midx)));
