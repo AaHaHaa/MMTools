@@ -23,8 +23,8 @@ fiber.saturation_intensity = 150; % J/m^2
 c = 299792458*1e-12; % m/ps
 wavelength_range = [0.7,2]*1e-6; % m
 Nt = 2^11;
-[f0,f_range,time_window,dt] = find_tw_f0(c./wavelength_range,Nt);
-sim.f0 = f0; % central pulse wavelength (m)
+sim.lambda0 = 1030e-9; % central pulse wavelength (m
+time_window = 7; % ps
 
 sim.gain_model = 1; % Gaussian gain
 
@@ -92,7 +92,7 @@ prefix = '../../../Fibers/OM4_wavelength1030nm';
 Nx = 400; % The number of spatial grid points that the modes use
 mode_profiles = zeros(Nx, Nx, num_modes);
 radius = '25'; % Used for loading the file
-lambda0 = '1030'; % Used for loading the file
+lambda0 = '10300'; % Used for loading the file
 for ii = 1:num_modes
    name = [prefix, '/mode',int2str(ii),'wavelength', lambda0, '.mat'];
    load(name, 'phi');
