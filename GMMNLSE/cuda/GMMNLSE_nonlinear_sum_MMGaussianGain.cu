@@ -51,10 +51,10 @@ __global__ void GMMNLSE_nonlinear_sum_MMGaussianGain(double2* Kerr, double2* Ra,
                     f = this_A[midx4].y;
 		            
                     pcdef = SK[i]*(c*e+d*f);
-                    if (midx3 == midx4) {
+                    if (midx3 == midx4) { // d*e-c*f= 0
                         this_Kerr.x += a*pcdef;
                         this_Kerr.y += b*pcdef;
-                    } else {
+                    } else { // (d*e-c*f) + (c <--> e, d <--> f) = 0
                         this_Kerr.x += a*pcdef*2;
                         this_Kerr.y += b*pcdef*2;
                     }
@@ -76,9 +76,9 @@ __global__ void GMMNLSE_nonlinear_sum_MMGaussianGain(double2* Kerr, double2* Ra,
                     e = this_A[midx4].x;
                     f = this_A[midx4].y;
                     
-                    if (midx3 == midx4) {
+                    if (midx3 == midx4) { // d*e-c*f= 0
                         this_Ra.x += SRa[i]*(c*e+d*f);
-                    } else {
+                    } else { // (d*e-c*f) + (c <--> e, d <--> f) = 0
                         this_Ra.x += SRa[i]*(c*e+d*f)*2;
                     }
                 }

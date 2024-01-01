@@ -63,7 +63,7 @@ __global__ void GMMNLSE_nonlinear_sum_with_polarization(double2* Kerr, double2* 
                             this_Kerr.x += a*pcdef+b*ncdef;
                             this_Kerr.y += b*pcdef-a*ncdef;
                         }
-                    } else {
+                    } else { // (d*e-c*f) + (c <--> e, d <--> f) = 0
                         this_Kerr.x += a*pcdef*2;
                         this_Kerr.y += b*pcdef*2;
                     }
@@ -92,7 +92,7 @@ __global__ void GMMNLSE_nonlinear_sum_with_polarization(double2* Kerr, double2* 
                             this_Ra.x += SRa[i]*(c*e+d*f);
                             this_Ra.y += SRa[i]*(d*e-c*f);
                         }
-                    } else {
+                    } else { // (d*e-c*f) + (c <--> e, d <--> f) = 0
                         this_Ra.x += SRa[i]*(c*e+d*f)*2;
                     }
                 }
@@ -120,7 +120,7 @@ __global__ void GMMNLSE_nonlinear_sum_with_polarization(double2* Kerr, double2* 
                             this_Rb.x += SRb[i]*(c*e+d*f);
                             this_Rb.y += SRb[i]*(d*e-c*f);
                         }
-                    } else {
+                    } else { // (d*e-c*f) + (c <--> e, d <--> f) = 0
                         this_Rb.x += SRb[i]*(c*e+d*f)*2;
                     }
                 }
