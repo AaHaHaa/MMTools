@@ -23,7 +23,7 @@ sim.gpu_yes = false; % don't use GPU
 % sim.Raman_model = 1; Use the isotropic Raman model
 % sim.gain_model = 0; Don't use gain model = passive propagation
 % sim.pulse_centering = true; Always shift the pulse to the center of the time window
-% sim.num_photon_noise_per_band = 0; Don't include photon shot noise
+% sim.num_photon_noise_per_bin = 0; Don't include photon shot noise
 % sim.gpuDevice.Index = 1; Use the GPU device 1
 % sim.progress_bar = true; Show the progress bar
 % sim.progress_bar_name = ''; Empty name for the progress bar
