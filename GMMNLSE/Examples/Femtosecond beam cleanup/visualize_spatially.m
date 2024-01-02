@@ -1,11 +1,11 @@
 %clearvars; close all;
 
-addpath('../../../MMTools/GMMNLSE/user_helpers/')
+addpath('../../user_helpers/')
 
-MM_folder = '../Fibers/GRIN-YDF-30_400_wavelength1030nm/';
+MM_folder = '../../Fibers/GRIN_168_400_wavelength1030nm/';
 lambda0 = 1030e-9;
-core_diameter = 30;
-num_modes = 10;
+core_diameter = 168;
+num_modes = 21;
 mode_profiles = zeros(400, 400, num_modes);
 for ni = 1:num_modes
     n = ni;
