@@ -112,8 +112,7 @@ v = 1/fiber_cavity(1).betas(2)*1e12; % velocity in the fiber
 gain_rate_eqn.t_rep = L0/v + L_air/c; % s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
                                       % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.
 
-[gain_rate_eqn,cross_sections_pump,cross_sections,overlap_factor,N_total] = gain_info( sim_Gain_6,gain_rate_eqn,ifftshift(lambda,1) );
-gain_param = {gain_rate_eqn,cross_sections_pump,cross_sections,overlap_factor,N_total};
+gain_rate_eqn = gain_info( fiber_Gain_6,sim_Gain_6,gain_rate_eqn,ifftshift(lambda,1) );
 
 %% Run the cavity simulation
 
@@ -133,7 +132,7 @@ while rt_num < max_rt
     cprintf('*[1 0.5 0.31]','Iteration %d', rt_num);
     % -----------------------------------------------------------------
     for j = 1:3
-        prop_output = GMMNLSE_propagate(fiber_cavity(j), prop_output, sim_cavity(j),gain_param);
+        prop_output = GMMNLSE_propagate(fiber_cavity(j), prop_output, sim_cavity(j),gain_rate_eqn);
             
         time_delay = time_delay + prop_output.t_delay(end);
             
@@ -238,4 +237,4 @@ end
 close(fig,fig_filter,fig_evolution);
 
 %% Compress the pulse
-[Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power] = analyze_field( t,f,output_field(:,:,end),'Treacy-t',pi/6,1e-6,true );
+[Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power] = analyze_field( t,f,output_field(:,:,end),'Treacy-t',pi/6,1e-3/1000,true );
