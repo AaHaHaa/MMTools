@@ -1,4 +1,17 @@
 % This code demonstrates the nonlinear CPA.
+%
+% For details, please refer to
+% Kuznetsova et al., "Chirped-pulse amplification near the gain-narrowing
+% limit of Yb-doped fiber using a reflection grism compressor," Appl. Phys.
+% B 88, 515-518 (2007).
+%
+% Other recommended papers of nonlinear CPA, please read
+% 1. Zhou et al., "Compensation of nonlinear phase shifts with third-order
+%    dispersion in short-pulse fiber amplifiers," Opt. Express 13, 4869-
+%    4877 (2005).
+% 2. Kuznetsova and Wise, "Scaling of femtosecond Yb-doped fiber amplifiers
+%    to tens of microjoule pulse energy via nonlinear chirped pulse 
+%    amplification," Opt. Lett. 32, 2671-2673 (2007).
 
 close all; clearvars;
 
