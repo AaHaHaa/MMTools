@@ -156,7 +156,7 @@ for j = 1:power_num
         if iterations_num ~= 1
             close(fig);
         end
-        [converged_yes,fig] = check_convergence( output_energy,prop_output.fields.forward(:,:,end),f,t );
+        [converged_yes,fig] = check_convergence( output_energy,prop_output.fields.forward(:,:,end),f,t,1e-3 );
 
         % ---------------------------------------------------------------------
         % Display running time
