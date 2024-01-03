@@ -16,6 +16,10 @@ I'm Yi-Hao Chen, the author of the code and from Frank Wise's group at Cornell A
 
 If you have questions, feel free to ask them here or send me an email (email address is in my paper).
 
-Note (12/22/2023):
-I've been constantly modifying it, especially the ASE part, these days.
+## Important notice:<br>
+* 12/22/2023:<br>
+I've been constantly modifying it, especially the ASE part, these days.<br>
 If you find a bug, download the latest one since I've been changing it often. If it still exists, let me know.
+* 1/3/2024:<br>
+I've fixed the bugs regarding spontaneous Raman scattering. My previous implementation was wrong and created almost negligible spontaneous Raman. It didn't affect any of the results that didn't care about spontaneous Raman scattering.
+About the implementation details, I'll release them by referring to my planned-to-published recent work once it's published.
