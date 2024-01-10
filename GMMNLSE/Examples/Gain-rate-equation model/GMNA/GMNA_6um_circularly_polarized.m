@@ -84,7 +84,7 @@ prop_output = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt, {'ifft',
 random_polarization = rand(Nt,1)+1i*rand(Nt,1); random_polarization = random_polarization./abs(random_polarization);
 prop_output.fields = [prop_output.fields,prop_output.fields/100.*random_polarization];
 
-%% Run the cavity simulation
+%% Run the simulation
 prop_output = GMMNLSE_propagate(fiber_Gain, prop_output, sim_Gain, gain_rate_eqn);
 
 %% Finish the simulation and save the data

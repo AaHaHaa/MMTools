@@ -84,7 +84,7 @@ f_pulse = c/pulse_lambda0*1e-12;
 freq_shift = f_pulse - f_now;
 prop_output = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt, {'ifft',freq_shift});
 
-%% Run the cavity simulation
+%% Run the simulation
 prop_output = GMMNLSE_propagate(fiber_Gain, prop_output, sim_Gain, gain_rate_eqn);
 
 %% Finish the simulation and save the data
