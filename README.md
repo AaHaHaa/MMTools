@@ -18,7 +18,7 @@ If you have questions, feel free to ask them here or send me an email (email add
 
 ## Important notice:<br>
 * 11/1/2023:<br>
-If you download the code early last year (2023), please re-download it. There is a huge bug in polarization modes. I fixed it only recently.
+If you downloaded the code early last year (2023), please re-download it. There is a huge bug in polarization modes. I fixed it only recently.
 * 12/22/2023:<br>
 I've been constantly modifying it, especially the ASE part, these days.<br>
 If you find a bug, download the latest one since I've been changing it often. If it still exists, let me know.
