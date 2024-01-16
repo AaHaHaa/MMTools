@@ -198,7 +198,7 @@ if global_opt
             'x0',initial_guess,...
             'lb',min_separation,...
             'options',optimoptions(@fmincon,'Display','off','TolX',1e-20));
-        gs = GlobalSearch('MaxTime',120,'NumTrialPoints',130,'NumStageOnePoints',20,'MaxWaitCycle',5,'Display','off');
+        gs = GlobalSearch('MaxTime',60,'NumTrialPoints',130,'NumStageOnePoints',20,'MaxWaitCycle',5,'Display','off');
         %gs = MultiStart('MaxTime',120,'Display','off','UseParallel',true,'StartPointsToRun','bounds-ineqs');
         %[optimal_separation2,feval2] = run(gs,problem,20);
         [optimal_separation2,feval2] = run(gs,problem);
@@ -290,16 +290,16 @@ if separation > 0
     % Propagate the light through the grating and transform it back to time domain
     field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
 
-    % Shift the pulse to the center of the time window
-    [~,pulse_center] = max(sum(abs(field).^2,2));
-    index_shift = pulse_center-floor(length(time)/2);
-    field = double(circshift(field,-index_shift,1));
-
     y = separation*tan(-theta_out);
 else
     field = fft( ifftshift(field_w,1) );
     y = zeros(size(theta_out));
 end
+
+% Shift the pulse to the center of the time window
+[~,pulse_center] = max(sum(abs(field).^2,2));
+index_shift = pulse_center-floor(length(time)/2);
+field = double(circshift(field,-index_shift,1));
 
 end
 
@@ -506,11 +506,6 @@ if offcenter > -R && offcenter < R
     % Propagate the light through the grating and transform it back to time domain
     field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
 
-    % Shift the pulse to the center of the time window
-    [~,pulse_center] = max(sum(abs(field).^2,2));
-    index_shift = pulse_center-floor(length(time)/2);
-    field = double(circshift(field,-index_shift,1));
-
     % The leftmost and rightmost positions on the concave mirror
     % Below are to compute the minimum size required for a concave mirror
     phi = theta_diff-pi/2-theta;
@@ -527,6 +522,11 @@ else
     concave_rightmost = zeros(size(theta_out));
     convex_size = zeros(size(theta_out));
 end
+
+% Shift the pulse to the center of the time window
+[~,pulse_center] = max(sum(abs(field).^2,2));
+index_shift = pulse_center-floor(length(time)/2);
+field = double(circshift(field,-index_shift,1));
 
 end
 
@@ -564,19 +564,17 @@ if separation > -2*R && separation < 2*R
 
         % Propagate the light through the grating and transform it back to time domain
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
-
-       % Shift the pulse to where it was before
-        field0 = fft( ifftshift(field_w,1) );
-        [~,pulse_center0] = max(abs(field0));
-        [~,pulse_center] = max(abs(field));
-        index_shift = pulse_center - pulse_center0;
-        field = double(circshift(field,-index_shift,1));
     else
         field = fft( ifftshift(field_w,1) );
     end
 else
     field = fft( ifftshift(field_w,1) );
 end
+
+% Shift the pulse to the center of the time window
+[~,pulse_center] = max(sum(abs(field).^2,2));
+index_shift = pulse_center-floor(length(time)/2);
+field = double(circshift(field,-index_shift,1));
 
 end
 
@@ -736,13 +734,6 @@ if grating_lens_distance > 0
 
         % Propagate the light through the grating and transform it back to time domain
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
-
-        % Shift the pulse to where it was before
-        field0 = fft( ifftshift(field_w,1) );
-        [~,pulse_center0] = max(abs(field0));
-        [~,pulse_center] = max(abs(field));
-        index_shift = pulse_center - pulse_center0;
-        field = double(circshift(field,-index_shift,1));
         
         % The leftmost and rightmost positions on the telescope
         % Below are to compute the minimum size required for the first lens
@@ -758,6 +749,11 @@ else % l can't be negative
     h_lens2 = zeros(size(theta_out));
     y = zeros(size(theta_out));
 end
+
+% Shift the pulse to the center of the time window
+[~,pulse_center] = max(sum(abs(field).^2,2));
+index_shift = pulse_center-floor(length(time)/2);
+field = double(circshift(field,-index_shift,1));
 
 end
 
