@@ -25,3 +25,5 @@ If you find a bug, download the latest one since I've been changing it often. If
 * 1/3/2024:<br>
 I've fixed the bugs regarding spontaneous Raman scattering. My previous implementation was wrong and created almost negligible spontaneous Raman. It didn't affect any of the results that didn't care about spontaneous Raman scattering.
 About the implementation details, I'll release them by referring to my plan-to-published recent work once it's published.
+* 1/17/2024:<br>
+Since I've received questions bout the Fourier Transform, I've added explanation about it in the readme.pdf. Because of the laser-field definition, Fourier Transform should be `ifft` in MATLAB; be careful about this! It's different from the mathematical convention. This affects phase results and even critical (and can make the result wrong) Fourier-Transform-constant issues, such as different constants of convolution theorem for different conventions.
