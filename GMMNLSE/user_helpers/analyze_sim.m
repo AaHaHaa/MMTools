@@ -615,7 +615,7 @@ for i = 1:save_point
     shading interp; colormap(jet);
     colorbar('location','south','Color','[1 1 1]');
     %cb = colorbar('location','south','Color','[1 1 1]');
-    %cb.Label.String = 'Intensity (nJ/nm)'; % the unit of the spectrogram colorbar
+    %cb.Label.String = 'PSD (nJ/nm)'; % the unit of the spectrogram colorbar
     xlabel('Time (ps)');
     ylabel('Wavelength (nm)');
     title('Spectrogram');
@@ -625,7 +625,7 @@ for i = 1:save_point
     yyaxis left
     h1_1 = plot(t,intensity(:,1,i)); % intensity (W)
     ylim([min_intensity max_intensity]);
-    ylabel('Intensity (W)');
+    ylabel('Power (W)');
     yyaxis right
     h1_2 = plot(t(2:end-1),pulse_inst_freq(:,1,i)); % instantaneous frequency (THz)
     ylabel('Inst. freq. (THz)');
@@ -644,7 +644,7 @@ for i = 1:save_point
     else
         ylim([min(wavelength) max(wavelength)]);
     end
-    xlabel(['Intensity (' spectrum_figure_unit ')']);
+    xlabel(['PSD (' spectrum_figure_unit ')']);
     set(h2,'linewidth',2); set(gca,'fontsize',14);
     title('Spectrum');
     
