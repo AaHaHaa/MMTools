@@ -29,7 +29,7 @@
 
 clearvars; close all;
 
-addpath('../../');
+addpath('../../user_helpers/');
 
 %% Single-grating Offner stretcher
 % 500 fs is more forgiving with a single-grating Offner stretcher with aberration.

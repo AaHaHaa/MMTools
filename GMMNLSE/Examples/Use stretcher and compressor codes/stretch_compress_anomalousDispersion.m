@@ -20,7 +20,7 @@
 
 clearvars; close all;
 
-addpath('../');
+addpath('../../user_helpers/');
 
 %% Martinez stretcher
 Nt = 2^18;
