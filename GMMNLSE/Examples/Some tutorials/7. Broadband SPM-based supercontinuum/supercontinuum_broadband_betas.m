@@ -1,4 +1,12 @@
-% This code demonstrates the self-phase modulation of a pulse.
+% This code demonstrates the supercontinuum from the SPM of a pulse.
+%
+% This code uses the propagation constant calculated from silica refractive
+% index, n(omega). The propagation constant is a function of frequency.
+%
+% Please compare to the other script, "supercontinuum_narrowband_betas.m,"
+% for a wrong result for bandwidth situations.
+% Taylor-series coefficients cannot approximate the broadband propagation
+% constant well.
 %
 % This code uses adaptive-step RK4IP for the passive-fiber propagation.
 
@@ -111,4 +119,4 @@ title('Spectrum during propagation');
 set(gca,'fontsize',14);
 
 %% Save the data
-%save('supercontinuum.mat');
+%save('supercontinuum_broadband_betas.mat');

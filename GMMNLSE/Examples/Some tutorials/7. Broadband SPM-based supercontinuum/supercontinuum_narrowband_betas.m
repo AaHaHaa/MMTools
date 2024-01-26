@@ -1,4 +1,10 @@
-% This code demonstrates the self-phase modulation of a pulse.
+% This code demonstrates the supercontinuum from the SPM of a pulse.
+%
+% This code uses Taylor-series coefficient for the propagation constant
+% that isn't accurate at large bandwidth.
+%
+% Please compare to the other script, "supercontinuum_broadband_betas.m,"
+% for a correct result for bandwidth situations.
 %
 % This code uses adaptive-step RK4IP for the passive-fiber propagation.
 
@@ -98,4 +104,4 @@ title('Spectrum during propagation');
 set(gca,'fontsize',14);
 
 %% Save the data
-%save('supercontinuum.mat');
+%save('supercontinuum_narrowband_betas.mat');
