@@ -244,8 +244,8 @@ end
 sim.include_sponRS = (sim.Raman_model ~= 0 && sim.include_sponRS);
 if sim.include_sponRS
     sponRS_prefactor = spontaneous_Raman(Nt,dt,sim);
-    haw_sponRS = haw; haw_sponRS = 1i*imag(haw_sponRS); haw_sponRS(1:ceil(Nt/2)) = -haw_sponRS(1:ceil(Nt/2));
-    hbw_sponRS = haw; hbw_sponRS = 1i*imag(hbw_sponRS); hbw_sponRS(1:ceil(Nt/2)) = -hbw_sponRS(1:ceil(Nt/2));
+    haw_sponRS = haw; haw_sponRS = 1i*imag(haw_sponRS);
+    hbw_sponRS = haw; hbw_sponRS = 1i*imag(hbw_sponRS);
 else
     sponRS_prefactor = 0; % dummy variable
     haw_sponRS = [];

@@ -93,6 +93,11 @@ switch material
                     % At 20 degree Celsius
         a =      [1.60865158,    0.237725916, 1.51530653];
         b = sqrt([0.0119654879, 0.0590589722, 135.521676]);
+    case 'N-SF10' % From https://refractiveindex.info/?shelf=glass&book=SF10&page=SCHOTT
+                    % n^2 - 1 = ...
+                    % At 20 degree Celsius
+        a =      [1.62153902,    0.256287842, 1.64447552];
+        b = sqrt([0.0122241457, 0.0595736775, 147.468793]);
     otherwise
         error('Material isn''t in this repository yet.');
 end
