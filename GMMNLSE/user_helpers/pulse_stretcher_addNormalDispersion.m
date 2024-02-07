@@ -1,4 +1,4 @@
-function [optimal_offcenter_l,stretched_field,grating_size,roof_mirror_size,size1,size2] = pulse_stretcher_addNormalDispersion( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R_or_f,varargin )
+function [optimal_offcenter_l,stretched_field,grating_size,roof_mirror_size,size1,size2,recover_info] = pulse_stretcher_addNormalDispersion( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R_or_f,varargin )
 %PULSE_STRETCHER_ADDNORMALDISPERSION Find the optimum distances and the 
 %corresponding stretched field after the stretcher adds normal
 %dispersion
@@ -40,15 +40,15 @@ function [optimal_offcenter_l,stretched_field,grating_size,roof_mirror_size,size
 % =========================================================================
 % Use:
 %    Offner type:
-%      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R )
-%      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R,verbose )
-%      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt )
-%      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt,m )
+%      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R )
+%      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R,verbose )
+%      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt )
+%      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt,m )
 %    Martinez type:
-%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length )
-%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose )
-%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt )
-%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt,m )
+%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length )
+%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose )
+%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt )
+%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt,m )
 %
 
 if ~ismember(stretcher_type,{'single-Offner','double-Offner','Martinez'})
@@ -60,12 +60,12 @@ optargs = {false false -1};
 % Load paramters
 optargs(1:length(varargin)) = varargin;
 [verbose,global_opt,m] = optargs{:};
-[optimal_offcenter_l,stretched_field,grating_size,roof_mirror_size,size1,size2] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R_or_f,verbose,m,global_opt);
+[optimal_offcenter_l,stretched_field,grating_size,roof_mirror_size,size1,size2,recover_info] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R_or_f,verbose,m,global_opt);
 
 end
 
 %%
-function [optimal_value,stretched_field,grating_size,roof_mirror_size,size1,size2] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R_or_f,verbose,m,global_opt)
+function [optimal_value,stretched_field,grating_size,roof_mirror_size,size1,size2,recover_info] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R_or_f,verbose,m,global_opt)
 %GRATING_PAIR
 
 N = length(time); % the number of time points
@@ -150,11 +150,11 @@ end
 % The final stretched pulse
 switch stretcher_type
     case 'single-Offner'
-        [stretched_field,y,concave_leftmost,concave_rightmost,convex_size] = single_Offner(0,optimal_value,theta_in,theta_out,wavelength,field_w,grating_spacing,R_or_f,m);
+        [stretched_field,y,concave_leftmost,concave_rightmost,convex_size,added_phase] = single_Offner(0,optimal_value,theta_in,theta_out,wavelength,field_w,grating_spacing,R_or_f,m);
     case 'double-Offner'
-        stretched_field = double_Offner(optimal_value,theta_in,theta_out,wavelength,field_w,grating_spacing,R_or_f,m);
+        [stretched_field,added_phase] = double_Offner(optimal_value,theta_in,theta_out,wavelength,field_w,grating_spacing,R_or_f,m);
     case 'Martinez'
-        [stretched_field,lens1,lens2,grating] = Martinez(optimal_value,theta_in,theta_out,wavelength,field_w,grating_spacing,R_or_f,m);
+        [stretched_field,lens1,lens2,grating,added_phase] = Martinez(optimal_value,theta_in,theta_out,wavelength,field_w,grating_spacing,R_or_f,m);
 end
 
 tol_range = 1e-3;
@@ -219,10 +219,13 @@ switch stretcher_type
         size2 = lens2_size;
 end
 
+% Information to recover the field
+recover_info = {exp(1i*2*pi*(freq_c-c/wavelength0)*time),exp(-1i*added_phase)};
+
 end
 
 %%
-function [field,y,concave_leftmost,concave_rightmost,convex_size] = single_Offner(separation,offcenter,theta_in,theta_out,wavelength,field_w,grating_spacing,R,m)
+function [field,y,concave_leftmost,concave_rightmost,convex_size,total_phase] = single_Offner(separation,offcenter,theta_in,theta_out,wavelength,field_w,grating_spacing,R,m)
 %SINGLE_OFFNER It finds the field after propagating through the 
 %single-grating Offner stretcher
 
@@ -269,7 +272,7 @@ if offcenter >0 && offcenter < R
         % Propagate the light through the grating and transform it back to time domain
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
 
-        % Shift the pulse to where it was before
+        % Shift the pulse temporally
         field0 = fft( ifftshift(field_w,1) ); field0(abs(field0)<max(abs(field0))/3) = 0; % remove noise for the original field
         % 1. Shift the pulse to where the previous peak is first:
         % This initial step is important in case the stretched pulse goes
@@ -304,6 +307,7 @@ if offcenter >0 && offcenter < R
         concave_leftmost = y;
         concave_rightmost = y;
         convex_size = y;
+        total_phase = y;
     end
 else
     field = fft( ifftshift(field_w,1) );
@@ -311,12 +315,13 @@ else
     concave_leftmost = y;
     concave_rightmost = y;
     convex_size = y;
+    total_phase = y;
 end
 
 end
 
 %%
-function field = double_Offner(separation,theta_in,theta_out,wavelength,field_w,grating_spacing,R,m)
+function [field,total_phase] = double_Offner(separation,theta_in,theta_out,wavelength,field_w,grating_spacing,R,m)
 %DOUBLE_OFFNER It finds the field after propagating through the 
 %aberration-free double-grating Offner stretcher
 
@@ -350,7 +355,7 @@ if separation > 0 && separation < 2*R
         % Propagate the light through the grating and transform it back to time domain
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
 
-        % Shift the pulse to where it was before
+        % Shift the pulse temporally
         field0 = fft( ifftshift(field_w,1) ); field0(abs(field0)<max(abs(field0))/3) = 0; % remove noise for the original field
         % 1. Shift the pulse to where the previous peak is first:
         % This initial step is important in case the stretched pulse goes
@@ -371,15 +376,17 @@ if separation > 0 && separation < 2*R
         field = circshift(field,-index_shift,1);
     else
         field = fft( ifftshift(field_w,1) );
+        total_phase = zeros(size(wavelength));
     end
 else
     field = fft( ifftshift(field_w,1) );
+    total_phase = zeros(size(wavelength));
 end
 
 end
 
 %%
-function [field,h_lens1,h_lens2,y] = Martinez(grating_lens_distance,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m)
+function [field,h_lens1,h_lens2,y,total_phase] = Martinez(grating_lens_distance,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m)
 %MARTINEZ It finds the field after propagating through the Martinez 
 %stretcher
 
@@ -428,7 +435,7 @@ if grating_lens_distance > 0 && grating_lens_distance < focal_length
         % Propagate the light through the grating and transform it back to time domain
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
 
-        % Shift the pulse to where it was before
+        % Shift the pulse temporally
         field0 = fft( ifftshift(field_w,1) ); field0(abs(field0)<max(abs(field0))/3) = 0; % remove noise for the original field
         % 1. Shift the pulse to where the previous peak is first:
         % This initial step is important in case the stretched pulse goes
@@ -461,6 +468,7 @@ else % grating_lens_distance can't be negative
     h_lens1 = [];
     h_lens2 = [];
     y = [];
+    total_phase = zeros(size(wavelength));
 end
 
 end
@@ -521,7 +529,7 @@ figure('Name','stretched pulse');
 h = plot(time(left:right),intensity(left:right));
 xlim([min(time(left:right)) max(time(left:right))]);
 xlabel('Time (ps)');
-ylabel('Intensity (W)');
+ylabel('Power (W)');
 title('Stretched pulse');
 
 set(h,'linewidth',2);

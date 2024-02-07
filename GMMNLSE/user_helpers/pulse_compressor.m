@@ -1,4 +1,4 @@
-function [optimal_value,dechirped_FWHM,dechirped_field,varargout] = pulse_compressor( compressor_type,theta_in,wavelength0,time,field,grating_spacing,varargin )
+function [optimal_value,dechirped_FWHM,dechirped_field,varargout] = pulse_compressor( compressor_type,theta_in,wavelength0,time,field,varargin )
 %PULSE_COMPRESSOR Find the optimum grating separation and the corresponding 
 %dechirped field after different types of compressors
 %
@@ -6,6 +6,11 @@ function [optimal_value,dechirped_FWHM,dechirped_field,varargout] = pulse_compre
 %                    'Treacy-t': transmissive grating pair,
 %                    'Treacy-beta2': consider only "beta2" term of a Treacy reflective grating compressor
 %                                    (Please refer to Ch.6.2 in Applications of Nonlinear Fiber Optics (2ed), Agrawal)
+%                    'prism': prism pair
+%                             It has the opposite sign of TOD from the silica fiber.
+%                             Dechirper based on a grating pair, despite beta2 compensation, only adds beta3 to the field, deteriorating the pulse quality.
+%                             This can be solved by using a prism pair.
+%                             However, because prism compressor has a smaller GDD, it is not suitable for huge dispersion compensation.
 %                    'Offner1': single-grating Offner compressor
 %                               Offner1 is the Offner compressor with one off-centered grating
 %                    'Offner2': double-grating Offner compressor
@@ -23,6 +28,8 @@ function [optimal_value,dechirped_FWHM,dechirped_field,varargout] = pulse_compre
 %   time: (N,1); the time grid points (ps)
 %   field: (N,1); the electric field in time domain
 %   grating_spacing: a scalar; the spacing between each grating line (m)
+%   alpha: the apex angle of prisms in a prism compressor (rad)
+%   prism_material: 'N-SF10'
 %
 %   Extra required arguments for the Offner compressor:
 %
@@ -45,57 +52,74 @@ function [optimal_value,dechirped_FWHM,dechirped_field,varargout] = pulse_compre
 % =========================================================================
 % Use:
 %   Treacy:
-%      [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size] = pulse_compressor( compressor_type,theta_in,wavelength0,time,field,grating_spacing,verbose,global_opt,m )
+%      [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,recover_info] = pulse_compressor( compressor_type,theta_in,wavelength0,time,field,grating_spacing,verbose,global_opt,m )
 %
 %       * compressor_type is either 'Treacy-t', 'Treacy-r', or 'Treacy-beta2'
 %       * grating_size and roof_mirror_size are optional outputs
 %       * verbose, global_opt, and m are optional inputs
 %
+%   Prism:
+%      [optimal_separation,dechirped_FWHM,dechirped_field,prism_height,roof_mirror_size,recover_info] = pulse_compressor( 'prism',[],wavelength0,time,field,alpha,prism_material,verbose,global_opt )
+%
+%       * prism_height and roof_mirror_size are optional outputs
+%       * verbose and global_opt are optional inputs
+%
 %   Offner1:
-%       [optimal_offcenter,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size] = pulse_compressor( 'Offner1',theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt,m )
+%       [optimal_offcenter,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_compressor( 'Offner1',theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt,m )
 %
 %       * grating_size, roof_mirror_size, concave_size, convex_size are optional outputs
 %       * verbose, global_opt, and m are optional inputs
 %
 %   Offner2:
-%       [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size] = pulse_compressor( 'Offner2',theta_in,wavelength0,time,field,grating_spacing,R,offcenter,verbose,global_opt,m )
+%       [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_compressor( 'Offner2',theta_in,wavelength0,time,field,grating_spacing,R,offcenter,verbose,global_opt,m )
 %
 %       * Compared to "Offner1", "offcenter" is required for an input here
 %       * grating_size, roof_mirror_size, concave_size, convex_size are optional outputs
 %       * verbose, global_opt, and m are optional inputs
 %
 %   Offner3:
-%       [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size] = pulse_compressor( 'Offner3',theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt,m )
+%       [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_compressor( 'Offner3',theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt,m )
 %
 %       * grating_size, roof_mirror_size, concave_size, convex_size are optional outputs
 %       * verbose, global_opt, and m are optional inputs
 %
 %   Martinez:
-%       [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = pulse_compressor( 'Martinez',theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt,m )
+%       [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_compressor( 'Martinez',theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt,m )
 %
 %       * grating_size, roof_mirror_size, lens1_size, lens2_size are optional outputs
 %       * verbose, global_opt, and m are optional inputs
 
 switch compressor_type
+    case {'Treacy-r','Treacy-t','Treacy-beta2'}
+        grating_spacing = varargin{1};
+        
+        n = 1;
+    case 'prism'
+        alpha = varargin{1};
+        prism_material = varargin{2};
+        
+        n = 2;
     case {'Offner1','Offner3'}
-        R = varargin{1};
+        grating_spacing = varargin{1};
+        R = varargin{2};
         
-        if length(varargin) > 1
-            varargin = varargin(2:end);
-        end
+        n = 2;
     case 'Offner2'
-        R = varargin{1};
-        offcenter = varargin{2};
+        grating_spacing = varargin{1};
+        R = varargin{2};
+        offcenter = varargin{3};
         
-        if length(varargin) > 2
-            varargin = varargin(3:end);
-        end
+        n = 3;
     case 'Martinez'
-        focal_length = varargin{1};
+        grating_spacing = varargin{1};
+        focal_length = varargin{2};
         
-        if length(varargin) > 1
-            varargin = varargin(2:end);
-        end
+        n = 2;
+end
+if length(varargin) > n % optional input arguments
+    varargin = varargin(n+1:end);
+else
+    varargin = {};
 end
 
 % Default parameters
@@ -105,25 +129,29 @@ optargs(1:length(varargin)) = varargin;
 [verbose,global_opt,m] = optargs{:};
 switch compressor_type
     case {'Treacy-beta2','Treacy-r','Treacy-t'}
-        [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size] = Treacy(compressor_type,theta_in,wavelength0,time,field,grating_spacing,verbose,m,global_opt);
+        [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,recover_info] = Treacy(compressor_type,theta_in,wavelength0,time,field,grating_spacing,verbose,m,global_opt);
         optimal_value = optimal_separation;
-        varargout = {grating_size,roof_mirror_size};
+        varargout = {grating_size,roof_mirror_size,recover_info};
+    case 'prism'
+        [optimal_separation,dechirped_FWHM,dechirped_field,prism_height,roof_mirror_size,recover_info] = prism(wavelength0,time,field,alpha,prism_material,verbose,global_opt);
+        optimal_value = optimal_separation;
+        varargout = {prism_height,roof_mirror_size,recover_info};
     case 'Offner1'
-        [optimal_offcenter,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size] = Offner(compressor_type,theta_in,wavelength0,time,field,grating_spacing,R,0,         verbose,m,global_opt);
+        [optimal_offcenter,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = Offner(compressor_type,theta_in,wavelength0,time,field,grating_spacing,R,0,         verbose,m,global_opt);
         optimal_value = optimal_offcenter;
-        varargout = {grating_size,roof_mirror_size,concave_size,convex_size};
+        varargout = {grating_size,roof_mirror_size,concave_size,convex_size,recover_info};
     case 'Offner2'
-        [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size] = Offner(compressor_type,theta_in,wavelength0,time,field,grating_spacing,R,offcenter,verbose,m,global_opt);
+        [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = Offner(compressor_type,theta_in,wavelength0,time,field,grating_spacing,R,offcenter,verbose,m,global_opt);
         optimal_value = optimal_separation;
-        varargout = {grating_size,roof_mirror_size,concave_size,convex_size};
+        varargout = {grating_size,roof_mirror_size,concave_size,convex_size,recover_info};
     case 'Offner3'
-        [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size] = Offner(compressor_type,theta_in,wavelength0,time,field,grating_spacing,R,0,        verbose,m,global_opt);
+        [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = Offner(compressor_type,theta_in,wavelength0,time,field,grating_spacing,R,0,        verbose,m,global_opt);
         optimal_value = optimal_separation;
-        varargout = {grating_size,roof_mirror_size,concave_size,convex_size};
+        varargout = {grating_size,roof_mirror_size,concave_size,convex_size,recover_info};
     case 'Martinez'
-        [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = Martinez(theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,m,global_opt);
+        [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = Martinez(theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,m,global_opt);
         optimal_value = optimal_separation;
-        varargout = {grating_size,roof_mirror_size,lens1_size,lens2_size};
+        varargout = {grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info};
     otherwise
         error('The value of compressor_type is wrong.');
 end
@@ -131,7 +159,7 @@ end
 end
 
 %%
-function [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size] = Treacy(compressor_type,theta_in,wavelength0,time,field,grating_spacing,verbose,m,global_opt)
+function [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,recover_info] = Treacy(compressor_type,theta_in,wavelength0,time,field,grating_spacing,verbose,m,global_opt)
 %TREACY
 
 N = length(time); % the number of time points
@@ -212,7 +240,7 @@ else
 end
 
 % The final dechirped pulse
-[dechirped_field,y] = Treacy_dechirping(compressor_type,optimal_separation,theta_in,theta_out,wavelength,wavelength_c,time,field_w,grating_spacing,m);
+[dechirped_field,y,added_phase] = Treacy_dechirping(compressor_type,optimal_separation,theta_in,theta_out,wavelength,wavelength_c,time,field_w,grating_spacing,m);
 dechirped_FWHM = find_FWHM(optimal_separation); % ps
 dechirped_FWHM = dechirped_FWHM*1e3; % fs
 
@@ -246,10 +274,13 @@ end
 % Recover back to the input frequency range
 dechirped_field = dechirped_field.*exp(-1i*2*pi*(f_c-c/wavelength0)*time);
 
+% Information to recover the field
+recover_info = {exp(1i*2*pi*(f_c-c/wavelength0)*time),exp(-1i*added_phase)};
+
 end
 
 %%
-function [field,y] = Treacy_dechirping(compressor_type,separation,theta_in,theta_out,wavelength,wavelength0,time,field_w,grating_spacing,m)
+function [field,y,total_phase] = Treacy_dechirping(compressor_type,separation,theta_in,theta_out,wavelength,wavelength0,time,field_w,grating_spacing,m)
 %TREACY_DECHIRPING It finds the field after propagating through the 
 %compressor
 
@@ -294,6 +325,7 @@ if separation > 0
 else
     field = fft( ifftshift(field_w,1) );
     y = zeros(size(theta_out));
+    total_phase = zeros(size(theta_out));
 end
 
 % Shift the pulse to the center of the time window
@@ -304,7 +336,196 @@ field = double(circshift(field,-index_shift,1));
 end
 
 %%
-function [optimal_value,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size] = Offner(compressor_type,theta_in,wavelength0,time,field,grating_spacing,R,offcenter,verbose,m,global_opt)
+function [optimal_separation,dechirped_FWHM,dechirped_field,prism_height,roof_mirror_size,recover_info] = prism(wavelength0,time,field,alpha,prism_material,verbose,global_opt)
+%TREACY
+
+N = length(time); % the number of time points
+dt = abs(time(2)-time(1)); % ps
+c = 299792.458; % nm/ps
+wavelength = c./((-N/2:N/2-1)'/N/dt + c/wavelength0); % nm
+if size(time,1) == 1
+    time = time';
+end
+
+field_w = fftshift(ifft(field),1); % frequency domain
+
+% Find the center wavelength of the pulse spectrum with its second moment
+f = c./wavelength; % THz
+f_c = calc_f_c(f,abs(field_w).^2);
+wavelength_c = c/f_c;
+wavelength = c./(f+f_c-c/wavelength0);
+field = field.*exp(1i*2*pi*(f_c-c/wavelength0)*time);
+field_w = fftshift(ifft(field),1);
+
+[a,b] = Sellmeier_coefficients(prism_material);
+Sellmeier_terms = @(lambda,a,b) a.*lambda.^2./(lambda.^2 - b.^2);
+n_from_Sellmeier = @(lambda) sqrt(1+sum(Sellmeier_terms(lambda,a,b),2));
+n = n_from_Sellmeier(wavelength/1e3); % wavelength: nm
+
+% Find the angle of incidence satisfying minimum deviation after a prism
+n_c = n_from_Sellmeier(wavelength_c/1e3);
+theta_in = asin(n_c*sin(alpha/2));
+
+% Find the angles related to the first prism
+theta2 = asin(sin(theta_in)./n);
+theta3 = alpha - theta2;
+theta4 = asin(n.*sin(theta3));
+
+% Determine the beam width after the first prism to find the minimum prism size
+I = sum(abs(field_w).^2,2);
+considered_regime = I > max(I)/1e4 & ~arrayfun(@(x)any(imag(x)),theta4) & wavelength>0;
+max_theta4 = max(theta4(considered_regime));
+
+% Calculate the derivatives based on central difference
+central_diff_coeff = {[-1/2;  0; 1/2],...
+                      [   1; -2;   1]};
+wavelength_halfrange = 1; % nm
+n_find_derivatives = n_from_Sellmeier((wavelength_c+[-wavelength_halfrange,0,wavelength_halfrange]')/1e3); % find the derivatives Dn and D2n from +/-1 nm around pulse ceter wavelength
+Dn  = sum(n_find_derivatives.*central_diff_coeff{1})/(wavelength_halfrange*1e-9);
+Dn2 = sum(n_find_derivatives.*central_diff_coeff{2})/(wavelength_halfrange*1e-9)^2;
+% Find theta4 for the center wavelength
+theta2_c = asin(sin(theta_in)./n_c);
+theta3_c = alpha - theta2_c;
+theta4_c = asin(n_c.*sin(theta3_c));
+
+find_optimum_compressor_separation1 = @(d) -prism_calc_max_intensity(d,[],max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w);
+find_FWHM = @(d,dh) prism_calc_FWHM(d,dh,max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w);
+
+% Run the global optimization process to find the optimal prism separation
+% -------------------------------------------------------------------------
+min_separation = 0;
+GVD_before_dechirping = characterize_spectral_phase(c./wavelength,fftshift(ifft(ifftshift(field(:,1),1)),1),3,false); % consider only the 1st mode
+initial_guess = -GVD_before_dechirping*1e-30/(wavelength_c*1e-9)^3*(2*pi*(c*1e3)^2)/(4*sec(max_theta4))/((Dn2+(2*n_c-1/n_c^3)*Dn^2)*sin(max_theta4-theta4_c)-2*Dn^2*cos(max_theta4-theta4_c));
+if initial_guess < min_separation
+    initial_guess = 0;
+elseif ~isreal(initial_guess) % in case that the phase is a mess
+    initial_guess = 0.1;
+end
+
+% This is the local optimization I used before which might be stuck at
+% local minimum if the pulse isn't smooth enough.
+option = optimset('TolX',1e-20);
+%option = optimset('PlotFcns',@optimplotfval,'TolX',1e-20); % plot the process of optimization
+[optimal_separation1,feval1] = fminsearch(find_optimum_compressor_separation1,initial_guess,option);
+% Because fminsearch is unconstrained method, I set the constrain below.
+if optimal_separation1 < min_separation
+    optimal_separation1 = min_separation;
+end
+% Global optimization
+optimal_separation2 = 0;    feval2 = 0;
+if global_opt
+    transform_limited_field = calc_transform_limited( field );
+    transform_limited_peak_power = max(abs(transform_limited_field).^2,[],1);
+    max_dh1 = optimal_separation1*(tan(max_theta4)*cos(alpha/2) - sin(alpha/2));
+    dechirped_field = prism_dechirping(optimal_separation1,max_dh1,max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w);
+    dechirped_peak_power = max(abs(dechirped_field).^2,[],1);
+    
+    % Apply global optimization only when the dechirped field isn't good enough
+    if dechirped_peak_power < transform_limited_peak_power*0.5
+        problem = createOptimProblem('fmincon',...
+            'objective',find_optimum_compressor_separation1,...
+            'x0',initial_guess,...
+            'lb',min_separation,...
+            'options',optimoptions(@fmincon,'Display','off','TolX',1e-20));
+        gs = GlobalSearch('MaxTime',60,'NumTrialPoints',130,'NumStageOnePoints',20,'MaxWaitCycle',5,'Display','off');
+        %gs = MultiStart('MaxTime',120,'Display','off','UseParallel',true,'StartPointsToRun','bounds-ineqs');
+        %[optimal_separation2,feval2] = run(gs,problem,20);
+        [optimal_separation2,feval2] = run(gs,problem);
+    end
+end
+
+if feval1 < feval2
+    optimal_separation = optimal_separation1;
+else
+    optimal_separation = optimal_separation2;
+end
+
+% The final dechirped pulse
+max_dh = optimal_separation*(tan(max_theta4)*cos(alpha/2) - sin(alpha/2));
+[dechirped_field,y,y2,added_phase] = prism_dechirping(optimal_separation,max_dh,max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w);
+dechirped_FWHM = find_FWHM(optimal_separation,max_dh); % ps
+dechirped_FWHM = dechirped_FWHM*1e3; % fs
+
+tol_range = 1e-3; % 1 mm
+if optimal_separation < (min_separation+tol_range)
+    warning('The distance of the grating compressor is too small.');
+    
+    if ~global_opt
+        fprintf('Try running with global optimization.\n');
+    end
+end
+
+% Minimum size required for the prism and the mirror
+prism_height = max(y(considered_regime)) - min(y(considered_regime));
+roof_mirror_size = (max(y2(considered_regime)) - min(y2(considered_regime)))*cos(theta_in);
+
+% Plot the result, if "verbose" is true.
+if verbose
+    show_result('prism',time,dechirped_field,optimal_separation,0,dechirped_FWHM,0,roof_mirror_size,prism_height);
+end
+
+% Recover back to the input frequency range
+dechirped_field = dechirped_field.*exp(-1i*2*pi*(f_c-c/wavelength0)*time);
+
+% Information to recover the field
+recover_info = {exp(1i*2*pi*(f_c-c/wavelength0)*time),exp(-1i*added_phase)};
+
+end
+
+%%
+function [field,y,y2,total_phase] = prism_dechirping(separation,max_dh,max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w)
+%PRISM_DECHIRPING It finds the field after propagating through the 
+%compressor
+
+if separation > 0
+    % The light can go out of the prism pairs under certain angles or
+    % wavelengths, so this part of light is rejected from the compressor.
+    rejected_part_f = imag(theta4)~=0 | wavelength<0;
+    rejected_part = rejected_part_f | abs(field_w)<max(abs(field_w(:)))/1e3;
+    if all(rejected_part)
+        error('All the spectral components are rejected with the selected diffractive order.');
+    end
+    field_w(rejected_part) = 0;
+    theta2(rejected_part_f) = 0;
+    theta3(rejected_part_f) = 0;
+    theta4(rejected_part_f) = 0;
+    
+    dh = separation*(tan(theta4)*cos(alpha/2) - sin(alpha/2));
+    if isempty(max_dh)
+        max_dh = separation*(tan(max_theta4)*cos(alpha/2) - sin(alpha/2));
+    end
+    y = max_dh - dh;
+    y2 = y*sec(alpha/2).*cos(theta3)./cos(theta2);
+    
+    ls = separation*sec(theta4);
+    lp = 2*y.*sin(alpha/2)./cos(theta2).*n;
+    lM = -y.*(cos(alpha)+sin(alpha)*tan(theta2))./cos(alpha/2)*sin(theta_in);
+    
+    propagation_distance = (ls + lp + lM)*1e9; % nm
+    propagation_phase = 2*pi./wavelength.*propagation_distance;
+    total_phase = zeros(size(propagation_phase));
+    total_phase(~rejected_part_f) = mod(2*(propagation_phase(~rejected_part_f)),2*pi); % "2" accounts for back-and-forth propagation
+                                                                                       % (~rejected_part) accounts for the light going into the compressor; if this is ignored, "mod" will give error when the input argument isn't real
+    total_phase(y<0) = 0; % this is rejected as well. Those y<0 means that the beam doesn't hit the second prism, passing over its apex
+    
+    % Propagate the light through the grating and transform it back to time domain
+    field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
+else
+    field = fft( ifftshift(field_w,1) );
+    y = zeros(size(theta4));
+    y2 = zeros(size(theta4));
+    total_phase = zeros(size(theta4));
+end
+
+% Shift the pulse to the center of the time window
+[~,pulse_center] = max(sum(abs(field).^2,2));
+index_shift = pulse_center-floor(length(time)/2);
+field = double(circshift(field,-index_shift,1));
+
+end
+
+%%
+function [optimal_value,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = Offner(compressor_type,theta_in,wavelength0,time,field,grating_spacing,R,offcenter,verbose,m,global_opt)
 %OFFNER
 
 N = length(time); % the number of time points
@@ -399,11 +620,11 @@ end
 % The final dechirped pulse
 switch compressor_type(end) 
     case '1' % single-grating Offner compressor
-        [dechirped_field,y,concave_leftmost,concave_rightmost,convex_size] = Offner_dechirping_with_aberration(0,optimal_value,theta_in,theta_out,wavelength,time,field_w,grating_spacing,R,m);
+        [dechirped_field,y,concave_leftmost,concave_rightmost,convex_size,added_phase] = Offner_dechirping_with_aberration(0,optimal_value,theta_in,theta_out,wavelength,time,field_w,grating_spacing,R,m);
     case '2' % double-grating version for the single-grating case
-        [dechirped_field,y,concave_leftmost,concave_rightmost,convex_size] = Offner_dechirping_with_aberration(optimal_value,offcenter,theta_in,theta_out,wavelength,time,field_w,grating_spacing,R,m);
+        [dechirped_field,y,concave_leftmost,concave_rightmost,convex_size,added_phase] = Offner_dechirping_with_aberration(optimal_value,offcenter,theta_in,theta_out,wavelength,time,field_w,grating_spacing,R,m);
     case '3' % true aberration-free double-grating Offner compressor
-        dechirped_field = Offner_dechirping_no_aberration(optimal_value,theta_in,theta_out,wavelength,field_w,grating_spacing,R,m);
+        [dechirped_field,added_phase] = Offner_dechirping_no_aberration(optimal_value,theta_in,theta_out,wavelength,field_w,grating_spacing,R,m);
 end
 dechirped_FWHM = find_FWHM(optimal_value); % ps
 dechirped_FWHM = dechirped_FWHM*1e3; % fs
@@ -459,10 +680,13 @@ end
 % Recover back to the input frequency range
 dechirped_field = dechirped_field.*exp(-1i*2*pi*(f_c-c/wavelength0)*time);
 
+% Information to recover the field
+recover_info = {exp(1i*2*pi*(f_c-c/wavelength0)*time),exp(-1i*added_phase)};
+
 end
 
 %%
-function [field,y,concave_leftmost,concave_rightmost,convex_size] = Offner_dechirping_with_aberration(separation,offcenter,theta_in,theta_out,wavelength,time,field_w,grating_spacing,R,m)
+function [field,y,concave_leftmost,concave_rightmost,convex_size,total_phase] = Offner_dechirping_with_aberration(separation,offcenter,theta_in,theta_out,wavelength,time,field_w,grating_spacing,R,m)
 %OFFNER_DECHIRPING_WITH_ABERRATION It finds the field after propagating 
 %through the Offner compressor
 
@@ -521,6 +745,7 @@ else
     concave_leftmost = zeros(size(theta_out));
     concave_rightmost = zeros(size(theta_out));
     convex_size = zeros(size(theta_out));
+    total_phase = zeros(size(theta_out));
 end
 
 % Shift the pulse to the center of the time window
@@ -531,7 +756,7 @@ field = double(circshift(field,-index_shift,1));
 end
 
 %%
-function field = Offner_dechirping_no_aberration(separation,theta_in,theta_out,wavelength,field_w,grating_spacing,R,m)
+function [field,total_phase] = Offner_dechirping_no_aberration(separation,theta_in,theta_out,wavelength,field_w,grating_spacing,R,m)
 %OFFNER_DECHIRPING_NO_ABERRATION It finds the field after propagating 
 %through the aberration-free double-grating Offner compressor
 
@@ -566,20 +791,22 @@ if separation > -2*R && separation < 2*R
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
     else
         field = fft( ifftshift(field_w,1) );
+        total_phase = zeros(size(theta_out));
     end
 else
     field = fft( ifftshift(field_w,1) );
+    total_phase = zeros(size(theta_out));
 end
 
 % Shift the pulse to the center of the time window
 [~,pulse_center] = max(sum(abs(field).^2,2));
-index_shift = pulse_center-floor(length(time)/2);
+index_shift = pulse_center-floor(length(wavelength)/2);
 field = double(circshift(field,-index_shift,1));
 
 end
 
 %%
-function [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = Martinez(theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,m,global_opt)
+function [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = Martinez(theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,m,global_opt)
 %Martinez
 
 N = length(time); % the number of time points
@@ -652,7 +879,7 @@ else
 end
 
 % The final dechirped pulse
-[dechirped_field,lens1,lens2,grating] = Martinez_dechirping(optimal_separation,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m);
+[dechirped_field,lens1,lens2,grating,added_phase] = Martinez_dechirping(optimal_separation,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m);
 dechirped_FWHM = find_FWHM(optimal_separation); % ps
 dechirped_FWHM = dechirped_FWHM*1e3; % fs
 
@@ -683,10 +910,13 @@ end
 % Recover back to the input frequency range
 dechirped_field = dechirped_field.*exp(-1i*2*pi*(f_c-c/wavelength0)*time);
 
+% Information to recover the field
+recover_info = {exp(1i*2*pi*(f_c-c/wavelength0)*time),exp(-1i*added_phase)};
+
 end
 
 %%
-function [field,h_lens1,h_lens2,y] = Martinez_dechirping(grating_lens_distance,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m)
+function [field,h_lens1,h_lens2,y,total_phase] = Martinez_dechirping(grating_lens_distance,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m)
 %MARTINEZ_DECHIRPING It finds the field after propagating through the 
 %Martinez stretcher
 
@@ -748,11 +978,12 @@ else % l can't be negative
     h_lens1 = zeros(size(theta_out));
     h_lens2 = zeros(size(theta_out));
     y = zeros(size(theta_out));
+    total_phase = zeros(size(theta_out));
 end
 
 % Shift the pulse to the center of the time window
 [~,pulse_center] = max(sum(abs(field).^2,2));
-index_shift = pulse_center-floor(length(time)/2);
+index_shift = pulse_center-floor(length(wavelength)/2);
 field = double(circshift(field,-index_shift,1));
 
 end
@@ -762,6 +993,15 @@ function max_intensity = Treacy_calc_max_intensity(compressor_type,separation,th
 %TREACY_CALC_MAX_INTENSITY
 
 field = Treacy_dechirping(compressor_type,separation,theta_in,theta_out,wavelength,wavelength0,time,field_w,grating_spacing,m);
+
+max_intensity = max(sum(abs(field).^2,2));
+
+end
+
+function max_intensity = prism_calc_max_intensity(separation,max_dh,max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w)
+%PRISM_CALC_MAX_INTENSITY
+
+field = prism_dechirping(separation,max_dh,max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w);
 
 max_intensity = max(sum(abs(field).^2,2));
 
@@ -794,6 +1034,18 @@ function FWHM = Treacy_calc_FWHM(compressor_type,separation,theta_in,theta_out,w
 %TREACY_CALC_FWHM It finds the FWHM
 
 field = Treacy_dechirping(compressor_type,separation,theta_in,theta_out,wavelength,wavelength0,time,field_w,grating_spacing,m);
+
+I = sum(abs(field).^2,2);
+threshold = max(I)/1.0001;
+[~,~,FWHM,~] = findpeaks(I,time,'MinPeakHeight',threshold,'WidthReference','halfheight','MinPeakProminence',threshold/2);
+FWHM = FWHM(1); % just in case the pulse is dechirped so badly that it has many peaks and is thus outputed many FWHMs
+
+end
+
+function FWHM = prism_calc_FWHM(separation,max_dh,max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w)
+%PRISM_CALC_FWHM It finds the FWHM
+
+field = prism_dechirping(separation,max_dh,max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w);
 
 I = sum(abs(field).^2,2);
 threshold = max(I)/1.0001;
@@ -836,6 +1088,8 @@ function show_result(compressor_type,time,dechirped_field,separation,offcenter,d
 %SHOW_RESULT
 
 switch compressor_type
+    case 'prism'
+        prism_height = varargin{1};
     case {'Offner1','Offner2','Offner3'}
         concave_size = varargin{1};
         convex_size = varargin{2};
@@ -874,6 +1128,10 @@ switch compressor_type
     case {'Treacy-t','Treacy-r'} % Treacy compressor
         fprintf('Grating separation = %6.4f(cm)\n',separation*100);
         fprintf('Minimum size of the grating = %6.4f(cm)\n',grating_size*100);
+        fprintf('Minimum size of the mirror = %6.4f(cm)\n',roof_mirror_size*100);
+    case 'prism'
+        fprintf('Prism separation = %6.4f(cm)\n',separation*100);
+        fprintf('Minimum size of the prism = %6.4f(cm)\n',prism_height*100);
         fprintf('Minimum size of the mirror = %6.4f(cm)\n',roof_mirror_size*100);
     case {'Offner1','Offner2'} % Offner compressor with aberration
         if compressor_type(end) == '1' % single-grating Offner compressor

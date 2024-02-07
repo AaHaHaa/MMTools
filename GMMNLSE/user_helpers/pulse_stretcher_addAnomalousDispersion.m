@@ -39,15 +39,15 @@ function [optimal_separation_l,stretched_field,grating_size,roof_mirror_size,var
 % =========================================================================
 % Use:
 %    Treacy type:
-%      [optimal_separation,stretched_field,grating_size,roof_mirror_size] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing )
-%      [optimal_separation,stretched_field,grating_size,roof_mirror_size] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,verbose )
-%      [optimal_separation,stretched_field,grating_size,roof_mirror_size] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,verbose,global_opt )
-%      [optimal_separation,stretched_field,grating_size,roof_mirror_size] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,verbose,global_opt,m )
+%      [optimal_separation,stretched_field,grating_size,roof_mirror_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing )
+%      [optimal_separation,stretched_field,grating_size,roof_mirror_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,verbose )
+%      [optimal_separation,stretched_field,grating_size,roof_mirror_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,verbose,global_opt )
+%      [optimal_separation,stretched_field,grating_size,roof_mirror_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,verbose,global_opt,m )
 %    Martinez type:
-%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length )
-%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose )
-%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt )
-%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt,m )
+%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length )
+%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose )
+%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt )
+%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt,m )
 %
 
 if ~ismember(stretcher_type,{'Treacy-r','Treacy-t','Martinez'})
@@ -72,10 +72,11 @@ optargs(1:length(varargin)) = varargin;
 [verbose,global_opt,m] = optargs{:};
 switch stretcher_type
     case {'Treacy-r','Treacy-t'}
-        [optimal_separation_l,stretched_field,grating_size,roof_mirror_size] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,m,global_opt);
+        [optimal_separation_l,stretched_field,grating_size,roof_mirror_size,recover_info] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,m,global_opt);
+        varargout = {recover_info};
     case 'Martinez'
-        [optimal_separation_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,m,global_opt);
-        varargout = {lens1_size,lens2_size};
+        [optimal_separation_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,m,global_opt);
+        varargout = {lens1_size,lens2_size,recover_info};
 end
 
 end
@@ -159,9 +160,9 @@ end
 % The final stretched pulse
 switch stretcher_type
     case {'Treacy-r','Treacy-t'}
-        [stretched_field,y] = Treacy(stretcher_type,optimal_value,theta_in,theta_out,wavelength,time,field_w,grating_spacing,m);
+        [stretched_field,y,added_phase] = Treacy(stretcher_type,optimal_value,theta_in,theta_out,wavelength,time,field_w,grating_spacing,m);
     case 'Martinez'
-        [stretched_field,lens1,lens2,grating] = Martinez(optimal_value,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m);
+        [stretched_field,lens1,lens2,grating,added_phase] = Martinez(optimal_value,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m);
 end
 
 tol_range = 1e-3;
@@ -200,14 +201,20 @@ end
 % Recover back to the input frequency range
 stretched_field = stretched_field.*exp(-1i*2*pi*(freq_c-c/wavelength0)*time);
 
-if isequal(stretcher_type,'Martinez')
-    varargout = {lens1_size,lens2_size};
+% Information to recover the field
+recover_info = {exp(1i*2*pi*(freq_c-c/wavelength0)*time),exp(-1i*added_phase)};
+
+switch stretcher_type
+    case {'Treacy-r','Treacy-t'}
+        varargout = {recover_info};
+    case 'Martinez'
+        varargout = {lens1_size,lens2_size,recover_info};
 end
 
 end
 
 %%
-function [field,y] = Treacy(stretcher_type,separation,theta_in,theta_out,wavelength,time,field_w,grating_spacing,m)
+function [field,y,total_phase] = Treacy(stretcher_type,separation,theta_in,theta_out,wavelength,time,field_w,grating_spacing,m)
 %TREACY It finds the field after propagating through the Treacy stretcher
 
 if separation > 0
@@ -238,7 +245,7 @@ if separation > 0
     % Propagate the light through the grating and transform it back to time domain
     field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
 
-    % Shift the pulse to where it was before
+    % Shift the pulse temporally
     field0 = fft( ifftshift(field_w,1) ); field0(abs(field0)<max(abs(field0))/3) = 0; % remove noise for the original field
     % 1. Shift the pulse to where the previous peak is first:
     % This initial step is important in case the stretched pulse goes
@@ -262,12 +269,13 @@ if separation > 0
 else
     field = fft( ifftshift(field_w,1) );
     y = [];
+    total_phase = zeros(size(wavelength));
 end
     
 end
 
 %%
-function [field,h_lens1,h_lens2,y] = Martinez(grating_lens_distance,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m)
+function [field,h_lens1,h_lens2,y,total_phase] = Martinez(grating_lens_distance,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m)
 %MARTINEZ It finds the field after propagating through the Martinez 
 %stretcher
 
@@ -316,7 +324,7 @@ if grating_lens_distance > focal_length
         % Propagate the light through the grating and transform it back to time domain
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
 
-        % Shift the pulse to where it was before
+        % Shift the pulse temporally
         field0 = fft( ifftshift(field_w,1) ); field0(abs(field0)<max(abs(field0))/3) = 0; % remove noise for the original field
         % 1. Shift the pulse to where the previous peak is first:
         % This initial step is important in case the stretched pulse goes
@@ -349,6 +357,7 @@ else % l can't be negative
     h_lens1 = [];
     h_lens2 = [];
     y = [];
+    total_phase = zeros(size(wavelength));
 end
 
 end
@@ -397,7 +406,7 @@ figure('Name','stretched pulse');
 h = plot(time(left:right),intensity(left:right));
 xlim([min(time(left:right)) max(time(left:right))]);
 xlabel('Time (ps)');
-ylabel('Intensity (W)');
+ylabel('Power (W)');
 title('Stretched pulse');
 
 set(h,'linewidth',2);

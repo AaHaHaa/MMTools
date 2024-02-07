@@ -70,7 +70,7 @@ dt = time_window/Nt;  % ps
 t = (-Nt/2:Nt/2-1)'*dt; % ps
 
 %% Soliton fields
-% Construct a single gaussian electric field envelope, in W^0.5
+% Construct a single sech2 electric field envelope, in W^0.5
 LD = t0.^2./abs(beta2);
 c = 299792458;
 lambda0 = c./(c./lambda0 + frequency_shift{2}*1e12); % calibrate lambda0 by including the frequency shift
