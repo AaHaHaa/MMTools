@@ -36,8 +36,8 @@ function fields = include_shot_noise(sim,omegas,Nt,dt,fields)
 %   spectrum_wavelength = spectrum_f.*(c./wavelength.^2);
 %   energy = -trapz(wavelength,spectrum_wavelength);         % pJ
 % -------------------------------------------------------------------------
-%   The noise is added as "one photon per frequency band," so each
-%   frequency band adds one photon energy, hbar*omega, to the total energy.
+%   The noise is added as "one photon per frequency bin," so each
+%   frequency bin adds one photon energy, hbar*omega, to the total energy.
 %   This corresponds to its "spectrum_unknown_unit" counterpart as
 %   "hbar*omega/(N*dt)," whose field amplitude is
 %   "sqrt(hbar*omega/(N*dt))."
