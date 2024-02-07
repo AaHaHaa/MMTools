@@ -130,7 +130,7 @@ while (binary_L == 0 || binary_R == 0) || ...
     % give pulse-output-end counterpump powers smaller and larger than the
     % actual counterpump power. Two boundary values are required for the 
     % binary search afterwards.
-    extra_ratio = 0.2; % added multiplication ratio for setting the boundaries.
+    extra_ratio = 0.5; % added multiplication ratio for setting the boundaries.
     if Power_pump_backward{end} < gain_rate_eqn.counterpump_power
         binary_L = guess_Power_pump_backward;
         binary_L_counterpump_power = Power_pump_backward{end};
