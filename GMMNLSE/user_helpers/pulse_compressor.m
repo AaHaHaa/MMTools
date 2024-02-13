@@ -29,7 +29,7 @@ function [optimal_value,dechirped_FWHM,dechirped_field,varargout] = pulse_compre
 %   field: (N,1); the electric field in time domain
 %   grating_spacing: a scalar; the spacing between each grating line (m)
 %   alpha: the apex angle of prisms in a prism compressor (rad)
-%   prism_material: 'N-SF10'
+%   prism_material: material in Sellmeier_coefficients.m in GMMNLSE_algorithm/
 %
 %   Extra required arguments for the Offner compressor:
 %
@@ -195,7 +195,7 @@ min_separation = 0;
 GVD_before_dechirping = characterize_spectral_phase(c./wavelength,fftshift(ifft(ifftshift(field(:,1),1)),1),3,false); % consider only the 1st mode
 % Obtain the initial guess from the beta2 of a grating compressor.
 % This number should be close to the answer already.
-initial_guess = GVD_before_dechirping/2/(m^2*wavelength_c^3/(2*pi*c^2*grating_spacing^2)*(1-(-m*(wavelength_c*1e-9)/grating_spacing-sin(theta_in))^2)^(-1.5)*1e-3);
+initial_guess = GVD_before_dechirping/(m^2*wavelength_c^3/(pi*c^2*grating_spacing^2)*(1-(-m*(wavelength_c*1e-9)/grating_spacing-sin(theta_in))^2)^(-1.5)*1e-3);
 if initial_guess < min_separation
     initial_guess = 0;
 elseif ~isreal(initial_guess) % in case that the phase is a mess

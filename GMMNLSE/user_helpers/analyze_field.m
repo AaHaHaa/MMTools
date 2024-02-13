@@ -1,4 +1,4 @@
-function [Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power,fig] = analyze_field( t,f,field,compressor_type,grating_incident_angle,grating_spacing,varargin )
+function [Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power,fig] = analyze_field( t,f,field,compressor_type,varargin )
 %ANALYZE_FIELD It plots the field and the spectrum, as well as their
 %dechirped and transform-limited counterparts.
 %
@@ -15,8 +15,16 @@ function [Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power,fig] = a
 %                    'Offner2': double-grating Offner compressor
 %                               (Assume the off-center distance of the first grating is known and fixed.
 %                                The grating separation is varied for pulse compression here.)
-%   grating_incident_angle: a scalar; the incident angle of light toward the grating
-%   grating_spacing: a scalar; the line spacing of the grating
+%
+%   Required arguments for grating-based compressor:
+%
+%      grating_incident_angle: a scalar; the incident angle of light toward the grating
+%      grating_spacing: a scalar; the line spacing of the grating
+%
+%   Required arguments for prism compressor:
+%
+%      alpha: the apex angle of prisms in a prism compressor (rad)
+%      prism_material: material in Sellmeier_coefficients.m in GMMNLSE_algorithm/
 %
 %   Extra required arguments for the Offner compressor:
 %
@@ -35,19 +43,34 @@ function [Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power,fig] = a
 
 %% Move the required input arguments out of the optional input arguments, varargin
 switch compressor_type
-    case 'Offner1'
-        R = varargin{1};
+    case {'Treacy-r','Treacy-t','Treacy-beta2'}
+        grating_incident_angle = varargin{1};
+        grating_spacing = varargin{2};
         
-        if length(varargin) > 1
-            varargin = varargin(2:end);
-        end
+        n = 2;
+    case 'prism'
+        alpha = varargin{1};
+        prism_material = varargin{2};
+        
+        n = 2;
+    case 'Offner1'
+        grating_incident_angle = varargin{1};
+        grating_spacing = varargin{2};
+        R = varargin{3};
+        
+        n = 3;
     case 'Offner2'
-        R = varargin{1};
-        offcenter = varargin{2};
+        grating_incident_angle = varargin{1};
+        grating_spacing = varargin{2};
+        R = varargin{3};
+        offcenter = varargin{4};
 
-        if length(varargin) > 2
-            varargin = varargin(3:end);
-        end
+        n = 4;
+end
+if length(varargin) > n % optional input arguments
+    varargin = varargin(n+1:end);
+else
+    varargin = {};
 end
 
 %% Default optional input arguments
@@ -162,6 +185,8 @@ end
 
 % Dechirp the pulse
 switch compressor_type
+    case 'prism'
+        [~,dechirped_FWHM,dechirped_field] = pulse_compressor(compressor_type,                    [],feval(@(x)x(1),ifftshift(c./f_interp,1)),t_interp,field_interp,alpha,prism_material,false,global_opt);
     case {'Treacy-t','Treacy-r','Treacy-beta2'}
         [~,dechirped_FWHM,dechirped_field] = pulse_compressor(compressor_type,grating_incident_angle,feval(@(x)x(1),ifftshift(c./f_interp,1)),t_interp,field_interp,grating_spacing,false,global_opt,-1);
     case 'Offner1'
