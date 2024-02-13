@@ -45,7 +45,7 @@ gain_rate_eqn.core_NA = 0.08;
 gain_rate_eqn.absorption_wavelength_to_get_N_total = 920; % nm
 gain_rate_eqn.absorption_to_get_N_total = 1; % dB/m
 gain_rate_eqn.pump_wavelength = 976; % nm
-gain_rate_eqn.copump_power = 4; % W
+gain_rate_eqn.copump_power = 3.6; % W
 gain_rate_eqn.counterpump_power = 0; % W
 gain_rate_eqn.reuse_data = false; % For a ring or linear cavity, the pulse will enter a steady state eventually.
                                   % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.
@@ -73,6 +73,19 @@ lambda = c./(f*1e12)*1e9; % nm
 % Precompute some parameters related to the gain to save the computational time
 % Check "gain_info.m" for details.
 gain_rate_eqn = gain_info( fiber_Gain,sim_Gain,gain_rate_eqn,ifftshift(lambda,1) );
+
+%% calculate fiber betas from silica refractive index
+% This is important to correctly simulate the broadband situations.
+% Taylor-series coefficients is only good in narrowband situations.
+
+% Sellmeier coefficients
+material = 'fused silica';
+[a,b] = Sellmeier_coefficients(material);
+Sellmeier_terms = @(lambda,a,b) a.*lambda.^2./(lambda.^2 - b.^2);
+n_from_Sellmeier = @(lambda) sqrt(1+sum(Sellmeier_terms(lambda,a,b),2));
+n_silica = n_from_Sellmeier(lambda/1e3);
+
+fiber_Gain.betas = n_silica*2*pi./(lambda*1e-9);
 
 %% Setup initial conditions
 tfwhm = 0.1; % ps

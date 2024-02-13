@@ -11,6 +11,7 @@ sim.lambda0 = 1080e-9;
 sim.f0 = 2.99792458e-4/sim.lambda0;
 sim.gpu_yes = false;
 sim.save_period = 0.1;
+sim.num_photon_noise_per_bin = 1;
 
 % -------------------------------------------------------------------------
 
@@ -72,6 +73,19 @@ lambda = c./(f*1e12)*1e9; % nm
 % Precompute some parameters related to the gain to save the computational time
 % Check "gain_info.m" for details.
 gain_rate_eqn = gain_info( fiber_Gain,sim_Gain,gain_rate_eqn,ifftshift(lambda,1) );
+
+%% calculate fiber betas from silica refractive index
+% This is important to correctly simulate the broadband situations.
+% Taylor-series coefficients is only good in narrowband situations.
+
+% Sellmeier coefficients
+material = 'fused silica';
+[a,b] = Sellmeier_coefficients(material);
+Sellmeier_terms = @(lambda,a,b) a.*lambda.^2./(lambda.^2 - b.^2);
+n_from_Sellmeier = @(lambda) sqrt(1+sum(Sellmeier_terms(lambda,a,b),2));
+n_silica = n_from_Sellmeier(lambda/1e3);
+
+fiber_Gain.betas = n_silica*2*pi./(lambda*1e-9);
 
 %% Setup initial conditions
 tfwhm = 0.6; % ps
