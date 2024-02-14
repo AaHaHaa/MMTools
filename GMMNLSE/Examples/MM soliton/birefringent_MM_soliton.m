@@ -1,4 +1,7 @@
 % This code demonstrates the generation of multimode soliton through SSFS.
+% Strong birefringence is added to demonstrate the polarized simulations.
+% Due to "strong" birefringence, its result is the same as the scalar
+% simulation.
 
 close all; clearvars;
 
@@ -14,6 +17,9 @@ fiber.S_tensors_filename = 'S_tensors_10modes.mat';
 sim.lambda0 = 1550e-9; % the central wavelength
 sim.pulse_centering = false;
 sim.midx = 1:2; % use two spatial modes for fast demonstration; users are free to try more
+sim.scalar = false;
+
+num_modes = length(sim.midx)*(double(~sim.scalar)+1); % 2, in the polarized scenario, accounts for polarized modes
 
 % Load default parameters like 
 %
@@ -25,6 +31,20 @@ sim.midx = 1:2; % use two spatial modes for fast demonstration; users are free t
 %
 % Please check this function for details.
 [fiber,sim] = load_default_GMMNLSE_propagate(fiber,sim,'multimode'); % load default parameters
+
+% Add birefringence to the fiber
+beat_length = 1e-3; % 1 mm
+% The betas at the other polarization can be easily calculated by 
+% beta_e = n_e*w/c = (n_o + delta_n)*w/c
+%                  = (n_o + lambda/beat_length)*w/c
+if sim.scalar
+    betas = zeros(size(fiber.betas,1),num_modes);
+    for i = 1:length(sim.midx)
+        betas(:,i*2-1) = fiber.betas(:,i);
+        betas(1,i*2) = fiber.betas(1,i) + 980e-9/beat_length *2*pi/sim.lambda0;
+    end
+    fiber.betas = betas;
+end
 
 num_save = 100;
 fiber.L0 = 10; % m
@@ -42,8 +62,14 @@ lambda = c./(f*1e12)*1e9; % nm
 %% Initial condition
 total_energy = 5; % nJ
 tfwhm = 0.5; % ps
-input_field = build_MMgaussian(tfwhm, time_window, total_energy, length(sim.midx), Nt, {'ifft',0}, ones(1,length(sim.midx)), -time_window/2*0.4);
-input_field.fields = input_field.fields.*exp(1i*2*pi*rand(1,length(sim.midx)));
+
+% Initially excited in the same polarization only
+ratio = ones(1,num_modes); 
+if num_modes > 1
+    ratio(2:2:end) = ratio(2:2:end)/1e3;
+end
+input_field = build_MMgaussian(tfwhm, time_window, total_energy, num_modes, Nt, {'ifft',0}, ratio, -time_window/2*0.4);
+input_field.fields = input_field.fields.*exp(1i*2*pi*rand(1,num_modes));
 
 %% Propagate
 prop_output = GMMNLSE_propagate(fiber,input_field,sim);
