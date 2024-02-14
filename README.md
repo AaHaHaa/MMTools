@@ -27,3 +27,5 @@ I've fixed the bugs regarding spontaneous Raman scattering. My previous implemen
 About the implementation details, I'll release them by referring to my plan-to-published recent work once it's published.
 * 1/17/2024:<br>
 Since I've received questions about the Fourier Transform, I've added explanation about it in the readme.pdf. Because of the laser-field definition, Fourier Transform should be `ifft` in MATLAB; be careful about this! It's different from the mathematical convention. This affects phase results and even critical (and can make the result wrong) Fourier-Transform-constant issues, such as different constants of convolution theorem for different conventions.
+* 2/14/2024:<br>
+There is a significant bug in CUDA related to spontaneous Raman scattering that will simply fail MATLAB. I fixed it. Please download the new one if you download the code after 1/3/2024 when I claimed to add and fix the spontaneous Raman scattering.
