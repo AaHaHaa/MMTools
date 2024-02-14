@@ -14,6 +14,7 @@ fiber.S_tensors_filename = 'S_tensors_10modes.mat';
 sim.lambda0 = 1550e-9; % the central wavelength
 sim.pulse_centering = false;
 sim.midx = 1:2; % use two spatial modes for fast demonstration; users are free to try more
+sim.gpu_yes = true; % make it "false" to test CPU
 
 % Load default parameters like 
 %

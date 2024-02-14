@@ -18,6 +18,7 @@ sim.lambda0 = 1550e-9; % the central wavelength
 sim.pulse_centering = false;
 sim.midx = 1:2; % use two spatial modes for fast demonstration; users are free to try more
 sim.scalar = false;
+sim.gpu_yes = true; % make it "false" to test CPU
 
 num_modes = length(sim.midx)*(double(~sim.scalar)+1); % 2, in the polarized scenario, accounts for polarized modes
 
