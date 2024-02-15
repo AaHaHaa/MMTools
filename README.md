@@ -7,7 +7,7 @@ Although adaptive-step-size control for RK4IP isn't new with published papers, a
 
 For rate-equation-gain modeling, all pumping schemes are implemented: copumping, counterpumping, co+counter-pumping, as well as with and without ASE.
 
-For multimode, GPU computations (with Nvidia cuda) is highly recommended. I have written a lot of cuda files to speed up simulations. It is controlled by `sim.gpu_yes=true or false`.
+For multimode, GPU computations (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true or false`.
 
 For details, please read the supplement of our paper: https://doi.org/10.1364/JOSAB.500586.  
 Please don't forget to cite our paper if you find this code useful in your work. I, the young and early-career researcher, need your support. Similarly, if you need help or have questions about the code, please feel free to send me an email.
