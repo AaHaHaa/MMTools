@@ -346,8 +346,20 @@ rev_idx = rev_matrix(idx);
 end
 
 function [beginning_nonzero,ending_nonzero] = beginning_idx(nonzero_midx1234s,num_modes)
-%BEGINNING_IDX It finds the first position of each (midx1,midx2) in
+%BEGINNING_IDX It finds the first and last positions of each (midx1,midx2) in
 %nonzero_midx1234s
+%
+%   beginning_nonzeros: the first position of each (midx1,midx2)
+%   ending_nonzeros: the (last position + 1) of each (midx1,midx2)
+%
+% For example,
+%   if nonzeros_midx1234s = [1,1,1,1,2,2,...
+%                            1,1,1,1,1,1,...
+%                            1,1,2,2,...
+%                            1,2,1,2,...],
+%   then
+%       beginning_nonzeros for (1,1) is 1 and
+%          ending_nonzeros for (1,1) is 5.
 
 beginning_nonzero = zeros(num_modes,num_modes);
 ending_nonzero = zeros(num_modes,num_modes);
@@ -381,6 +393,13 @@ function [nonzero_midx1234s,S,...
 %REFINE_SCALAR_S It refine the nonzero indices by removing (midx1,midx2,midx4,midx3)
 %when midx3~=midx4 in scalar simulations. The cuda file in GMMNLSE is 
 %updated accordingly.
+%
+%   Summation over the midx3 and midx4 in (midx1,midx2,midx4,midx3), or (p,l,m,n) for easily-recognized notation below
+%   exhibits symmetry due to Am*conj(An)+An*conj(Am).
+%   The computation can be simplified by computing with real and imaginary
+%   parts and removing the cancelled parts.
+%   This is done in CUDA, so only one (midx3,midx4) is needed.
+%   (midx4,midx3) is removed when midx3~=midx4.
 
 [beginning_nonzero,ending_nonzero] = beginning_idx(nonzero_midx1234s,num_modes);
 
@@ -413,8 +432,9 @@ function [nonzero_midx1234s,S,...
                                                                  num_modes,...
                                                                  use_gpu)
 %REFINE_POLARIZED_S It refine the nonzero indices by removing (midx1,midx2,midx4,midx3)
-%when midx3~=midx4 in polarized simulations. The cuda file in GMMNLSE is 
-%updated accordingly.
+%when midx3~=midx4 when they represent the same polarization in polarized simulations.
+%The terms to remove is the same as in scalar situations.
+%The cuda file in GMMNLSE is updated accordingly.
 
 [beginning_nonzero,ending_nonzero] = beginning_idx(nonzero_midx1234s,num_modes);
 
