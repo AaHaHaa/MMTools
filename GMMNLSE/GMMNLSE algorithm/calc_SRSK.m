@@ -433,7 +433,10 @@ function [nonzero_midx1234s,S,...
                                                                  use_gpu)
 %REFINE_POLARIZED_S It refine the nonzero indices by removing (midx1,midx2,midx4,midx3)
 %when midx3~=midx4 when they represent the same polarization in polarized simulations.
-%The terms to remove is the same as in scalar situations.
+%
+%If midx3 and midx4 are in the same spatial mode but different polarizations, no reduction is applied since it doesn't guarantee another overlap-integral sum of (midx4,midx3) for (midx3,midx4).
+%
+%Therefore, the terms to remove is the same as in scalar situations.
 %The cuda file in GMMNLSE is updated accordingly.
 
 [beginning_nonzero,ending_nonzero] = beginning_idx(nonzero_midx1234s,num_modes);
