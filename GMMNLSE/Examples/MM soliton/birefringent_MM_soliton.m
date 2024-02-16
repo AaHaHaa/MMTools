@@ -38,7 +38,7 @@ beat_length = 1e-3; % 1 mm
 % The betas at the other polarization can be easily calculated by 
 % beta_e = n_e*w/c = (n_o + delta_n)*w/c
 %                  = (n_o + lambda/beat_length)*w/c
-if sim.scalar
+if ~sim.scalar
     betas = zeros(size(fiber.betas,1),num_modes);
     for i = 1:length(sim.midx)
         betas(:,i*2-1) = fiber.betas(:,i);
