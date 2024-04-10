@@ -65,19 +65,11 @@ anisotropic_Raman_included = ~sim.scalar & sim.Raman_model==2;
 % Spontaneous Raman scattering
 if sim.include_sponRS
     if sim.gpu_yes
-        Ra_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
-        Rb_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
-
         A_sponRS = fft(sponRS_prefactor{1}.*sqrt(abs(randn(N,sim.MPA.M+1,num_modes,'gpuArray'))).*exp(1i*2*pi*rand(N,sim.MPA.M+1,num_modes,'gpuArray')));
     else
-        Ra_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
-        Rb_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
-
         A_sponRS = fft(sponRS_prefactor{1}.*sqrt(abs(randn(N,sim.MPA.M+1,num_modes))).*exp(1i*2*pi*rand(N,sim.MPA.M+1,num_modes)));
     end
 else
-    Ra_sponRS = [];
-    Rb_sponRS = [];
     A_sponRS = [];
 end
 
@@ -109,6 +101,19 @@ for n_it = 1:sim.MPA.n_tot_max
         Kerr = complex(zeros(N, sim.MPA.M+1, num_modes));
         Ra = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
         Rb = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
+    end
+    % Spontaneous Raman scattering
+    if sim.include_sponRS
+        if sim.gpu_yes
+            Ra_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
+            Rb_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
+        else
+            Ra_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
+            Rb_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
+        end
+    else
+        Ra_sponRS = [];
+        Rb_sponRS = [];
     end
 
     % Calculate large num_modes^4 Kerr, Ra, and Rb terms.
