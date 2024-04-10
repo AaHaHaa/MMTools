@@ -85,19 +85,11 @@ end
 % Spontaneous Raman scattering
 if sim.include_sponRS
     if sim.gpu_yes
-        Ra_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
-        Rb_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
-
         A_sponRS = fft(sponRS_prefactor{1}.*sqrt(abs(randn(N,sim.MPA.M+1,num_modes,'gpuArray'))).*exp(1i*2*pi*rand(N,sim.MPA.M+1,num_modes,'gpuArray')));
     else
-        Ra_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
-        Rb_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
-
         A_sponRS = fft(sponRS_prefactor{1}.*sqrt(abs(randn(N,sim.MPA.M+1,num_modes))).*exp(1i*2*pi*rand(N,sim.MPA.M+1,num_modes)));
     end
 else
-    Ra_sponRS = [];
-    Rb_sponRS = [];
     A_sponRS = [];
 end
 
@@ -130,6 +122,19 @@ for n_it = 1:sim.MPA.n_tot_max
         Rb = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
 
         transfer_matrix = complex(zeros(sim.MPA.M+1, num_spatial_modes, num_spatial_modes, polar));
+    end
+    % Spontaneous Raman scattering
+    if sim.include_sponRS
+        if sim.gpu_yes
+            Ra_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
+            Rb_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
+        else
+            Ra_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
+            Rb_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
+        end
+    else
+        Ra_sponRS = [];
+        Rb_sponRS = [];
     end
 
     % Calculate Bmn for all l and m, and M
