@@ -89,13 +89,11 @@ c = 299792458; % m/s
 v = 1/fiber.betas(2)*1e12; % velocity in the fiber
 gain_rate_eqn.t_rep = fiber.L0*2/v + L_air/c; % s
 
-% arm 1
-gain_rate_eqn_GMNA = gain_info( fiber,sim,gain_rate_eqn,ifftshift(lambda,1) );
-% arm 2
+% arm 1: SPM
 gain_rate_eqn.copump_power = gain_rate_eqn.copump_power/3;
 gain_rate_eqn_SPM = gain_info( fiber,sim,gain_rate_eqn,ifftshift(lambda,1) );
-
-gain_rate_eqn_cavity = {gain_rate_eqn_SPM,gain_rate_eqn_GMNA};
+% arm 2: GMNA
+gain_rate_eqn_GMNA = gain_info( fiber,sim,gain_rate_eqn,ifftshift(lambda,1) );
 
 %% Run the cavity simulation
 func = analyze_sim;
@@ -112,38 +110,59 @@ while rt_num < max_rt
     
     t_iteration_start = tic;
     cprintf('*[1 0.5 0.31]','Iteration %d', rt_num);
-    % -----------------------------------------------------------------
-    for i = 1:2
-        % Propagation inside fibers
-        prop_output = GMMNLSE_propagate(fiber, prop_output, sim, gain_rate_eqn_cavity{i});
-        time_delay = time_delay + prop_output.t_delay(end);
+    
+    % ---------------------------------------------------------------------
+    % fiber arm 1: SPM
+    % ---------------------------------------------------------------------
+    prop_output = GMMNLSE_propagate(fiber, prop_output, sim, gain_rate_eqn_SPM);
+    time_delay = time_delay + prop_output.t_delay(end);
 
-        % Save the field information
-        field(:,:,zn:zn+length(prop_output.z)-1) = prop_output.fields;
-        saved_z(zn:zn+length(prop_output.z)-1) = current_z + prop_output.z;
+    % Save the field information
+    field(:,:,zn:zn+length(prop_output.z)-1) = prop_output.fields;
+    saved_z(zn:zn+length(prop_output.z)-1) = current_z + prop_output.z;
 
-        % Save the gain info
-        N2(:,:,zn:zn+length(prop_output.z)-1) = prop_output.N2;
-        pump(:,:,zn:zn+length(prop_output.z)-1) = prop_output.Power.pump.forward;
+    % Save the gain info
+    N2(:,:,zn:zn+length(prop_output.z)-1) = prop_output.N2;
+    pump(:,:,zn:zn+length(prop_output.z)-1) = prop_output.Power.pump.forward;
 
-        current_z = prop_output.z(end);
-        zn = zn + length(prop_output.z)-1;
-        
-        % % Spectral filter (arm 1)
-        if i == 1
-            output_field2(:,:,rt_num) = prop_output.fields(:,:,end);
-            if rt_num ~= 1
-                close(fig_filter);
-            end
-            [prop_output,fig_filter] = gaussian_spectral_filter(prop_output, sim.f0, spectral_filter(i).cw, spectral_filter(i).bw,3,true); % Filter
-            
-            prop_output.fields = prop_output.fields(:,:,end)*sqrt(1-loss);
-            
-            % Save the field after the filter
-            current_z = current_z + filter_displacement;
-            zn = zn + 1;
-        end
+    current_z = prop_output.z(end);
+    zn = zn + length(prop_output.z)-1;
+    
+    % ---------------------------------------------------------------------
+    % Loss and spectral filter after the fiber arm 1
+    % ---------------------------------------------------------------------
+    output_field2(:,:,rt_num) = prop_output.fields(:,:,end);
+    if rt_num ~= 1
+        close(fig_filter);
     end
+    [prop_output,fig_filter] = gaussian_spectral_filter(prop_output, sim.f0, spectral_filter(1).cw, spectral_filter(1).bw,3,true); % Filter
+
+    prop_output.fields = prop_output.fields(:,:,end)*sqrt(1-loss);
+
+    % Save the field after the filter
+    current_z = current_z + filter_displacement;
+    zn = zn + 1;
+    
+    % ---------------------------------------------------------------------
+    % fiber arm 2: GMNA
+    % ---------------------------------------------------------------------
+    prop_output = GMMNLSE_propagate(fiber, prop_output, sim, gain_rate_eqn_GMNA);
+    time_delay = time_delay + prop_output.t_delay(end);
+
+    % Save the field information
+    field(:,:,zn:zn+length(prop_output.z)-1) = prop_output.fields;
+    saved_z(zn:zn+length(prop_output.z)-1) = current_z + prop_output.z;
+
+    % Save the gain info
+    N2(:,:,zn:zn+length(prop_output.z)-1) = prop_output.N2;
+    pump(:,:,zn:zn+length(prop_output.z)-1) = prop_output.Power.pump.forward;
+
+    current_z = prop_output.z(end);
+    zn = zn + length(prop_output.z)-1;
+
+    % ---------------------------------------------------------------------
+    % Finish propagation
+    % ---------------------------------------------------------------------
     saved_z = saved_z(1:zn);
     
     % Output couplier
@@ -176,8 +195,8 @@ while rt_num < max_rt
     
     % ---------------------------------------------------------------------
     % Update the repetition rate based on "time_delay"
-    gain_rate_eqn_cavity{1}.t_rep = gain_rate_eqn.t_rep + time_delay*1e-12;
-    gain_rate_eqn_cavity{2}.t_rep = gain_rate_eqn_cavity{1}.t_rep;
+    gain_rate_eqn_SPM.t_rep = gain_rate_eqn.t_rep + time_delay*1e-12;
+    gain_rate_eqn_GMNA.t_rep = gain_rate_eqn_SPM.t_rep;
     
     % ---------------------------------------------------------------------
     % Plot
@@ -217,7 +236,7 @@ energy = output_energy(arrayfun(@any,output_energy)); % clear zero
 % Save the final output field
 save('ring_Mamyshev_oscillator.mat', 't','f','output_field','output_field2','time_delay','energy',...
                          'saved_z','splice_z','field',...
-                         'N2','pump','gain_rate_eqn_cavity',...
+                         'N2','pump','gain_rate_eqn_SPM','gain_rate_eqn_GMNA',...
                          'fiber','sim',... % cavity parameters
                          '-v7.3'); % saved mat file version
 % -------------------------------------------------------------------------

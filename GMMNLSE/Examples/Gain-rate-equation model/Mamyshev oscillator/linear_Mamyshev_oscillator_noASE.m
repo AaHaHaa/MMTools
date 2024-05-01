@@ -62,13 +62,8 @@ fiber_Gain.L0 = 3; % the length of the gain fiber
 % Please check this function for details.
 [fiber_Gain,sim_Gain] = load_default_GMMNLSE_propagate(fiber_Gain,sim_Gain,'single_mode');
 
-% -------------------------------------------------------------------------
-% ----------------------------------- All ---------------------------------
-% -------------------------------------------------------------------------
-fiber_cavity = [fiber_Gain fiber_Gain];
-sim_cavity = [sim_Gain sim_Gain];
 
-fiber_arm = {1 2};
+fiber_cavity = [fiber_Gain fiber_Gain];
 
 %% Setup general cavity parameters
 max_rt = 100; % maximum number of roundtrips
@@ -96,9 +91,6 @@ fiber.betas = n_silica*2*pi./(lambda*1e-9);
 %% Filter parameters
 spectral_filter = struct('bw',4, ... % bandwidth (nm)
                          'cw',{1025,1045}); % center wavelength (nm)
-
-% Similar to "spectral_filter" for the pulse; the spectral_filter for the ASE.
-filter_factor = @(center_lambda,bandwidth_lambda) exp(-(f-299792.458/center_lambda).^2/(299792.458/center_lambda^2*bandwidth_lambda/(2*sqrt(log(2))))^2);
 
 %% Setup initial conditions
 tfwhm = 1; % ps
@@ -132,8 +124,6 @@ gain_rate_eqn_counterpumping.counterpump_power = gain_rate_eqn_copumping.copump_
 gain_rate_eqn_copumping = gain_info( fiber_Gain,sim_Gain,gain_rate_eqn_copumping,ifftshift(lambda,1) );
 gain_rate_eqn_counterpumping = gain_info( fiber_Gain,sim_Gain,gain_rate_eqn_counterpumping,ifftshift(lambda,1) );
 
-gain_rate_eqn = {gain_rate_eqn_counterpumping gain_rate_eqn_copumping};
-
 %% Run the cavity simulation
 func = analyze_sim;
 
@@ -149,54 +139,73 @@ while rt_num < max_rt
     
     t_iteration_start = tic;
     cprintf('*[1 0.5 0.31]','Iteration %d', rt_num);
-    % -----------------------------------------------------------------
-    for i = 1:2
-        % Propagation inside fibers
-        for j = fiber_arm{i}
-            prop_output = GMMNLSE_propagate(fiber_cavity(j), prop_output, sim_cavity(j),gain_rate_eqn{j});
-            
-            gain_rate_eqn{mod(j,2)+1}.saved_data = prop_output.saved_data;
-            time_delay = time_delay + prop_output.t_delay(end);
-            
-            % Save the information
-            if isstruct(prop_output.fields)
-                prop_output.fields = prop_output.fields.forward;
-            end
-            [saved_field,saved_z_this_fiber] = func.extract_saved_field(prop_output.fields,max_save_per_fiber,current_z,prop_output.z);
-            field{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_field;
-            saved_z(zn:zn+size(saved_field,3)-1) = saved_z_this_fiber;
-            % Save the gain info
-            saved_N2 = func.extract_saved_field( prop_output.N2,max_save_per_fiber,current_z,sim.save_period );
-            N2{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_N2;
-            switch i
-                case 2
-                    saved_pump_forward = func.extract_saved_field( prop_output.Power.pump.forward,max_save_per_fiber,current_z,sim.save_period );
-                    pump{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_pump_forward;
-                case 1
-                    saved_pump_backward = func.extract_saved_field( prop_output.Power.pump.backward,max_save_per_fiber,current_z,sim.save_period );
-                    pump{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_pump_backward;
-            end
-            
-            current_z = saved_z_this_fiber(end);
-            zn = zn + size(saved_field,3)-1;
-        end
-        
-        % Loss and spectral filter
-        if i==1
-            % Spectral filter (arm 1)
-            if rt_num ~= 1
-                close(fig_filter);
-            end
-            
-            [prop_output,fig_filter] = gaussian_spectral_filter(prop_output, sim.f0, spectral_filter(1).cw, spectral_filter(1).bw,1,true); % Filter
-            
-            prop_output.fields(:,:,end) = prop_output.fields(:,:,end)*sqrt(1-loss);
-            
-            % Save the field after the filter
-            current_z = current_z + filter_displacement;
-            zn = zn + 1;
-        end
+    
+    % ---------------------------------------------------------------------
+    % Counterpumping gain fiber (fiber arm 1)
+    % ---------------------------------------------------------------------
+    prop_output = GMMNLSE_propagate(fiber_Gain, prop_output, sim_Gain, gain_rate_eqn_counterpumping);
+    
+    gain_rate_eqn_copumping.saved_data = prop_output.saved_data;
+    time_delay = time_delay + prop_output.t_delay(end);
+    
+    % Save the information
+    if isstruct(prop_output.fields)
+        prop_output.fields = prop_output.fields.forward;
     end
+    [saved_field,saved_z_this_fiber] = func.extract_saved_field(prop_output.fields,max_save_per_fiber,current_z,prop_output.z);
+    field{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_field;
+    saved_z(zn:zn+size(saved_field,3)-1) = saved_z_this_fiber;
+    % Save the gain info
+    saved_N2 = func.extract_saved_field( prop_output.N2,max_save_per_fiber,current_z,sim.save_period );
+    N2{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_N2;
+    saved_pump_backward = func.extract_saved_field( prop_output.Power.pump.backward,max_save_per_fiber,current_z,sim.save_period );
+    pump{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_pump_backward;
+    
+    current_z = saved_z_this_fiber(end);
+    zn = zn + size(saved_field,3)-1;
+    
+    % ---------------------------------------------------------------------
+    % Loss and spectral filter after the fiber arm 1
+    % ---------------------------------------------------------------------
+    % Spectral filter
+    if rt_num ~= 1
+        close(fig_filter);
+    end
+    [prop_output,fig_filter] = gaussian_spectral_filter(prop_output, sim.f0, spectral_filter(1).cw, spectral_filter(1).bw,1,true); % Filter
+    % Loss
+    prop_output.fields(:,:,end) = prop_output.fields(:,:,end)*sqrt(1-loss);
+
+    % Save the field after the filter
+    current_z = current_z + filter_displacement;
+    zn = zn + 1;
+
+    % ---------------------------------------------------------------------
+    % Copumping gain fiber (fiber arm 2)
+    % ---------------------------------------------------------------------
+    prop_output = GMMNLSE_propagate(fiber_Gain, prop_output, sim_Gain, gain_rate_eqn_copumping);
+    
+    gain_rate_eqn_counterpumping.saved_data = prop_output.saved_data;
+    time_delay = time_delay + prop_output.t_delay(end);
+    
+    % Save the information
+    if isstruct(prop_output.fields)
+        prop_output.fields = prop_output.fields.forward;
+    end
+    [saved_field,saved_z_this_fiber] = func.extract_saved_field(prop_output.fields,max_save_per_fiber,current_z,prop_output.z);
+    field{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_field;
+    saved_z(zn:zn+size(saved_field,3)-1) = saved_z_this_fiber;
+    % Save the gain info
+    saved_N2 = func.extract_saved_field( prop_output.N2,max_save_per_fiber,current_z,sim.save_period );
+    N2{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_N2;
+    saved_pump_forward = func.extract_saved_field( prop_output.Power.pump.forward,max_save_per_fiber,current_z,sim.save_period );
+    pump{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_pump_forward;
+    
+    current_z = saved_z_this_fiber(end);
+    zn = zn + size(saved_field,3)-1;
+    
+    % ---------------------------------------------------------------------
+    % Finish propagation
+    % ---------------------------------------------------------------------
     saved_z = saved_z(1:zn);
     
     % ---------------------------------------------------------------------
@@ -230,8 +239,8 @@ while rt_num < max_rt
     
     % ---------------------------------------------------------------------
     % Update the repetition rate based on "time_delay"
-    gain_rate_eqn{1}.t_rep = gain_rate_eqn{1}.t_rep + time_delay*1e-12;
-    gain_rate_eqn{2}.t_rep = gain_rate_eqn{1}.t_rep;
+    gain_rate_eqn_counterpumping.t_rep = gain_rate_eqn.t_rep + time_delay*1e-12;
+    gain_rate_eqn_copumping.t_rep = gain_rate_eqn_counterpumping.t_rep;
     
     % ---------------------------------------------------------------------
     % Plot
@@ -274,8 +283,7 @@ energy = output_energy(arrayfun(@any,output_energy)); % clear zero
 if pulse_survives
     save('linear_Mamyshev_oscillator_noASE.mat', 't','f','output_field','time_delay','energy',...
                                                  'saved_z','splice_z','field',...
-                                                 'pump','N2','gain_rate_eqn',...
-                                                 'fiber_cavity','sim_cavity',... % cavity parameters
+                                                 'pump','N2','gain_rate_eqn_copumping','gain_rate_eqn_counterpumping',...
                                                  '-v7.3'); % saved mat file version
 end
 % -------------------------------------------------------------------------
