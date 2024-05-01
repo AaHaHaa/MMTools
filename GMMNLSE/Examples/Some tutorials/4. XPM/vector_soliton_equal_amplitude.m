@@ -39,7 +39,7 @@ LD = T0^2/abs(beta2); % dispersion length
 num_save = 20;
 fiber.L0 = 10*LD; % propagate for 10*LD
 sim.save_period = fiber.L0/num_save;
-sim.gpu_yes = false;
+%sim.gpu_yes = false;
 
 % Load default parameters like 
 %
