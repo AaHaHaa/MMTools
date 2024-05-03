@@ -1,6 +1,5 @@
-function pulse_compressor_animator( compressor_type,separation,theta_in,wavelength0,time,field,varargin )
-%PULSE_COMPRESSOR_ANIMATOR Make an animation of spectrograms of the fields 
-% after differernt grating/prism separations of the compressor
+function dechirped_field = pulse_compressor_single( compressor_type,separation,theta_in,wavelength0,time,field,varargin )
+%PULSE_COMPRESSOR_SINGLE Computes the fields after the separation of the compressor
 %
 %   compressor_type: 'Treacy-r': reflective grating pair,
 %                    'Treacy-t': transmissive grating pair,
@@ -49,61 +48,36 @@ function pulse_compressor_animator( compressor_type,separation,theta_in,waveleng
 %                  required only for 'Offner2'
 %
 %   Optional arguments:
-%
-%       tlim - (1,2) matrix; the range of the time to plot (ps) (default: [])
-%       wavelengthlim - (1,2) matrix; the range of the wavelength to plot (nm) (default: [])
-%       t_feature - a scalar; the ratio of the tiny pulse structure vs. pulse duration you want to resolve;
-%                   the larger the number, the higher the time resolution (default: 50)
-%       f_feature - a scalar; the ratio of the tiny spectral structure vs. pulse bandwidth you want to revolve
-%                   the larger the number, the higher the frequency resolution (default: 50)
-%       lambda_or_f - true (use wavelength) or false (use frequency);
-%                     plot with frequency (THz) or wavelength (nm);
-%                     If plot_yes=false, this acts nothing
-%                    (default: true)
 %       m: a scalar; the diffraction order (default: -1)
 % =========================================================================
 % Use:
 %   Treacy:
-%      pulse_compressor_animator( compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m )
+%      dechirped_field = pulse_compressor_single( compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,m )
 %
 %       * compressor_type is either 'Treacy-t', 'Treacy-r', or 'Treacy-beta2'
-%       * [tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m] are optional inputs
 %
 %   Prism:
-%      pulse_compressor_animator( 'prism',separation,[],wavelength0,time,field,alpha,prism_material,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f )
-%
-%       * [tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m] are optional inputs
+%      dechirped_field = pulse_compressor_single( 'prism',separation,[],wavelength0,time,field,alpha,prism_material )
 %
 %   Grism1:
-%      pulse_compressor_animator( 'grism1',separation,theta_in,wavelength0,time,field,grating_spacing,alpha,prism_material,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m )
-%
-%       * [tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m] are optional inputs
+%      dechirped_field = pulse_compressor_single( 'grism1',separation,theta_in,wavelength0,time,field,grating_spacing,alpha,prism_material,m )
 %
 %   Grism2:
-%      pulse_compressor_animator( 'grism2',separation,theta_in,wavelength0,time,field,grating_spacing,alpha,prism_material,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m )
-%
-%      * [tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m] are optional inputs
+%      dechirped_field = pulse_compressor_single( 'grism2',separation,theta_in,wavelength0,time,field,grating_spacing,alpha,prism_material,m )
 %
 %   Offner1:
-%       pulse_compressor_animator( 'Offner1',separation,theta_in,wavelength0,time,field,grating_spacing,R,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m )
-%
-%       * [tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m] are optional inputs
+%      dechirped_field = pulse_compressor_single( 'Offner1',separation,theta_in,wavelength0,time,field,grating_spacing,R,m )
 %
 %   Offner2:
-%       pulse_compressor_animator( 'Offner2',separation,theta_in,wavelength0,time,field,grating_spacing,R,offcenter,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m )
+%      dechirped_field = pulse_compressor_single( 'Offner2',separation,theta_in,wavelength0,time,field,grating_spacing,R,offcenter,m )
 %
 %       * Compared to "Offner1", "offcenter" is required for an input here
-%       * [tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m] are optional inputs
 %
 %   Offner3:
-%       pulse_compressor_animator( 'Offner3',separation,theta_in,wavelength0,time,field,grating_spacing,R,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m )
-%
-%       * [tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m] are optional inputs
+%      dechirped_field = pulse_compressor_single( 'Offner3',separation,theta_in,wavelength0,time,field,grating_spacing,R,m )
 %
 %   Martinez:
-%      pulse_compressor_animator( 'Martinez',separation,theta_in,wavelength0,time,field,grating_spacing,focal_length,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m )
-%
-%       * [tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m] are optional inputs
+%      dechirped_field = pulse_compressor_single( 'Martinez',separation,theta_in,wavelength0,time,field,grating_spacing,focal_length,m )
 
 switch compressor_type
     case {'Treacy-r','Treacy-t','Treacy-beta2'}
@@ -147,41 +121,34 @@ else
 end
 
 % Default parameters
-optargs = {[],[],50,50,true,-1};
+optargs = {-1};
 % Load paramters
 optargs(1:length(varargin)) = varargin;
-[tlim,wavelengthlim,t_feature,f_feature,lambda_or_f,m] = optargs{:};
+m = optargs{:};
 
 switch compressor_type
     case {'Treacy-beta2','Treacy-r','Treacy-t'}
-        Frame = Treacy(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,                     m,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f);
+        dechirped_field = Treacy(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,                    m);
     case 'prism'
-        Frame = prism(                 separation,         wavelength0,time,field,               alpha,prism_material,  tlim,wavelengthlim,t_feature,f_feature,lambda_or_f);
+        dechirped_field = prism(                 separation,         wavelength0,time,field,               alpha,prism_material  );
     case {'grism1','grism2'}
-        Frame = grism(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,alpha,prism_material,m,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f);
+        dechirped_field = grism(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,alpha,prism_material,m);
     case 'Offner1'
-        Frame = Offner(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,R,0,                 m,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f);
+        dechirped_field = Offner(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,R,0,                 m);
     case 'Offner2'
-        Frame = Offner(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,R,offcenter,         m,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f);
+        dechirped_field = Offner(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,R,offcenter,         m);
     case 'Offner3'
-        Frame = Offner(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,R,0,                 m,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f);
+        dechirped_field = Offner(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,R,0,                 m);
     case 'Martinez'
-        Frame = Martinez(              separation,theta_in,wavelength0,time,field,grating_spacing,focal_length,          tlim,wavelengthlim,t_feature,f_feature,lambda_or_f);
+        dechirped_field = Martinez(              separation,theta_in,wavelength0,time,field,grating_spacing,focal_length          );
     otherwise
         error('The value of compressor_type is wrong.');
 end
-fig_movie = implay(Frame,2);
-fig = figure;
-fp = get(fig,'position');
-screen_size = get(0,'ScreenSize');
-original_top = screen_size(4)-fp(2)-fp(4);
-close(fig);
-set(fig_movie.Parent,'position',[fp(1) screen_size(4)-original_top-fp(4)*7/4 fp(3)*5.5/4 fp(4)*7/4]); % enlarge the figure size to fit in so many subplots
 
 end
 
 %%
-function Frame = Treacy(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,m,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f)
+function dechirped_field = Treacy(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,m)
 %GRATING_PAIR
 
 N = length(time); % the number of time points
@@ -209,17 +176,7 @@ else % 'r' and 't'
 end
 
 % The dechirped pulse
-save_point = length(separation);
-Frame(save_point) = struct('cdata',[],'colormap',[]);
-for si = 1:save_point
-    dechirped_field = Treacy_dechirping(compressor_type,separation(si),theta_in,theta_out,wavelength,wavelength_c,time,field_w,grating_spacing,m);
-    
-    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
-    colormap(whitejet_lower(512)); set(cb,'Color','[0 0 0]');
-    ax.NextPlot = 'replaceChildren';
-    Frame(si) = getframe(fig);
-    close(fig);
-end
+dechirped_field = Treacy_dechirping(compressor_type,separation,theta_in,theta_out,wavelength,wavelength_c,time,field_w,grating_spacing,m);
 
 end
 
@@ -280,7 +237,7 @@ field = double(circshift(field,-index_shift,1));
 end
 
 %%
-function Frame = prism(separation,wavelength0,time,field,alpha,prism_material,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f)
+function dechirped_field = prism(separation,wavelength0,time,field,alpha,prism_material)
 %PRISM
 
 N = length(time); % the number of time points
@@ -321,17 +278,7 @@ considered_regime = I > max(I)/1e4 & ~arrayfun(@(x)any(imag(x)),theta4) & wavele
 max_theta4 = max(theta4(considered_regime));
 
 % The dechirped pulse
-save_point = length(separation);
-Frame(save_point) = struct('cdata',[],'colormap',[]);
-for si = 1:save_point
-    dechirped_field = prism_dechirping(separation(si),max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w);
-    
-    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
-    colormap(whitejet_lower(512)); set(cb,'Color','[0 0 0]');
-    ax.NextPlot = 'replaceChildren';
-    Frame(si) = getframe(fig);
-    close(fig);
-end
+dechirped_field = prism_dechirping(separation,max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w);
 
 end
 
@@ -386,7 +333,7 @@ field = double(circshift(field,-index_shift,1));
 end
 
 %%
-function Frame = grism(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,alpha,prism_material,m,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f)
+function dechirped_field = grism(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,alpha,prism_material,m)
 %GRISM
 
 N = length(time); % the number of time points
@@ -448,17 +395,7 @@ considered_regime = I > max(I)/1e4 & ~arrayfun(@(x)any(imag(x)),considered_max_t
 max_theta = max(considered_max_theta(considered_regime));
 
 % The dechirped pulse
-save_point = length(separation);
-Frame(save_point) = struct('cdata',[],'colormap',[]);
-for si = 1:save_point
-    dechirped_field = grism_dechirping(compressor_type,separation(si),max_theta,considered_regime,alpha,beta,theta_in,theta2,theta3,theta4,theta5,theta6,n,wavelength,time,field_w,grating_spacing,m);
-    
-    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
-    colormap(whitejet_lower(512)); set(cb,'Color','[0 0 0]');
-    ax.NextPlot = 'replaceChildren';
-    Frame(si) = getframe(fig);
-    close(fig);
-end
+dechirped_field = grism_dechirping(compressor_type,separation,max_theta,considered_regime,alpha,beta,theta_in,theta2,theta3,theta4,theta5,theta6,n,wavelength,time,field_w,grating_spacing,m);
 
 end
 
@@ -544,7 +481,7 @@ field = double(circshift(field,-index_shift,1));
 end
 
 %%
-function Frame = Offner(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,R,offcenter,m,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f)
+function dechirped_field = Offner(compressor_type,separation,theta_in,wavelength0,time,field,grating_spacing,R,offcenter,m)
 %OFFNER
 
 N = length(time); % the number of time points
@@ -567,23 +504,13 @@ field_w = fftshift(ifft(field),1);
 theta_out = asin( m*wavelength/(grating_spacing*1e9) + sin(theta_in) ); % the transmitted/reflected angle of the m-th order diffraction
 
 % The dechirped pulse
-save_point = length(separation);
-Frame(save_point) = struct('cdata',[],'colormap',[]);
-for si = 1:save_point
-    switch compressor_type(end) 
-        case '1' % single-grating Offner compressor
-            dechirped_field = Offner_dechirping_with_aberration(0,separation(si),theta_in,theta_out,wavelength,time,field_w,grating_spacing,R,m);
-        case '2' % double-grating version for the single-grating case
-            dechirped_field = Offner_dechirping_with_aberration(separation(si),offcenter,theta_in,theta_out,wavelength,time,field_w,grating_spacing,R,m);
-        case '3' % true aberration-free double-grating Offner compressor
-            dechirped_field = Offner_dechirping_no_aberration(separation(si),theta_in,theta_out,wavelength,field_w,grating_spacing,R,m);
-    end
-    
-    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
-    colormap(whitejet_lower(512)); set(cb,'Color','[0 0 0]');
-    ax.NextPlot = 'replaceChildren';
-    Frame(si) = getframe(fig);
-    close(fig);
+switch compressor_type(end) 
+    case '1' % single-grating Offner compressor
+        dechirped_field = Offner_dechirping_with_aberration(0,separation,theta_in,theta_out,wavelength,time,field_w,grating_spacing,R,m);
+    case '2' % double-grating version for the single-grating case
+        dechirped_field = Offner_dechirping_with_aberration(separation,offcenter,theta_in,theta_out,wavelength,time,field_w,grating_spacing,R,m);
+    case '3' % true aberration-free double-grating Offner compressor
+        dechirped_field = Offner_dechirping_no_aberration(separation,theta_in,theta_out,wavelength,field_w,grating_spacing,R,m);
 end
 
 end
@@ -709,7 +636,7 @@ field = double(circshift(field,-index_shift,1));
 end
 
 %%
-function Frame = Martinez(separation,theta_in,wavelength0,time,field,grating_spacing,focal_length,tlim,wavelengthlim,t_feature,f_feature,lambda_or_f)
+function dechirped_field = Martinez(separation,theta_in,wavelength0,time,field,grating_spacing,focal_length)
 %Martinez
 
 N = length(time); % the number of time points
@@ -733,17 +660,7 @@ field_w = fftshift(ifft(field),1);
 theta_out = asin( m*wavelength/(grating_spacing*1e9) + sin(theta_in) ); % the transmitted/reflected angle of the m-th order diffraction
 
 % The dechirped pulse
-save_point = length(separation);
-Frame(save_point) = struct('cdata',[],'colormap',[]);
-for si = 1:save_point
-    dechirped_field = Martinez_dechirping(separation(si),theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m);
-    
-    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
-    colormap(whitejet_lower(512)); set(cb,'Color','[0 0 0]');
-    ax.NextPlot = 'replaceChildren';
-    Frame(si) = getframe(fig);
-    close(fig);
-end
+dechirped_field = Martinez_dechirping(separation,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m);
 
 end
 

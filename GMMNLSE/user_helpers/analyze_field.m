@@ -53,6 +53,13 @@ switch compressor_type
         prism_material = varargin{2};
         
         n = 2;
+    case {'grism1','grism2'}
+        grating_incident_angle = varargin{1};
+        grating_spacing = varargin{2};
+        alpha = varargin{3};
+        prism_material = varargin{4};
+        
+        n = 4;
     case 'Offner1'
         grating_incident_angle = varargin{1};
         grating_spacing = varargin{2};
@@ -66,6 +73,8 @@ switch compressor_type
         offcenter = varargin{4};
 
         n = 4;
+    otherwise
+        error('The value of compressor_type is wrong.');
 end
 if length(varargin) > n % optional input arguments
     varargin = varargin(n+1:end);
@@ -104,13 +113,12 @@ end
 field = field(:,mi(1));
 
 c = 299792.458; % nm/ps
-wavelength = c./f(f>0); % nm
+wavelength = c./f; % nm
 N = size(field,1);
 dt = t(2)-t(1); % ps
 factor_correct_unit = (N*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
                                     % "/1e3" is to make pJ into nJ
 spectrum = abs(fftshift(ifft(field),1)).^2*factor_correct_unit; % in frequency domain
-spectrum = spectrum(f>0); % ignore the negative frequency part, if existing, due to a large frequency window
 
 % -------------------------------------------------------------------------
 % Unit explanation:
@@ -187,6 +195,8 @@ end
 switch compressor_type
     case 'prism'
         [~,dechirped_FWHM,dechirped_field] = pulse_compressor(compressor_type,                    [],feval(@(x)x(1),ifftshift(c./f_interp,1)),t_interp,field_interp,alpha,prism_material,false,global_opt);
+    case {'grism1','grism2'}
+        [~,dechirped_FWHM,dechirped_field] = pulse_compressor(compressor_type,grating_incident_angle,feval(@(x)x(1),ifftshift(c./f_interp,1)),t_interp,field_interp,grating_spacing,alpha,prism_material,false,global_opt,-1);
     case {'Treacy-t','Treacy-r','Treacy-beta2'}
         [~,dechirped_FWHM,dechirped_field] = pulse_compressor(compressor_type,grating_incident_angle,feval(@(x)x(1),ifftshift(c./f_interp,1)),t_interp,field_interp,grating_spacing,false,global_opt,-1);
     case 'Offner1'
@@ -264,9 +274,9 @@ end
 %    ASE energy (J/THz) = ASE power (W/THz) * t_rep (s)
 if verbose && ~isempty(ASE)
     fig(4) = figure('Name','Spectrum');
-    spectrum_total = spectrum.*factor + (ASE.spectrum(f>0).*ASE.t_rep*1e9).*factor; % 1e9 in the ASE term is to make it nJ
-    plot(299792.458./f(f>0),  spectrum_total,'r','linewidth',2); hold on;
-    plot(299792.458./f(f>0),spectrum.*factor,'b','linewidth',2); hold off;
+    spectrum_total = spectrum.*factor + (ASE.spectrum.*ASE.t_rep*1e9).*factor; % 1e9 in the ASE term is to make it nJ
+    plot(299792.458./f(f>0),  spectrum_total(f>0),'r','linewidth',2); hold on;
+    plot(299792.458./f(f>0),spectrum(f>0).*factor(f>0),'b','linewidth',2); hold off;
     l = legend('Pulse+ASE','Pulse'); set(l,'fontsize',16);
     xlabel('Wavelength (nm)');
     ylabel('Spectrum (nJ/nm)');

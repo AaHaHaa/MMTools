@@ -37,7 +37,7 @@ spectrum = abs(Ef).^2;
 threshold_factor = 20;
 spectrum(spectrum<max(spectrum)/threshold_factor) = 0;
 
-[bandwidth,center_f] = calc_RMS(f,spectrum);
+[bandwidth,center_f] = calc_RMS(f,spectrum); bandwidth = bandwidth*2;
 [~,center_idx] = min(abs(f-center_f));
 
 % Consider only the central (non-zero) part of the spectrum
