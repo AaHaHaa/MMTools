@@ -97,16 +97,18 @@ guess_GVD = min(-(desired_duration-t_fwhm)/omega_fwhm*1e6/2,0);
 
 % Run the optimization process to find the optimal distance, offcenter for
 % Offner stretchers or l for Martinez stretcher
+% I assume that the dispersion equations are similar to Treacy grating
+% pairs.
 % -------------------------------------------------------------------------
 switch stretcher_type
     case 'single-Offner'
         min_distance = 0;
         max_distance = R_or_f*0.9; % if it's R, the transmissive grating hits the convex mirror
-        initial_guess = min_distance; % no added dispersion at offcenter = 0
+        initial_guess = -guess_GVD/2/(m^2*wavelength_c^3/(2*pi*c^2*grating_spacing^2)*(1-(-m*(wavelength_c*1e-9)/grating_spacing-sin(theta_in))^2)^(-1.5)*1e-3); % no added dispersion at offcenter = 0
     case 'double-Offner'
         min_distance = 0;
         max_distance = R_or_f*2*0.9; % if it's 2*R, the transmissive grating hits the concave mirror
-        initial_guess = min_distance; % no added dispersion at offcenter = 0
+        initial_guess = -guess_GVD/2/(m^2*wavelength_c^3/(2*pi*c^2*grating_spacing^2)*(1-(-m*(wavelength_c*1e-9)/grating_spacing-sin(theta_in))^2)^(-1.5)*1e-3); % no added dispersion at offcenter = 0
     case 'Martinez'
         min_distance = 0;
         max_distance = R_or_f;

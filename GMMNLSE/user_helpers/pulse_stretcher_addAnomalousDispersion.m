@@ -114,6 +114,8 @@ guess_GVD = max((desired_duration-t_fwhm)/omega_fwhm*1e6/2,0);
 
 % Run the optimization process to find the optimal distance, grating 
 % separation for Treacy stretchers or l for Martinez stretcher
+% I assume that the dispersion equation of Martinez stretcher is similar to
+% Treacy grating pairs.
 % -------------------------------------------------------------------------
 switch stretcher_type
     case {'Treacy-r','Treacy-t'}

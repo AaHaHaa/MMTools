@@ -793,6 +793,7 @@ field_w = fftshift(ifft(field),1); % frequency domain
 % Find the center wavelength of the pulse spectrum with its second moment
 f = c./wavelength; % THz
 f_c = calc_f_c(f,abs(field_w).^2);
+wavelength_c = c/f_c;
 wavelength = c./(f+f_c-c/wavelength0);
 field = field.*exp(1i*2*pi*(f_c-c/wavelength0)*time);
 field_w = fftshift(ifft(field),1);
@@ -821,7 +822,19 @@ switch compressor_type(end)
         min_value = -2*R*0.9;
         max_value =  2*R*0.9;
 end
-initial_guess = 0;
+GVD_before_dechirping = characterize_spectral_phase(c./wavelength,fftshift(ifft(ifftshift(field(:,1),1)),1),3,false); % consider only the 1st mode
+% Obtain the initial guess from the beta2 of a grating compressor.
+% This number should be close to the answer already.
+% I assume that the dispersion equations are similar to Treacy grating
+% pairs.
+initial_guess = -GVD_before_dechirping/(m^2*wavelength_c^3/(pi*c^2*grating_spacing^2)*(1-(-m*(wavelength_c*1e-9)/grating_spacing-sin(theta_in))^2)^(-1.5)*1e-3);
+if initial_guess < min_value
+    initial_guess = min_value;
+elseif initial_guess > max_value
+    initial_guess = max_value;
+elseif ~isreal(initial_guess) % in case that the phase is a mess
+    initial_guess = 0.1;
+end
 
 % This is the local optimization I used before which might be stuck at
 % local minimum if the pulse isn't smooth enough.
