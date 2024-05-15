@@ -116,22 +116,26 @@ end
 
 % This is the local optimization I used before which might be stuck at
 % local minimum if the pulse isn't smooth enough.
-option = optimset('TolX',1e-20);
-%option = optimset('PlotFcns',@optimplotfval,'TolX',1e-20); % plot the process of optimization
+option = optimset('TolX',1e-10);
+%option = optimset('PlotFcns',@optimplotfval,'TolX',1e-10); % plot the process of optimization
 [optimal_value1,feval1] = fminsearch(find_optimum_stretcher_distance,initial_guess,option);
+if feval1/desired_duration > 0.001 % sometimes it fails to find the optimum, so try to run with random initial guess again
+    [optimal_value1,feval1] = fminsearch(find_optimum_stretcher_distance,rand(1)*(max_distance-min_distance)+min_distance,option);
+end
 % Because fminsearch is an unconstrained method, I set the constrain below.
 if optimal_value1 < min_distance
     optimal_value1 = min_distance;
 elseif optimal_value1 > max_distance
     optimal_value1 = max_distance;
 end
+    
 % Global optimization
-if global_opt && feval1/desired_duration > 0.001
+if global_opt && abs(feval1/desired_duration) > 0.001
     problem = createOptimProblem('fmincon',...
         'objective',find_optimum_stretcher_distance,...
         'x0',initial_guess,... % try with a different initial value
         'lb',min_distance,'ub',max_distance,...
-        'options',optimoptions(@fmincon,'Display','off','TolX',1e-20));
+        'options',optimoptions(@fmincon,'Display','off','TolX',1e-10));
     gs = GlobalSearch('MaxTime',60,'NumTrialPoints',130,'NumStageOnePoints',20,'MaxWaitCycle',5,'Display','off');
     %gs = MultiStart('MaxTime',120,'Display','off','UseParallel',true,'StartPointsToRun','bounds-ineqs');
     %[optimal_offcenter2,feval2] = run(gs,problem,20);
