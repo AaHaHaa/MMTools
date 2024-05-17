@@ -178,6 +178,9 @@ end
 % The dechirped pulse
 dechirped_field = Treacy_dechirping(compressor_type,separation,theta_in,theta_out,wavelength,wavelength_c,time,field_w,grating_spacing,m);
 
+% Recover back to the input frequency range
+dechirped_field = dechirped_field.*exp(-1i*2*pi*(f_c-c/wavelength0)*time);
+
 end
 
 %%
@@ -279,6 +282,9 @@ max_theta4 = max(theta4(considered_regime));
 
 % The dechirped pulse
 dechirped_field = prism_dechirping(separation,max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w);
+
+% Recover back to the input frequency range
+dechirped_field = dechirped_field.*exp(-1i*2*pi*(f_c-c/wavelength0)*time);
 
 end
 
@@ -397,6 +403,9 @@ max_theta = max(considered_max_theta(considered_regime));
 % The dechirped pulse
 dechirped_field = grism_dechirping(compressor_type,separation,max_theta,considered_regime,alpha,beta,theta_in,theta2,theta3,theta4,theta5,theta6,n,wavelength,time,field_w,grating_spacing,m);
 
+% Recover back to the input frequency range
+dechirped_field = dechirped_field.*exp(-1i*2*pi*(f_c-c/wavelength0)*time);
+
 end
 
 %%
@@ -512,6 +521,9 @@ switch compressor_type(end)
     case '3' % true aberration-free double-grating Offner compressor
         dechirped_field = Offner_dechirping_no_aberration(separation,theta_in,theta_out,wavelength,field_w,grating_spacing,R,m);
 end
+
+% Recover back to the input frequency range
+dechirped_field = dechirped_field.*exp(-1i*2*pi*(f_c-c/wavelength0)*time);
 
 end
 
@@ -661,6 +673,9 @@ theta_out = asin( m*wavelength/(grating_spacing*1e9) + sin(theta_in) ); % the tr
 
 % The dechirped pulse
 dechirped_field = Martinez_dechirping(separation,theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m);
+
+% Recover back to the input frequency range
+dechirped_field = dechirped_field.*exp(-1i*2*pi*(f_c-c/wavelength0)*time);
 
 end
 
