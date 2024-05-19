@@ -145,7 +145,7 @@ set(gca,'fontsize',20);
 xlim([980,1100]);
 
 filtered_lambda = 1040;
-filtered_pulse = edgepass_filter('lowpass', prop_output, sim.f0, filtered_lambda, 0.3,1,true);
+filtered_pulse = edgepass_spectral_filter('lowpass', prop_output, sim.f0, filtered_lambda, 0.3,1,true);
 analyze_field( t,f,filtered_pulse.fields(:,:,end),'Treacy-t',pi/6,1e-6,true,false );
 
 % Save the final output field

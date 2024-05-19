@@ -96,6 +96,11 @@ end
 Power_pump_backward    = solve_Power( 'pump',  sim.scalar,-deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.pump,  gain_rate_eqn.cross_sections_pump,N2,gain_rate_eqn.N_total,Power_pump_backward,       [], gain_rate_eqn.GammaN,    [],          []); % no spontaneous term for pump
 % -------------------------------------------------------------------------
 
+if any(feval(@(x)x(:),sum(Power_pump_forward,5)) < 0) || any(feval(@(x)x(:),sum(Power_pump_backward,5)) < 0) || any(feval(@(x)x(:),sum(Power_ASE_forward,5)) < 0)
+    error('solve_gain_rate_eqn:NegativeValueError',...
+          'Please reduce the step size or check other parameters. Current pump or ASE power becomes a negative value.');
+end
+
 % Change the size back to (N,num_modes)
 if sim.scalar || isequal(sim.step_method,'RK4IP')
     G = permute(G,[5 3 6 1 2 4]);

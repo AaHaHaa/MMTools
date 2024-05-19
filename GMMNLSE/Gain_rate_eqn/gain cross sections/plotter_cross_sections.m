@@ -1,8 +1,8 @@
 clearvars; close all;
 
 %filename = 'optiwave Er.txt';
-%filename = 'Liekki Yb_AV_20160530.txt';
-filename = 'Yb_Gen_VIII_Cross_Section (Nufern).txt';
+filename = 'Liekki Yb_AV_20160530.txt';
+%filename = 'Yb_Gen_VIII_Cross_Section (Nufern).txt';
 
 %% Reading data from the specified file
 delimiter = ',';
@@ -49,4 +49,4 @@ print(gcf,'Yb (Liekki).pdf','-dpdf');
 %print(gcf,'Yb (Nufern).jpg','-djpeg');
 
 xlim([960,990]);
-print(gcf,'Yb_scaled (Liekki).pdf','-dpdf');
+%print(gcf,'Yb_scaled (Liekki).pdf','-dpdf');

@@ -370,7 +370,7 @@ for ii = 2:num_zPoints
     [last_signal_fields,...
      last_Power_pump_forward,last_Power_pump_backward,...
      last_Power_ASE_forward,...
-     N2_next] = GMMNLSE_rategain_func(last_signal_fields,last_signal_fields_backward,...
+     last_N2] = GMMNLSE_rategain_func(last_signal_fields,last_signal_fields_backward,...
                                       last_Power_pump_forward,last_Power_pump_backward,...
                                       last_Power_ASE_forward,last_Power_ASE_backward,...
                                       dt,sim,prefactor,...
@@ -393,18 +393,22 @@ for ii = 2:num_zPoints
 
     % Save N2
     if gain_rate_eqn.export_N2
-        if Zi == 2 % save the first N2
+        if Zi == num_zPoints % save the last N2
             if sim.gpu_yes
-                N2(:,:,1) = gather(N2_next);
+                N2(:,:,end) = gather(last_N2);
             else
-                N2(:,:,1) = N2_next;
+                N2(:,:,end) = last_N2;
             end
         end
-        if rem(Zi-1, num_zPoints_persave) == 0
+        % Current N2 is computed by the next propagating step, so 
+        % there is Zi-2, not Zi-1.
+        % Coincidentally, this command also helps save the first
+        % N2.
+        if rem(Zi-2, num_zPoints_persave) == 0
             if sim.gpu_yes % if using MPA, save only the last one
-                N2(:,:,int64((Zi-1)/num_zPoints_persave+1)) = gather(N2_next);
+                N2(:,:,int64((Zi-2)/num_zPoints_persave+1)) = gather(last_N2);
             else
-                N2(:,:,int64((Zi-1)/num_zPoints_persave+1)) = N2_next;
+                N2(:,:,int64((Zi-2)/num_zPoints_persave+1)) = last_N2;
             end
         end
     end
@@ -552,8 +556,8 @@ end
 %% PREP_FOR_OUTPUT_N2
 function N2 = prep_for_output_N2( N2, N_total, num_zPoints_persave )
 %PREP_FOR_OUTPUT_N2
-% Since N2 is computed from z-index=2 to the end of the fiber, we don't
-% have the one at z-index=1, the input end. It's also not zero, so we need
+% Since N2 is computed from z-index = 1 to the (end-1) of the fiber, we don't
+% have the one at z-index = the input end. It's also not zero, so we need
 % to do interpolation from the other N2's to find its value.
 % This funciton also transforms N2 into the ratio, N2/N_total, for the user
 % to visualize the gain saturation level.
@@ -566,7 +570,7 @@ N2 = N2/max(N_total(:));
 sN2 = size(N2,3)-1;
 
 if sN2 > 1
-    N2(:,:,1) = permute(interp1([1,(1:sN2)*num_zPoints_persave],permute(N2,[3 1 2]),0,'spline'),[2 3 1]);
+    N2(:,:,end) = permute(interp1((0:sN2-1)*num_zPoints_persave,permute(N2(:,:,1:end-1),[3 1 2]),sN2*num_zPoints_persave,'spline'),[2 3 1]);
 end
 
 end

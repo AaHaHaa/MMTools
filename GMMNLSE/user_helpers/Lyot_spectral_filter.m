@@ -22,7 +22,7 @@ function [output,fig] = Lyot_spectral_filter(input, f0, target_wavelength, thick
 c = 299792.458; % in nm/ps
 
 if ~isstruct(input)
-    error('Unlike most auxiliary functions, edgepass_filter requires that the input be a struct with at least fields and dt');
+    error('Unlike most auxiliary functions, Lyot_spectral_filter requires that the input be a struct with at least fields and dt');
 end
 
 optargs = {true,0.0088};

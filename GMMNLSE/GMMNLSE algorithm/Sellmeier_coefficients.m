@@ -88,26 +88,41 @@ switch material
                     % At 20 degree Celsius
         a = [1.4313493, 0.65054713, 5.3414021];
         b = [0.0726631,  0.1193242, 18.028251];
+    case 'BK7' % From https://refractiveindex.info/?shelf=glass&book=BK7&page=SCHOTT
+                    % n^2 - 1 = ...
+                    % At 20 degree Celsius
+        a =      [   1.03961212,  0.231792344, 1.01046945];
+        b = sqrt([0.00600069867, 0.0200179144, 103.560653]);
     case 'N-SF1' % From https://refractiveindex.info/?shelf=glass&book=SCHOTT-SF&page=N-SF1
                     % n^2 - 1 = ...
                     % At 20 degree Celsius
-        a =      [1.60865158,    0.237725916, 1.51530653];
+        a =      [  1.60865158,  0.237725916, 1.51530653];
         b = sqrt([0.0119654879, 0.0590589722, 135.521676]);
     case 'N-SF10' % From https://refractiveindex.info/?shelf=glass&book=SF10&page=SCHOTT
                     % n^2 - 1 = ...
                     % At 20 degree Celsius
-        a =      [1.62153902,    0.256287842, 1.64447552];
+        a =      [  1.62153902,  0.256287842, 1.64447552];
         b = sqrt([0.0122241457, 0.0595736775, 147.468793]);
+    case 'N-SF11' % From https://refractiveindex.info/?shelf=glass&book=SF11&page=SCHOTT
+                    % n^2 - 1 = ...
+                    % At 20 degree Celsius
+        a =      [ 1.73759695,   0.313747346, 1.89878101];
+        b = sqrt([0.013188707,  0.0623068142,  155.23629]);
     case 'N-SF14' % From https://refractiveindex.info/?shelf=glass&book=SCHOTT-SF&page=N-SF14
                     % n^2 - 1 = ...
                     % At 20 degree Celsius
-        a =      [1.69022361,    0.288870052, 1.7045187];
+        a =      [  1.69022361,  0.288870052, 1.7045187];
         b = sqrt([0.0130512113, 0.061369188, 149.517689]);
     case 'CaF2' % From https://refractiveindex.info/?shelf=main&book=CaF2&page=Malitson
                     % n^2 - 1 = ...
                     % At 20 degree Celsius
-        a = [0.5675888,   0.4710914, 3.8484723];
+        a = [  0.5675888, 0.4710914, 3.8484723];
         b = [0.050263605, 0.1003909, 34.649040];
+    case 'N-LAK21' % From https://refractiveindex.info/?shelf=glass&book=SCHOTT-LaK&page=N-LAK21
+                    % n^2 - 1 = ...
+                    % At 20 degree Celsius
+        a =      [   1.22718116,  0.420783743, 1.01284843];
+        b = sqrt([0.00602075682, 0.0196862889, 88.4370099]);
     otherwise
         error('Material isn''t in this repository yet.');
 end

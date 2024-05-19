@@ -350,7 +350,7 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
                 [last_signal_fields, a5,...
                  last_Power_pump_forward,last_Power_pump_backward,...
                  opt_deltaZ,success,...
-                 N2_next] = GMMNLSE_rategain_func(last_signal_fields,dt,sim,gain_rate_eqn,...
+                 last_N2] = GMMNLSE_rategain_func(last_signal_fields,dt,sim,gain_rate_eqn,...
                                                   SK_info,SRa_info,SRb_info,...
                                                   haw,hbw,...
                                                   haw_sponRS,hbw_sponRS,sponRS_prefactor,...
@@ -429,7 +429,7 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
             % calculating signal fields with MPA, the code will give error here if
             % this approximation is bad.
             if isequal(sim.step_method,'MPA')
-                relative_N2 = max(N2_next(:));
+                relative_N2 = max(last_N2(:));
                 relative_gain = relative_N2.*gain_rate_eqn.cross_sections.emission - (max(gain_rate_eqn.N_total(:))-relative_N2).*gain_rate_eqn.cross_sections.absorption;
                 relative_gain(relative_gain<0) = 0; % I think (?) it only neds to resolve the "gain" correctly
 
@@ -443,13 +443,32 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
 
             % If it's time to save, get the result from the GPU if necessary,
             % transform to the time domain, and save it
-            if gain_rate_eqn.export_N2 && z == sim.last_deltaZ
-                if sim.gpu_yes
-                    z_1st_N2 = gather(sim.deltaZ);
-                    N2(:,:,1) = gather(N2_next);
-                else
-                    z_1st_N2 = sim.deltaZ;
-                    N2(:,:,1) = N2_next;
+            if z == sim.last_deltaZ
+                ready_save_N2 = true;
+            end
+            if gain_rate_eqn.export_N2
+                if z >= save_z(end)-eps(z) % save the last N2
+                    if sim.gpu_yes
+                        z_last_N2 = gather(z);
+                        N2(:,:,end) = gather(last_N2);
+                    else
+                        z_last_N2 = z;
+                        N2(:,:,end) = last_N2;
+                    end
+                end
+                % Below saves N2:
+                % Current N2 is computed by the next propagating step, so 
+                % there is "ready_save_N2" is to delay the saving process 
+                % by one propagating step with the "save_i-1" command.
+                % Coincidentally, this command also helps save the first
+                % N2.
+                if ready_save_N2
+                    if sim.gpu_yes
+                        N2(:,:,save_i-1) = gather(last_N2);
+                    else
+                        N2(:,:,save_i-1) = last_N2;
+                    end
+                    ready_save_N2 = false; % finish saving, then reset it back to false
                 end
             end
             if z >= save_z(save_i)-eps(z)
@@ -459,20 +478,15 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
                     Power_pump_forward{save_i} = gather(last_Power_pump_forward);
                     Power_pump_backward{save_i} = gather(last_Power_pump_backward);
                     signal_fields{save_i} = gather(last_signal_fields);
-
-                    if gain_rate_eqn.export_N2
-                        N2(:,:,save_i) = gather(N2_next);
-                    end
                 else
                     save_z(save_i) = z;
                     save_deltaZ(save_i) = sim.last_deltaZ;
                     Power_pump_forward{save_i} = last_Power_pump_forward;
                     Power_pump_backward{save_i} = last_Power_pump_backward;
                     signal_fields{save_i} = last_signal_fields;
-
-                    if gain_rate_eqn.export_N2
-                        N2(:,:,save_i) = N2_next;
-                    end
+                end
+                if gain_rate_eqn.export_N2
+                    ready_save_N2 = true;
                 end
 
                 T_delay_out(save_i) = T_delay;
@@ -577,7 +591,7 @@ end
 switch direction
     case 'forward'
         if gain_rate_eqn.export_N2
-            N2 = prep_for_output_N2(N2,gain_rate_eqn.N_total,z_1st_N2,save_z);
+            N2 = prep_for_output_N2(N2,gain_rate_eqn.N_total,z_last_N2,save_z);
         end
         varargout = {signal_fields,Power_pump_forward,Power_pump_backward,...
                      save_z,save_deltaZ,...
@@ -631,8 +645,8 @@ end
 end
 
 %% PREP_FOR_OUTPUT_N2
-function N2 = prep_for_output_N2( N2, N_total, z_1st_N2, save_z )
-%PREP_FOR_OUTPUT_N2 It interpolates the first z-plane N2 from the other N2
+function N2 = prep_for_output_N2( N2, N_total, z_last_N2, save_z )
+%PREP_FOR_OUTPUT_N2 It interpolates the last z-plane N2 from the other N2
 %data and transform N2 into the ratio, N2/N_total.
 
 if isequal(class(N_total),'gpuArray')
@@ -643,7 +657,7 @@ N2 = N2/max(N_total(:));
 sN2 = size(N2,3)-1;
 
 if sN2 > 1
-    N2(:,:,1) = permute(interp1([z_1st_N2;save_z(2:end)],permute(N2,[3 1 2]),0,'spline'),[2 3 1]);
+    N2(:,:,end) = permute(interp1([save_z(1:end-1);z_last_N2],permute(N2,[3 1 2]),save_z(end),'spline'),[2 3 1]);
 end
 
 end

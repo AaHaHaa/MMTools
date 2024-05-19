@@ -115,11 +115,21 @@ switch direction
             end
         end
         [~,G]                  = solve_Power( 'signal',sim.scalar,deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.signal,gain_rate_eqn.cross_sections,     N2,gain_rate_eqn.N_total,                 [],       [],     [], gain_rate_eqn.FmFnN, field_input); % no spontaneous term for signal
+        
+        if any(feval(@(x)x(:),sum(Power_pump_forward,5)) < 0) || any(feval(@(x)x(:),sum(Power_ASE_forward,5)) < 0)
+            error('solve_gain_rate_eqn:NegativeValueError',...
+                  'Please reduce the step size or check other parameters. Current pump or ASE power becomes a negative value.');
+        end
     case 'backward'
         % at z-deltaZ
         Power_pump_backward    = solve_Power( 'pump',  sim.scalar,deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.pump,  gain_rate_eqn.cross_sections_pump,N2,gain_rate_eqn.N_total,Power_pump_backward,       [], gain_rate_eqn.GammaN,    [],          []); % no spontaneous term for pump
         if gain_rate_eqn.include_ASE
             Power_ASE_backward = solve_Power( 'ASE',   sim.scalar,deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.signal,gain_rate_eqn.cross_sections,     N2,gain_rate_eqn.N_total,Power_ASE_backward,  E_photon,     [], gain_rate_eqn.FmFnN,          []);
+        end
+        
+        if any(feval(@(x)x(:),sum(Power_pump_backward,5)) < 0) || any(feval(@(x)x(:),sum(Power_ASE_backward,5)) < 0)
+            error('solve_gain_rate_eqn:NegativeValueError',...
+                  'Please reduce the step size or check other parameters. Current pump or ASE power becomes a negative value.');
         end
 end
 
@@ -298,7 +308,7 @@ end
 if isequal(field_type,'signal')
     Pnext = [];
 else
-    if size(fz,6) == 1 % single mode with Rk4IP (no parallelization; M=1) or
+    if size(fz,6) == 1 % single mode with RK4IP (no parallelization; M=1) or
                        % 'backward' propagation which updates only pump and ASE powers
         Pnext = P0 + fz;
     else % 'forward' propagation in multimode (with MPA)
