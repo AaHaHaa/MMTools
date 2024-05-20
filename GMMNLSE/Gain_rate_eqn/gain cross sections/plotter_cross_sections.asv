@@ -46,8 +46,8 @@ l = legend('Absorption','Emission');
 set(l,'fontsize',12,'location','northeast');
 %print('Er (optiwave).jpg','-djpeg');
 %print(gcf,'Yb (Liekki).jpg','-djpeg');
-%print(gcf,'Yb (Liekki).pdf','-dpdf');
+print(gcf,'Yb (Liekki).pdf','-dpdf');
 %print(gcf,'Yb (Nufern).jpg','-djpeg');
 
-%xlim([960,990]);
+xlim([960,990]);
 %print(gcf,'Yb_scaled (Liekki).pdf','-dpdf');
