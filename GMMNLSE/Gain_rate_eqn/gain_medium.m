@@ -1,6 +1,5 @@
 function gain_rate_eqn = gain_medium(gain_rate_eqn)
-%GAIN_MEDIUM Summary of this function goes here
-%   Detailed explanation goes here
+%GAIN_MEDIUM This loads relevant parameters for a specific gain medium.
 
 switch gain_rate_eqn.gain_medium
     case 'Yb'
