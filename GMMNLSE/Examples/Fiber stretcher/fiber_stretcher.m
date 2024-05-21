@@ -8,6 +8,7 @@
 % only adds more TOD to the pulse.
 %
 %  Prism dechirper: -GDD, -TOD
+%  Grism dechirper: -GDD, -TOD
 % Treacy dechirper: -GDD, +TOD
 %
 % This code uses adaptive-step RK4IP for the passive-fiber propagation.
@@ -42,13 +43,14 @@ sim.gpu_yes = false; % don't use GPU
 % Please check this function for details.
 [fiber,sim] = load_default_GMMNLSE_propagate([],sim); % load default parameters
 
-num_save = 100;
-fiber.L0 = 5;
+num_save = 1;
+fiber.L0 = 6;
 sim.save_period = fiber.L0/num_save;
+fiber.n2 = 1e-100;
 
 %% Setup general parameters
-Nt = 2^12; % the number of time points
-time_window = 50; % ps
+Nt = 2^14; % the number of time points
+time_window = 100; % ps
 dt = time_window/Nt;
 f = sim.f0+(-Nt/2:Nt/2-1)'/(Nt*dt); % THz
 t = (-Nt/2:Nt/2-1)'*dt; % ps
@@ -76,20 +78,32 @@ initial_pulse = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
 %% Propagate
 prop_output = GMMNLSE_propagate(fiber,initial_pulse,sim);
 
+%% Find the TOD/GDD of a fiber
+[quardratic_phase,cubic_phase,~,quintic_phase] = characterize_spectral_phase( f,fftshift(ifft(ifftshift(prop_output.fields(:,:,end),1)),1),7 );
+fprintf('TOD/GDD (fiber) = %6.4f(fs)\n',cubic_phase/quardratic_phase);
+fprintf('FOD/GDD (fiber) = %6.4f(fs^2)\n',quintic_phase/quardratic_phase);
+
 %% Dechirped by a prism compressor
 alpha = pi/3;
-[dechirped_separation_prism,optimal_FWHM_prism,dechirped_field_prism,prism_height] = pulse_compressor( 'prism',[],sim.lambda0*1e9,t,prop_output.fields(:,:,end),alpha,'fused silica',false,true );
+[dechirped_separation_prism,optimal_FWHM_prism,dechirped_field_prism,prism_height,~,theta_in] = pulse_compressor( 'prism',[],sim.lambda0*1e9,t,prop_output.fields(:,:,end),alpha,'N-SF11',false,true );
+
+%% Dechirped by a grism compressor
+alpha = 69.1*pi/180;
+incident_angle = 30; % deg
+grating_spacing = 1e-3/1000; % m
+[dechirped_separation_grism,optimal_FWHM_grism,dechirped_field_grism,grism_height] = pulse_compressor( 'grism2',incident_angle*pi/180,sim.lambda0*1e9,t,prop_output.fields(:,:,end),grating_spacing,alpha,'fused silica',false,true );
 
 %% Dechirped by a Treacy compressor
 incident_angle = 30; % deg
 grating_spacing = 1e-3/1000; % m
-[dechirped_separation_Treacy,optimal_FWHM_Treacy,dechirped_field_Treacy] = pulse_compressor( 'Treacy-t',incident_angle*pi/180,sim.lambda0*1e9,t,prop_output.fields(:,:,end),grating_spacing );
+[dechirped_separation_Treacy,optimal_FWHM_Treacy,dechirped_field_Treacy,grating_size] = pulse_compressor( 'Treacy-t',incident_angle*pi/180,sim.lambda0*1e9,t,prop_output.fields(:,:,end),grating_spacing );
 
 %% Plot
 % Time
 figure;
-plot(t,abs([prop_output.fields(:,:,1),dechirped_field_prism,dechirped_field_Treacy]).^2,'linewidth',2);
-xlim([-5,5]);
+plot(t,abs([prop_output.fields(:,:,1),dechirped_field_grism,dechirped_field_prism,dechirped_field_Treacy]).^2,'linewidth',2);
+xlim([-1,1]);
 xlabel('Time (ps)');
 ylabel('Power (W)');
 set(gca,'fontsize',14);
+legend('Input','Grism','Prism','Treacy');

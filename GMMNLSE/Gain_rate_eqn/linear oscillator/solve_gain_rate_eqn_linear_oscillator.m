@@ -79,9 +79,9 @@ end
 % Power
 % -------------------------------------------------------------------------
 % Forward (at z+deltaZ):
-Power_pump_forward     = solve_Power( 'pump',  sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.pump,  gain_rate_eqn.cross_sections_pump,N2,gain_rate_eqn.N_total,Power_pump_forward,        [], gain_rate_eqn.GammaN,    [],          []); % no spontaneous term for pump
+Power_pump_forward     = solve_Power( 'pump',  sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.pump,  gain_rate_eqn.cross_sections_pump,N2,gain_rate_eqn.N_total,Power_pump_forward,        [], gain_rate_eqn.GammaN,    [],          [], gain_rate_eqn.gain_medium); % no spontaneous term for pump
 if gain_rate_eqn.include_ASE
-    Power_ASE_forward  = solve_Power( 'ASE',   sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.signal,gain_rate_eqn.cross_sections,     N2,gain_rate_eqn.N_total,Power_ASE_forward,   E_photon,     [], gain_rate_eqn.FmFnN,          []);
+    Power_ASE_forward  = solve_Power( 'ASE',   sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.signal,gain_rate_eqn.cross_sections,     N2,gain_rate_eqn.N_total,Power_ASE_forward,   E_photon,     [], gain_rate_eqn.FmFnN,          [], gain_rate_eqn.gain_medium);
 end
 
 if sim.scalar
@@ -90,10 +90,10 @@ else % polarized fields
     polarized_fields = cat(4,signal_fields(:,1:2:end-1,:),signal_fields(:,2:2:end,:)); % separate the polarization modes
     field_input = permute(polarized_fields,[5 6 2 7 1 3 4]);
 end
-[~,G]                  = solve_Power( 'signal',sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.signal,gain_rate_eqn.cross_sections,     N2,gain_rate_eqn.N_total,                 [],       [],     [], gain_rate_eqn.FmFnN, field_input); % no spontaneous term for signal
+[~,G]                  = solve_Power( 'signal',sim.scalar, deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.signal,gain_rate_eqn.cross_sections,     N2,gain_rate_eqn.N_total,                 [],       [],     [], gain_rate_eqn.FmFnN, field_input, gain_rate_eqn.gain_medium); % no spontaneous term for signal
 % -------------------------------------------------------------------------
 % Backward (at z+deltaZ): use -deltaZ here
-Power_pump_backward    = solve_Power( 'pump',  sim.scalar,-deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.pump,  gain_rate_eqn.cross_sections_pump,N2,gain_rate_eqn.N_total,Power_pump_backward,       [], gain_rate_eqn.GammaN,    [],          []); % no spontaneous term for pump
+Power_pump_backward    = solve_Power( 'pump',  sim.scalar,-deltaZ*1e6,dx,A_core,num_spatial_modes,gain_rate_eqn.sponASE_spatial_modes,gain_rate_eqn.overlap_factor.pump,  gain_rate_eqn.cross_sections_pump,N2,gain_rate_eqn.N_total,Power_pump_backward,       [], gain_rate_eqn.GammaN,    [],          [], gain_rate_eqn.gain_medium); % no spontaneous term for pump
 % -------------------------------------------------------------------------
 
 if any(feval(@(x)x(:),sum(Power_pump_forward,5)) < 0) || any(feval(@(x)x(:),sum(Power_pump_backward,5)) < 0) || any(feval(@(x)x(:),sum(Power_ASE_forward,5)) < 0)
@@ -195,10 +195,18 @@ N2 = N_total.*total_absorption./...
      (total_absorption + total_emission + ... % absorption and emission terms
       1/gain_rate_eqn.tau);                   % spontaneous emission
 
+% For Nd, an extra ion cluster fraction needs to be taken into account.
+% See the supplement of the following paper for detail:
+% Boulanger et al., "Femtosecond Mamyshev oscillator at 920 nm," Opt. Lett.
+% 49, 2201-2204 (2024).
+if isequal(gain_rate_eqn.gain_medium,'Nd')
+    N2 = N2*(1-gain_rate_eqn.cluster_fraction);
+end
+
 end
 
 %%
-function [Pnext,signal_out] = solve_Power( field_type,isscalar,deltaZ,dx,A_core,num_spatial_modes,sponASE_spatial_modes,overlap_factor,cross_sections,N2,N_total,P0,E_photon,GammaN,FmFnN,Am )
+function [Pnext,signal_out] = solve_Power( field_type,isscalar,deltaZ,dx,A_core,num_spatial_modes,sponASE_spatial_modes,overlap_factor,cross_sections,N2,N_total,P0,E_photon,GammaN,FmFnN,Am,gain_medium )
 %SOLVE_POWER solves Power(z+deltaZ) for pump, ASE, and signal.
 %
 %   deltaZ: um
@@ -216,36 +224,47 @@ if isequal(field_type,'ASE') % ASE
     end
 end
 
+cross_section_all = cross_sections.emission + cross_sections.absorption;
+
 if isempty(dx) % single mode
     overlap_factor = overlap_factor*A_core; % For the single mode, the integral w.r.t. x and y can be done first, which becomes overlap_factor here.
     
-    % spontaneous emission
-    if isequal(field_type,'ASE') % ASE
-        dPdz_spontaneous = overlap_factor*cross_sections.emission*N2.*E_photon; % unit: W/THz/um
-    else % signal: ignore spontaneous term, pump: no spontaneous term
-        dPdz_spontaneous = 0;
-    end
     switch field_type
         case 'signal' % amplification factor
-            tmp = 1 + overlap_factor*((cross_sections.emission + cross_sections.absorption)*N2 - cross_sections.absorption*N_total).*deltaZ;
+            if ismember(gain_medium,{'Er','Nd'}) % consider excited-state absorption
+                tmp = 1 + overlap_factor*(cross_section_all*N2 - cross_sections.absorption*N_total - cross_sections.ESA*N2)*deltaZ;
+            else % 'Yb'
+                tmp = 1 + overlap_factor*(cross_section_all*N2 - cross_sections.absorption*N_total)*deltaZ;
+            end
             tmp(tmp < 0) = 0; % Sometimes, if the factor is too close zero, it can be negative due to the numerically precision.
             signal_out = sqrt(tmp);
-        otherwise
-            fz = ( overlap_factor*((cross_sections.emission + cross_sections.absorption)*N2 - cross_sections.absorption*N_total ).*P0 + dPdz_spontaneous ).*deltaZ; % unit: W/THz for ASE, W for pump
+        case 'ASE'
+            if ismember(gain_medium,{'Er','Nd'}) % consider excited-state absorption
+                fz = ( overlap_factor*(N2*(cross_section_all.*P0 + cross_sections.emission.*E_photon) - (cross_sections.absorption*N_total + cross_sections.ESA*N2).*P0) )*deltaZ; % unit: W/THz
+            else % 'Yb'
+                fz = ( overlap_factor*(N2*(cross_section_all.*P0 + cross_sections.emission.*E_photon) - cross_sections.absorption*N_total.*P0) )*deltaZ; % unit: W/THz
+            end
+        case 'pump' % no spontaneous term
+            if ismember(gain_medium,{'Er','Nd'}) % consider excited-state absorption
+                fz = overlap_factor*(cross_section_all*N2 - cross_sections.absorption*N_total - cross_sections.ESA*N2).*P0*deltaZ; % unit: W
+            else % 'Yb'
+                fz = overlap_factor*(cross_section_all*N2 - cross_sections.absorption*N_total).*P0*deltaZ; % unit: W
+            end
     end
     
 else % multimode
-    %trapz2 = @(x) trapz(trapz(x,1),2)*dx^2; % take the integral w.r.t. the x-y plane
     trapz2 = @(x) sum(x,[1,2])*dx^2; % take the integral w.r.t. the x-y plane
-    
-    cross_section_all = cross_sections.emission + cross_sections.absorption;
     
     switch field_type
         case 'signal' % ignore spontaneous term
             FmFnN2 = trapz2(overlap_factor.*N2);
             
             % Calculate gA*deltaZ after passing through the gain.
-            signal_out = permute( sum( deltaZ/2.*(cross_section_all.*FmFnN2 - cross_sections.absorption.*FmFnN).*Am ,3) ,[1 2 4 3 5 6 7]); % Am_after_gain - Am
+            if ismember(gain_medium,{'Er','Nd'}) % consider excited-state absorption
+                signal_out = permute( sum( deltaZ/2.*(cross_section_all.*FmFnN2 - cross_sections.absorption.*FmFnN - cross_sections.ESA*FmFnN2).*Am ,3) ,[1 2 4 3 5 6 7]); % Am_after_gain - Am
+            else % 'Yb'
+                signal_out = permute( sum( deltaZ/2.*(cross_section_all.*FmFnN2 - cross_sections.absorption.*FmFnN).*Am ,3) ,[1 2 4 3 5 6 7]); % Am_after_gain - Am
+            end
         case 'ASE'
             if ~isscalar % polarized fields
                 P0 = cat(7,P0(:,:,1:2:end-1,:,:,:),P0(:,:,2:2:end,:,:,:));
@@ -254,10 +273,18 @@ else % multimode
             GammaN2 = trapz2(overlap_factor(:,:,diag_idx).*N2); % overlap_factor*N2
             GammaN = FmFnN(:,:,diag_idx); % overlap_factor*N_total
             
-            fz = real( GammaN2.*(cross_section_all.*P0 + cross_sections.emission.*E_photon) - GammaN.*cross_sections.absorption.*P0 ).*deltaZ; % W/THz
-        case 'pump'
+            if ismember(gain_medium,{'Er','Nd'}) % consider excited-state absorption
+                fz = real( GammaN2.*(cross_section_all.*P0 + cross_sections.emission.*E_photon) - (cross_sections.absorption*GammaN + cross_sections.ESA*GammaN2).*P0 ).*deltaZ; % W/THz
+            else % 'Yb'
+                fz = real( GammaN2.*(cross_section_all.*P0 + cross_sections.emission.*E_photon) - GammaN.*cross_sections.absorption.*P0 ).*deltaZ; % W/THz
+            end
+        case 'pump' % no spontaneous term
             GammaN2 = trapz2(overlap_factor.*N2);
-            fz = ( GammaN2*cross_section_all - GammaN*cross_sections.absorption ).*P0.*deltaZ; % W
+            if ismember(gain_medium,{'Er','Nd'}) % consider excited-state absorption
+                fz = ( GammaN2*cross_section_all - GammaN*cross_sections.absorption - GammaN2*cross_sections.ESA ).*P0.*deltaZ; % W
+            else % 'Yb'
+                fz = ( GammaN2*cross_section_all - GammaN*cross_sections.absorption ).*P0.*deltaZ; % W
+            end
     end
 end
 

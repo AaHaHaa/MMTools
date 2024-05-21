@@ -366,12 +366,15 @@ switch type_of_mode
     case 'single_mode'
         default_sim.midx = 1;
         
-        if default_sim.lambda0 < 1.3e-6 % lambda(zero dispersion)=1.3um; assume 1030nm for normal dispersion
+        if default_sim.lambda0 > 1e-6 && default_sim.lambda0 < 1.3e-6 % lambda(zero dispersion)=1.3um; assume 1030nm for normal dispersion
             default_fiber.betas = [8.8268e6; 4.8821e3; 0.0209; 32.9e-6; -26.7e-9];
-            default_fiber.MFD = 5.95; % um; 1030nm from Thorlabs 1060XP
+            default_fiber.MFD = 5.95; % um; 1030nm from Thorlabs's 1060XP
+        elseif default_sim.lambda0 < 1e-6 % assume at 920 nm, where Nd is used
+            default_fiber.betas = [9.8810e6; 4.8872e3; 0.0315; 2.0457e-5; 1.2737e-9];
+            default_fiber.MFD = 4; % um; 1030nm from IXblue's IXF-2CF-PAS-PM-4-80-0.16-P
         else % assume 1550nm for anomalous dispersion
             default_fiber.betas = [5.8339e6; 4.8775e3; -0.0123; 0.1049e-6; -378.3e-9];
-            default_fiber.MFD = 8.09; % um; 1550nm from Thorlabs 1060XP
+            default_fiber.MFD = 8.09; % um; 1550nm from Thorlabs's 1060XP
         end
         % Load "input_fiber" into "default_fiber" first to calculate SR.
         if isfield(input_fiber,'MFD')

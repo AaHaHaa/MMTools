@@ -28,7 +28,7 @@ fiber.betas_filename = 'betas.mat';
 fiber.S_tensors_filename = 'S_tensors_3modes.mat';
 
 %% Gain info
-gain_rate_eqn.cross_section_filename = 'Liekki Yb_AV_20160530.txt';
+gain_rate_eqn.gain_medium = 'Yb'; % specify the gain medium
 gain_rate_eqn.core_diameter = 10; % um
 gain_rate_eqn.cladding_diameter = 125; % um
 gain_rate_eqn.core_NA = 0.08; % in fact, this is only used in single-mode
@@ -41,7 +41,6 @@ gain_rate_eqn.reuse_data = false; % For a ring or linear cavity, the pulse will 
                                   % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.
 gain_rate_eqn.linear_oscillator = false; % For a linear oscillator, there are pulses from both directions simultaneously, which will deplete the gain;
                                          % therefore, the backward-propagating pulses need to be taken into account.
-gain_rate_eqn.tau = 840e-6; % lifetime of Yb in F_(5/2) state (Paschotta et al., "Lifetme quenching in Yb-doped fibers"); in "s"
 gain_rate_eqn.t_rep = 1/15e6; % assume 15 MHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
                              % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.
 gain_rate_eqn.downsampling_factor = 1; % an integer; downsample the eigenmode profiles to run faster

@@ -6,7 +6,7 @@ clearvars; close all;
 addpath('../../GMMNLSE algorithm/','../../user_helpers/');
 
 %% Gain info
-gain_rate_eqn.cross_section_filename = 'Liekki Yb_AV_20160530.txt';
+gain_rate_eqn.gain_medium = 'Yb'; % specify the gain medium
 gain_rate_eqn.reuse_data = false; % For a ring or linear cavity, the pulse will enter a steady state eventually.
                                   % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.
 gain_rate_eqn.linear_oscillator = false; % For a linear oscillator, there are pulses from both directions simultaneously, which will deplete the gain;
@@ -21,7 +21,6 @@ gain_rate_eqn.copump_power = 0; % W
 gain_rate_eqn.counterpump_power = 1; % W
 gain_rate_eqn.t_rep = 1/15e6; % assume 15 MHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
                               % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.
-gain_rate_eqn.tau = 840e-6; % lifetime of Yb in F_(5/2) state (Paschotta et al., "Lifetme quenching in Yb-doped fibers"); in "s"
 gain_rate_eqn.export_N2 = true; % whether to export N2, the ion density in the upper state or not
 gain_rate_eqn.ignore_ASE = true;
 gain_rate_eqn.sponASE_spatial_modes = []; % In LMA fibers, the number of ASE modes can be larger than one as the signal field, so this factor is used to correctly considered ASE. If empty like [], it's length(sim.midx).
@@ -35,7 +34,7 @@ N = 2^12; % the number of time points
 dt = time_window/N;
 t = (-N/2:N/2-1)'*dt; % ps
 
-fiber.L0 = 1; % m; the length of the gain fiber
+fiber.L0 = 5; % m; the length of the gain fiber
 save_num = 50; % the number of saved data
 sim.save_period = fiber.L0/save_num;
 sim.lambda0 = 1030e-9; % central wavelength; in "m"

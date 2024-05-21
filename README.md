@@ -2,7 +2,7 @@
 This is the shared package to simulate pulse propagation in a solid-core fiber with GMMNLSE/MM-UPPE with MATLAB.
 
 > [!IMPORTANT]
-> Stay tuned! I'm extending its capability to various gain media. Current plan includes Er, Er/Yb, Nd, Tm, and Ho. I'll let you know when it's done.
+> Stay tuned! I'm extending its capability to various gain media. Current plan includes Er, Er/Yb, Nd, Tm, and Ho. I'll let you know when it's done. See [Important notice](https://github.com/AaHaHaa/MMTools?tab=readme-ov-file#important-notice) below.
 
 It solves the pulse propagation with RK4IP if single mode and MPA if multimode. Both scalar and polarized scenarios can be simulated. Besides, it is implemented with an adaptive step-size control for both methods. Both passive and gain fibers can be simulated, where gain model includes Gaussian gain and rate-equation gain, for both single mode and multimode. Random mode coupling can be included as well.
 > Note:<br>
@@ -34,3 +34,5 @@ About the implementation details, please find them in https://doi.org/10.1063/5.
 Since I've received questions about the Fourier Transform, I've added explanation about it in the readme.pdf. Because of the laser-field definition, Fourier Transform should be `ifft` in MATLAB; be careful about this! It's different from the mathematical convention. This affects phase results and even critical (and can make the result wrong) Fourier-Transform-constant issues, such as different constants of convolution theorem for different conventions.
 * 2/14/2024:<br>
 There is a significant bug in CUDA related to spontaneous Raman scattering that will simply fail MATLAB. I fixed it. Please download the new one if you downloaded the code between 1/3/2024, when I claimed to add and fix the spontaneous Raman scattering, and today.
+* 5/20/2024:<br>
+Finish the initial implementation of Er and Nd rate-equation gain modeling. More tests will be done for verification.

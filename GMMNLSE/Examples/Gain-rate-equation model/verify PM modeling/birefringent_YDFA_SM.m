@@ -50,7 +50,7 @@ fiber.betas = fiber.betas(:,1);
 % Note that the use of single spatial mode is different from multi-spatial modes.
 % Activating "reuse_data" or "linear_oscillator_model" requires setting other parameters.
 % Check the example or "gain_info.m".
-gain_rate_eqn.cross_section_filename = 'Liekki Yb_AV_20160530.txt';
+gain_rate_eqn.gain_medium = 'Yb'; % specify the gain medium
 gain_rate_eqn.core_diameter = 6; % um
 gain_rate_eqn.cladding_diameter = 125; % um
 gain_rate_eqn.core_NA = 0.12;
@@ -65,7 +65,6 @@ gain_rate_eqn.linear_oscillator = false; % For a linear oscillator, there are pu
                                          % therefore, the backward-propagating pulses need to be taken into account.
 gain_rate_eqn.t_rep = 25e-9; % Assume 25 MHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
                              % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.
-gain_rate_eqn.tau = 840e-6; % lifetime of Yb in F_(5/2) state (Paschotta et al., "Lifetme quenching in Yb-doped fibers"); in "s"
 gain_rate_eqn.export_N2 = false; % whether to export N2, the ion density in the upper state or not
 gain_rate_eqn.ignore_ASE = true;
 gain_rate_eqn.sponASE_spatial_modes = []; % In LMA fibers, the number of ASE modes can be larger than one as the signal field, so this factor is used to correctly considered ASE. If empty like [], it's length(sim.midx).

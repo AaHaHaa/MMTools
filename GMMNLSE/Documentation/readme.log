@@ -1,0 +1,2932 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.1.29)  13 MAY 2024 00:49
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**readme.tex
+(./readme.tex
+LaTeX2e <2022-11-01> patch level 1
+L3 programming layer <2023-01-24>
+(/usr/local/texlive/2022/texmf-dist/tex/latex/base/book.cls
+Document Class: book 2022/07/02 v1.4n Standard LaTeX document class
+(/usr/local/texlive/2022/texmf-dist/tex/latex/base/bk12.clo
+File: bk12.clo 2022/07/02 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count185
+\c@chapter=\count186
+\c@section=\count187
+\c@subsection=\count188
+\c@subsubsection=\count189
+\c@paragraph=\count190
+\c@subparagraph=\count191
+\c@figure=\count192
+\c@table=\count193
+\abovecaptionskip=\skip48
+\belowcaptionskip=\skip49
+\bibindent=\dimen140
+) (./preamble.tex
+(/usr/local/texlive/2022/texmf-dist/tex/latex/tools/tabularx.sty
+Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/tools/array.sty
+Package: array 2022/09/04 v2.5g Tabular extension package (FMi)
+\col@sep=\dimen141
+\ar@mcellbox=\box51
+\extrarowheight=\dimen142
+\NC@list=\toks16
+\extratabsurround=\skip50
+\backup@length=\skip51
+\ar@cellbox=\box52
+)
+\TX@col@width=\dimen143
+\TX@old@table=\dimen144
+\TX@old@col=\dimen145
+\TX@target=\dimen146
+\TX@delta=\dimen147
+\TX@cols=\count194
+\TX@ftn=\toks17
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/titlesec/titlesec.sty
+Package: titlesec 2021/07/05 v2.14 Sectioning titles
+\ttl@box=\box53
+\beforetitleunit=\skip52
+\aftertitleunit=\skip53
+\ttl@plus=\dimen148
+\ttl@minus=\dimen149
+\ttl@toksa=\toks18
+\titlewidth=\dimen150
+\titlewidthlast=\dimen151
+\titlewidthfirst=\dimen152
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks19
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2022/03/10 v1.4e Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2022/09/22 v1.2b Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen153
+\Gin@req@width=\dimen154
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2022/01/06 v1.3d Standard LaTeX Color (DPC)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: pdftex.def on input line 149.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+(/usr/local/texlive/2022/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+Package: fancyhdr 2022/11/09 v4.1 Extensive control of page headers and footers
+
+\f@nch@headwidth=\skip54
+\f@nch@O@elh=\skip55
+\f@nch@O@erh=\skip56
+\f@nch@O@olh=\skip57
+\f@nch@O@orh=\skip58
+\f@nch@O@elf=\skip59
+\f@nch@O@erf=\skip60
+\f@nch@O@olf=\skip61
+\f@nch@O@orf=\skip62
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/microtype/microtype.sty
+Package: microtype 2022/06/23 v3.0f Micro-typographical refinements (RS)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count195
+)
+\MT@toks=\toks20
+\MT@tempbox=\box54
+\MT@count=\count196
+LaTeX Info: Redefining \noprotrusionifhmode on input line 1045.
+LaTeX Info: Redefining \leftprotrusion on input line 1046.
+LaTeX Info: Redefining \rightprotrusion on input line 1056.
+LaTeX Info: Redefining \textls on input line 1234.
+\MT@outer@kern=\dimen155
+LaTeX Info: Redefining \textmicrotypecontext on input line 1858.
+\MT@listname@count=\count197
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/microtype/microtype-pdftex.def
+File: microtype-pdftex.def 2022/06/23 v3.0f Definitions specific to pdftex (RS)
+
+LaTeX Info: Redefining \lsstyle on input line 900.
+LaTeX Info: Redefining \lslig on input line 900.
+\MT@outer@space=\skip63
+)
+Package microtype Info: Loading configuration file microtype.cfg.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/microtype/microtype.cfg
+File: microtype.cfg 2022/06/23 v3.0f microtype main configuration file (RS)
+))
+(/usr/local/texlive/2022/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen156
+\lightrulewidth=\dimen157
+\cmidrulewidth=\dimen158
+\belowrulesep=\dimen159
+\belowbottomsep=\dimen160
+\aboverulesep=\dimen161
+\abovetopsep=\dimen162
+\cmidrulesep=\dimen163
+\cmidrulekern=\dimen164
+\defaultaddspace=\dimen165
+\@cmidla=\count198
+\@cmidlb=\count199
+\@aboverulesep=\dimen166
+\@belowrulesep=\dimen167
+\@thisruleclass=\count266
+\@lastruleclass=\count267
+\@thisrulewidth=\dimen168
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/tools/enumerate.sty
+Package: enumerate 2015/07/23 v3.00 enumerate extensions (DPC)
+\@enLab=\toks21
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/framed/framed.sty
+Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
+\OuterFrameSep=\skip64
+\fb@frw=\dimen169
+\fb@frh=\dimen170
+\FrameRule=\dimen171
+\FrameSep=\dimen172
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2022/04/08 v2.17n AMS math features
+\@mathmargin=\skip65
+
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2022/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2021/08/26 v2.01 AMS text
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks22
+\ex@=\dimen173
+))
+(/usr/local/texlive/2022/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen174
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2022/04/08 v2.04 operator names
+)
+\inf@bad=\count268
+LaTeX Info: Redefining \frac on input line 234.
+\uproot@=\count269
+\leftroot@=\count270
+LaTeX Info: Redefining \overline on input line 399.
+LaTeX Info: Redefining \colon on input line 410.
+\classnum@=\count271
+\DOTSCASE@=\count272
+LaTeX Info: Redefining \ldots on input line 496.
+LaTeX Info: Redefining \dots on input line 499.
+LaTeX Info: Redefining \cdots on input line 620.
+\Mathstrutbox@=\box55
+\strutbox@=\box56
+LaTeX Info: Redefining \big on input line 722.
+LaTeX Info: Redefining \Big on input line 723.
+LaTeX Info: Redefining \bigg on input line 724.
+LaTeX Info: Redefining \Bigg on input line 725.
+\big@size=\dimen175
+LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
+\macc@depth=\count273
+LaTeX Info: Redefining \bmod on input line 905.
+LaTeX Info: Redefining \pmod on input line 910.
+LaTeX Info: Redefining \smash on input line 940.
+LaTeX Info: Redefining \relbar on input line 970.
+LaTeX Info: Redefining \Relbar on input line 971.
+\c@MaxMatrixCols=\count274
+\dotsspace@=\muskip16
+\c@parentequation=\count275
+\dspbrk@lvl=\count276
+\tag@help=\toks23
+\row@=\count277
+\column@=\count278
+\maxfields@=\count279
+\andhelp@=\toks24
+\eqnshift@=\dimen176
+\alignsep@=\dimen177
+\tagshift@=\dimen178
+\tagwidth@=\dimen179
+\totwidth@=\dimen180
+\lineht@=\dimen181
+\@envbody=\toks25
+\multlinegap=\skip66
+\multlinetaggap=\skip67
+\mathdisplay@stack=\toks26
+LaTeX Info: Redefining \[ on input line 2953.
+LaTeX Info: Redefining \] on input line 2954.
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
+(/usr/local/texlive/2022/texmf-dist/tex/generic/nth/nth.sty
+Package: nth 2002/02/27
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/mathtools/mathtools.sty
+Package: mathtools 2022/06/29 v1.29 mathematical typesetting tools
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count280
+\calc@Bcount=\count281
+\calc@Adimen=\dimen182
+\calc@Bdimen=\dimen183
+\calc@Askip=\skip68
+\calc@Bskip=\skip69
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count282
+\calc@Cskip=\skip70
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/mathtools/mhsetup.sty
+Package: mhsetup 2021/03/18 v1.4 programming setup (MH)
+)
+\g_MT_multlinerow_int=\count283
+\l_MT_multwidth_dim=\dimen184
+\origjot=\skip71
+\l_MT_shortvdotswithinadjustabove_dim=\dimen185
+\l_MT_shortvdotswithinadjustbelow_dim=\dimen186
+\l_MT_above_intertext_sep=\dimen187
+\l_MT_below_intertext_sep=\dimen188
+\l_MT_above_shortintertext_sep=\dimen189
+\l_MT_below_shortintertext_sep=\dimen190
+\xmathstrut@box=\box57
+\xmathstrut@dim=\dimen191
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/commath/commath.sty
+(/usr/local/texlive/2022/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2022/04/13 v1.1d Standard LaTeX ifthen package (DPC)
+))
+(/usr/local/texlive/2022/texmf-dist/tex/latex/units/nicefrac.sty
+Package: nicefrac 1998/08/04 v0.9b Nice fractions
+\L@UnitsRaiseDisplaystyle=\skip72
+\L@UnitsRaiseTextstyle=\skip73
+\L@UnitsRaiseScriptstyle=\skip74
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/siunitx/siunitx.sty
+Package: siunitx 2023-01-03 v3.2.0 A comprehensive (SI) units package
+\l__siunitx_angle_tmp_dim=\dimen192
+\l__siunitx_angle_marker_box=\box58
+\l__siunitx_angle_unit_box=\box59
+\l__siunitx_compound_count_int=\count284
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/translations/translations.sty
+Package: translations 2022/02/05 v1.12 internationalization of LaTeX2e packages
+ (CN)
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2022/02/03 v1.0f TeX engine tests
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2020-05-10 v1.25 LaTeX kernel commands for general use (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+))
+\l__siunitx_number_exponent_fixed_int=\count285
+\l__siunitx_number_min_decimal_int=\count286
+\l__siunitx_number_min_integer_int=\count287
+\l__siunitx_number_round_precision_int=\count288
+\l__siunitx_number_lower_threshold_int=\count289
+\l__siunitx_number_upper_threshold_int=\count290
+\l__siunitx_number_group_first_int=\count291
+\l__siunitx_number_group_size_int=\count292
+\l__siunitx_number_group_minimum_int=\count293
+\l__siunitx_table_tmp_box=\box60
+\l__siunitx_table_tmp_dim=\dimen193
+\l__siunitx_table_column_width_dim=\dimen194
+\l__siunitx_table_integer_box=\box61
+\l__siunitx_table_decimal_box=\box62
+\l__siunitx_table_uncert_box=\box63
+\l__siunitx_table_before_box=\box64
+\l__siunitx_table_after_box=\box65
+\l__siunitx_table_before_dim=\dimen195
+\l__siunitx_table_carry_dim=\dimen196
+\l__siunitx_unit_tmp_int=\count294
+\l__siunitx_unit_position_int=\count295
+\l__siunitx_unit_total_int=\count296
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/bigints/bigints.sty
+Package: bigints 2010/02/15 Writing big integrals
+Package bigints Info: This is Bigints by Merciadri Luca. on input line 5.
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/caption/subcaption.sty
+Package: subcaption 2022/01/07 v1.5 Sub-captions (AR)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2022/03/01 v3.6b Customizing captions (AR)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2022/03/17 v2.3b caption3 kernel (AR)
+\caption@tempdima=\dimen197
+\captionmargin=\dimen198
+\caption@leftmargin=\dimen199
+\caption@rightmargin=\dimen256
+\caption@width=\dimen257
+\caption@indent=\dimen258
+\caption@parindent=\dimen259
+\caption@hangindent=\dimen260
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count297
+\c@continuedfloat=\count298
+)
+\c@subfigure=\count299
+\c@subtable=\count300
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/csquotes/csquotes.sty
+Package: csquotes 2022-09-14 v5.2n context-sensitive quotations (JAW)
+\csq@reset=\count301
+\csq@gtype=\count302
+\csq@glevel=\count303
+\csq@qlevel=\count304
+\csq@maxlvl=\count305
+\csq@tshold=\count306
+\csq@ltx@everypar=\toks27
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/csquotes/csquotes.def
+File: csquotes.def 2022-09-14 v5.2n csquotes generic definitions (JAW)
+)
+Package csquotes Info: Trying to load configuration file 'csquotes.cfg'...
+Package csquotes Info: ... configuration file loaded successfully.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/csquotes/csquotes.cfg
+File: csquotes.cfg 
+))
+(/usr/local/texlive/2022/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2022-11-13 v7.00u Hypertext links for LaTeX
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/hycolor/hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/letltxmacro/letltxmacro.sty
+Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/auxhook/auxhook.sty
+Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2022-05-17 v2.50 Cross-referencing by name of section
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/refcount/refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/gettitlestring/gettitlestring.s
+ty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+ (/usr/local/texlive/2022/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+))
+\c@section@level=\count307
+)
+\@linkdim=\dimen261
+\Hy@linkcounter=\count308
+\Hy@pagecounter=\count309
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2022-11-13 v7.00u Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/intcalc/intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
+)
+\Hy@SavedSpaceFactor=\count310
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2022-11-13 v7.00u Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Option `CJKbookmarks' set `true' on input line 4045.
+Package hyperref Info: Hyper figures OFF on input line 4162.
+Package hyperref Info: Link nesting OFF on input line 4167.
+Package hyperref Info: Hyper index ON on input line 4170.
+Package hyperref Info: Plain pages OFF on input line 4177.
+Package hyperref Info: Backreferencing OFF on input line 4182.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4410.
+\c@Hy@tempcnt=\count311
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip17
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4748.
+\XeTeXLinkMargin=\dimen262
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/bitset/bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+\Fld@menulength=\count312
+\Field@Width=\dimen263
+\Fld@charsize=\dimen264
+Package hyperref Info: Hyper figures OFF on input line 6027.
+Package hyperref Info: Link nesting OFF on input line 6032.
+Package hyperref Info: Hyper index ON on input line 6035.
+Package hyperref Info: backreferencing OFF on input line 6042.
+Package hyperref Info: Link coloring OFF on input line 6047.
+Package hyperref Info: Link coloring with OCG OFF on input line 6052.
+Package hyperref Info: PDF/A mode OFF on input line 6057.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/base/atbegshi-ltx.sty
+Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
+package with kernel methods
+)
+\Hy@abspage=\count313
+\c@Item=\count314
+\c@Hfootnote=\count315
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2022-11-13 v7.00u Hyperref driver for pdfTeX
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/base/atveryend-ltx.sty
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
+kage
+with kernel methods
+)
+\Fld@listcount=\count316
+\c@bookmark@seq@number=\count317
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2022-07-10 v1.10 Rerun checks for auxiliary files (HO)
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+85.
+)
+\Hy@SectionHShift=\skip75
+)
+Package hyperref Info: Option `colorlinks' set `false' on input line 16.
+ (/usr/local/texlive/2022/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+)
+\Gm@cnth=\count318
+\Gm@cntv=\count319
+\c@Gm@tempcnt=\count320
+\Gm@bindingoffset=\dimen265
+\Gm@wd@mp=\dimen266
+\Gm@odd@mp=\dimen267
+\Gm@even@mp=\dimen268
+\Gm@layoutwidth=\dimen269
+\Gm@layoutheight=\dimen270
+\Gm@layouthoffset=\dimen271
+\Gm@layoutvoffset=\dimen272
+\Gm@dimlist=\toks28
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/l3packages/xfrac/xfrac.sty
+(/usr/local/texlive/2022/texmf-dist/tex/latex/l3kernel/expl3.sty
+Package: expl3 2023-01-24 L3 programming layer (loader) 
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count321
+\l__pdf_internal_box=\box66
+))
+(/usr/local/texlive/2022/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty
+Package: l3keys2e 2023-01-16 LaTeX2e option processing using LaTeX3 keys
+) (/usr/local/texlive/2022/texmf-dist/tex/latex/base/textcomp.sty
+Package: textcomp 2020/02/02 v2.0n Standard LaTeX package
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+Package: xparse 2023-01-16 L3 Experimental document command parser
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/l3packages/xtemplate/xtemplate.st
+y
+Package: xtemplate 2023-01-16 L3 Experimental prototype document functions
+\l__xtemplate_tmp_dim=\dimen273
+\l__xtemplate_tmp_int=\count322
+\l__xtemplate_tmp_muskip=\muskip18
+\l__xtemplate_tmp_skip=\skip76
+)
+Package: xfrac 2023-01-16 L3 Experimental split-level fractions
+\l__xfrac_slash_box=\box67
+\l__xfrac_tmp_box=\box68
+\l__xfrac_denominator_bot_sep_dim=\dimen274
+\l__xfrac_numerator_bot_sep_dim=\dimen275
+\l__xfrac_numerator_top_sep_dim=\dimen276
+\l__xfrac_slash_left_sep_dim=\dimen277
+\l__xfrac_slash_right_sep_dim=\dimen278
+\l__xfrac_slash_left_muskip=\muskip19
+\l__xfrac_slash_right_muskip=\muskip20
+
+Package xtemplate Info: Declaring object type 'xfrac' taking 3 argument(s) on
+(xtemplate)             line 80.
+
+) (/usr/local/texlive/2022/texmf-dist/tex/latex/physics/physics.sty
+Package: physics 
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2021/02/14 v1.3d Input encoding file
+\inpenc@prehook=\toks29
+\inpenc@posthook=\toks30
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/biblatex.sty
+Package: biblatex 2022/07/12 v3.18b programmable bibliographies (PK/MW)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/logreq/logreq.sty
+Package: logreq 2010/08/04 v1.0 xml request logger
+\lrq@indent=\count323
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/logreq/logreq.def
+File: logreq.def 2010/08/04 v1.0 logreq spec v1.0
+))
+\c@tabx@nest=\count324
+\c@listtotal=\count325
+\c@listcount=\count326
+\c@liststart=\count327
+\c@liststop=\count328
+\c@citecount=\count329
+\c@citetotal=\count330
+\c@multicitecount=\count331
+\c@multicitetotal=\count332
+\c@instcount=\count333
+\c@maxnames=\count334
+\c@minnames=\count335
+\c@maxitems=\count336
+\c@minitems=\count337
+\c@citecounter=\count338
+\c@maxcitecounter=\count339
+\c@savedcitecounter=\count340
+\c@uniquelist=\count341
+\c@uniquename=\count342
+\c@refsection=\count343
+\c@refsegment=\count344
+\c@maxextratitle=\count345
+\c@maxextratitleyear=\count346
+\c@maxextraname=\count347
+\c@maxextradate=\count348
+\c@maxextraalpha=\count349
+\c@abbrvpenalty=\count350
+\c@highnamepenalty=\count351
+\c@lownamepenalty=\count352
+\c@maxparens=\count353
+\c@parenlevel=\count354
+\blx@tempcnta=\count355
+\blx@tempcntb=\count356
+\blx@tempcntc=\count357
+\c@blx@maxsection=\count358
+\blx@maxsegment@0=\count359
+\blx@notetype=\count360
+\blx@parenlevel@text=\count361
+\blx@parenlevel@foot=\count362
+\blx@sectionciteorder@0=\count363
+\blx@sectionciteorderinternal@0=\count364
+\blx@entrysetcounter=\count365
+\blx@biblioinstance=\count366
+\labelnumberwidth=\skip77
+\labelalphawidth=\skip78
+\biblabelsep=\skip79
+\bibitemsep=\skip80
+\bibnamesep=\skip81
+\bibinitsep=\skip82
+\bibparsep=\skip83
+\bibhang=\skip84
+\blx@bcfin=\read2
+\blx@bcfout=\write3
+\blx@langwohyphens=\language87
+\c@mincomprange=\count367
+\c@maxcomprange=\count368
+\c@mincompwidth=\count369
+Package biblatex Info: Trying to load biblatex default data model...
+Package biblatex Info: ... file 'blx-dm.def' found.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/blx-dm.def
+File: blx-dm.def 2022/07/12 v3.18b biblatex localization (PK/MW)
+)
+Package biblatex Info: Trying to load biblatex citestyle data model...
+Package biblatex Info: ... file 'numeric-comp.dbx' not found.
+Package biblatex Info: Trying to load biblatex bibstyle data model...
+Package biblatex Info: ... file 'phys.dbx' found.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex-phys/phys.dbx
+File: phys.dbx 2019/12/03 v1.1b biblatex database model extension
+)
+Package biblatex Info: Trying to load biblatex custom data model...
+Package biblatex Info: ... file 'biblatex-dm.cfg' not found.
+\c@afterword=\count370
+\c@savedafterword=\count371
+\c@annotator=\count372
+\c@savedannotator=\count373
+\c@author=\count374
+\c@savedauthor=\count375
+\c@bookauthor=\count376
+\c@savedbookauthor=\count377
+\c@commentator=\count378
+\c@savedcommentator=\count379
+\c@editor=\count380
+\c@savededitor=\count381
+\c@editora=\count382
+\c@savededitora=\count383
+\c@editorb=\count384
+\c@savededitorb=\count385
+\c@editorc=\count386
+\c@savededitorc=\count387
+\c@foreword=\count388
+\c@savedforeword=\count389
+\c@holder=\count390
+\c@savedholder=\count391
+\c@introduction=\count392
+\c@savedintroduction=\count393
+\c@namea=\count394
+\c@savednamea=\count395
+\c@nameb=\count396
+\c@savednameb=\count397
+\c@namec=\count398
+\c@savednamec=\count399
+\c@translator=\count400
+\c@savedtranslator=\count401
+\c@shortauthor=\count402
+\c@savedshortauthor=\count403
+\c@shorteditor=\count404
+\c@savedshorteditor=\count405
+\c@labelname=\count406
+\c@savedlabelname=\count407
+\c@institution=\count408
+\c@savedinstitution=\count409
+\c@lista=\count410
+\c@savedlista=\count411
+\c@listb=\count412
+\c@savedlistb=\count413
+\c@listc=\count414
+\c@savedlistc=\count415
+\c@listd=\count416
+\c@savedlistd=\count417
+\c@liste=\count418
+\c@savedliste=\count419
+\c@listf=\count420
+\c@savedlistf=\count421
+\c@location=\count422
+\c@savedlocation=\count423
+\c@organization=\count424
+\c@savedorganization=\count425
+\c@origlocation=\count426
+\c@savedoriglocation=\count427
+\c@origpublisher=\count428
+\c@savedorigpublisher=\count429
+\c@publisher=\count430
+\c@savedpublisher=\count431
+\c@language=\count432
+\c@savedlanguage=\count433
+\c@origlanguage=\count434
+\c@savedoriglanguage=\count435
+\c@pageref=\count436
+\c@savedpageref=\count437
+\shorthandwidth=\skip85
+\shortjournalwidth=\skip86
+\shortserieswidth=\skip87
+\shorttitlewidth=\skip88
+\shortauthorwidth=\skip89
+\shorteditorwidth=\skip90
+\locallabelnumberwidth=\skip91
+\locallabelalphawidth=\skip92
+\localshorthandwidth=\skip93
+\localshortjournalwidth=\skip94
+\localshortserieswidth=\skip95
+\localshorttitlewidth=\skip96
+\localshortauthorwidth=\skip97
+\localshorteditorwidth=\skip98
+Package biblatex Info: Trying to load compatibility code...
+Package biblatex Info: ... file 'blx-compat.def' found.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/blx-compat.def
+File: blx-compat.def 2022/07/12 v3.18b biblatex compatibility (PK/MW)
+)
+Package biblatex Info: Trying to load BibTeX backend compatibility...
+Package biblatex Info: ... file 'blx-bibtex.def' found.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/blx-bibtex.def
+File: blx-bibtex.def 2022/07/12 v3.18b biblatex compatibility (PK/MW)
+
+
+Package biblatex Warning: Using fall-back BibTeX(8) backend:
+(biblatex)                functionality may be reduced/unavailable.
+
+)
+Package biblatex Info: Trying to load generic definitions...
+Package biblatex Info: ... file 'biblatex.def' found.
+ (/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/biblatex.def
+File: biblatex.def 2022/07/12 v3.18b biblatex compatibility (PK/MW)
+\c@textcitecount=\count438
+\c@textcitetotal=\count439
+\c@textcitemaxnames=\count440
+\c@biburlbigbreakpenalty=\count441
+\c@biburlbreakpenalty=\count442
+\c@biburlnumpenalty=\count443
+\c@biburlucpenalty=\count444
+\c@biburllcpenalty=\count445
+\biburlbigskip=\muskip21
+\biburlnumskip=\muskip22
+\biburlucskip=\muskip23
+\biburllcskip=\muskip24
+\c@smartand=\count446
+)
+Package biblatex Info: Trying to load bibliography style 'phys'...
+Package biblatex Info: ... file 'phys.bbx' found.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex-phys/phys.bbx
+File: phys.bbx 2019/12/03 v1.1b biblatex bibliography style
+Package biblatex Info: Trying to load bibliography style 'numeric-comp'...
+Package biblatex Info: ... file 'numeric-comp.bbx' found.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/bbx/numeric-comp.bbx
+File: numeric-comp.bbx 2022/07/12 v3.18b biblatex bibliography style (PK/MW)
+Package biblatex Info: Trying to load bibliography style 'numeric'...
+Package biblatex Info: ... file 'numeric.bbx' found.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/bbx/numeric.bbx
+File: numeric.bbx 2022/07/12 v3.18b biblatex bibliography style (PK/MW)
+Package biblatex Info: Trying to load bibliography style 'standard'...
+Package biblatex Info: ... file 'standard.bbx' found.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/bbx/standard.bbx
+File: standard.bbx 2022/07/12 v3.18b biblatex bibliography style (PK/MW)
+\c@bbx:relatedcount=\count447
+\c@bbx:relatedtotal=\count448
+))))
+Package biblatex Info: Trying to load citation style 'numeric-comp'...
+Package biblatex Info: ... file 'numeric-comp.cbx' found.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/cbx/numeric-comp.cbx
+File: numeric-comp.cbx 2022/07/12 v3.18b biblatex citation style (PK/MW)
+\c@cbx@tempcnta=\count449
+\c@cbx@tempcntb=\count450
+\c@cbx@tempcntc=\count451
+\c@cbx@tempcntd=\count452
+Package biblatex Info: Redefining '\cite'.
+Package biblatex Info: Redefining '\parencite'.
+Package biblatex Info: Redefining '\footcite'.
+Package biblatex Info: Redefining '\footcitetext'.
+Package biblatex Info: Redefining '\smartcite'.
+Package biblatex Info: Redefining '\supercite'.
+Package biblatex Info: Redefining '\textcite'.
+Package biblatex Info: Redefining '\textcites'.
+Package biblatex Info: Redefining '\cites'.
+Package biblatex Info: Redefining '\parencites'.
+Package biblatex Info: Redefining '\smartcites'.
+)
+Package biblatex Info: Trying to load configuration file...
+Package biblatex Info: ... file 'biblatex.cfg' found.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/biblatex.cfg
+File: biblatex.cfg 
+)
+Package biblatex Info: Input encoding 'utf8' detected.
+Package biblatex Info: Document encoding is UTF8 ....
+Package biblatex Info: ... and expl3
+(biblatex)             2023-01-24 L3 programming layer (loader) 
+(biblatex)             is new enough (at least 2020/04/06),
+(biblatex)             setting 'casechanger=expl3'.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/blx-case-expl3.sty
+Package: blx-case-expl3 2022/07/12 v3.18b expl3 case changing code for biblatex
+
+))
+(/usr/local/texlive/2022/texmf-dist/tex/latex/mhchem/mhchem.sty
+Package: mhchem 2021/12/31 v4.09 for typesetting chemical formulae
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/chemgreek/chemgreek.sty
+Package: chemgreek 2020/01/16 v1.1a interface for upright Greek letters for use
+ in chemistry (CN)
+\l__chemgreek_tmpa_int=\count453
+\g__chemgreek_tmpa_int=\count454
+)
+\l__mhchem_ce_distanceFromLastComma_int=\count455
+\__mhchem_arrow_extPgfLength_skip=\skip99
+\mhchem@minispace@tmp=\skip100
+\mhchem@minibackspace@tmp=\skip101
+\mhchem@bondwidth=\skip102
+\mhchem@bondheight=\skip103
+\mhchem@smallbondwidth@tmpA=\skip104
+\mhchem@smallbondwidth@tmpB=\skip105
+\mhchem@smallbondwidth=\skip106
+\mhchem@bondtmp@minussidebearingleft=\skip107
+\mhchem@bondtmp@minussidebearingright=\skip108
+\l__mhchem_option_version_int=\count456
+\mhchem@option@minusmathsidebearingleft=\dimen279
+\mhchem@option@minusmathsidebearingright=\dimen280
+\mhchem@option@minustextsidebearingleft=\dimen281
+\mhchem@option@minustextsidebearingright=\dimen282
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/listings/listings.sty
+\lst@mode=\count457
+\lst@gtempboxa=\box69
+\lst@token=\toks31
+\lst@length=\count458
+\lst@currlwidth=\dimen283
+\lst@column=\count459
+\lst@pos=\count460
+\lst@lostspace=\dimen284
+\lst@width=\dimen285
+\lst@newlines=\count461
+\lst@lineno=\count462
+\lst@maxwidth=\dimen286
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
+\c@lstnumber=\count463
+\lst@skipnumbers=\count464
+\lst@framebox=\box70
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/listings/listings.cfg
+File: listings.cfg 2020/03/24 1.8d listings configuration
+))
+Package: listings 2020/03/24 1.8d (Carsten Heinz)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/lstaddons/lstautogobble.sty
+Package: lstautogobble 2012/05/03 v0.1 Implements 'autogobble' option for 'list
+ings'
+\lstag@spacecount=\count465
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/tools/verbatim.sty
+Package: verbatim 2022-07-02 v1.5u LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks32
+\verbatim@line=\toks33
+\verbatim@in@stream=\read3
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2020/03/24 1.8d listings language file
+))
+Package translations Info: No language package found. I am going to use `englis
+h' as default language. on input line 8.
+
+
+Package csquotes Warning: Load 'inputenc' before 'csquotes' on input line 8.
+
+Package csquotes Info: Checking for multilingual support...
+Package csquotes Info: ... none found.
+(./readme.aux)
+\openout1 = `readme.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+
+(/usr/local/texlive/2022/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count466
+\scratchdimen=\dimen287
+\scratchbox=\box71
+\nofMPsegments=\count467
+\nofMParguments=\count468
+\everyMPshowfont=\toks34
+\MPscratchCnt=\count469
+\MPscratchDim=\dimen288
+\MPnumerator=\count470
+\makeMPintoPDFobject=\count471
+\everyMPtoPDFconversion=\toks35
+) (/usr/local/texlive/2022/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+LaTeX Info: Redefining \microtypecontext on input line 8.
+Package microtype Info: Applying patch `item' on input line 8.
+Package microtype Info: Applying patch `toc' on input line 8.
+Package microtype Info: Applying patch `eqnum' on input line 8.
+Package microtype Info: Applying patch `footnote' on input line 8.
+Package microtype Info: Generating PDF output.
+Package microtype Info: Character protrusion enabled (level 2).
+Package microtype Info: Using default protrusion set `alltext'.
+Package microtype Info: Automatic font expansion enabled (level 2),
+(microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
+Package microtype Info: Using default expansion set `alltext-nott'.
+LaTeX Info: Redefining \showhyphens on input line 8.
+Package microtype Info: No adjustment of tracking.
+Package microtype Info: No adjustment of interword spacing.
+Package microtype Info: No adjustment of character kerning.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
+(RS)
+)
+
+Package siunitx Warning: Detected the "physics" package:
+(siunitx)                omitting definition of \qty.
+(siunitx)                
+(siunitx)                If you want to use \qty with the siunitx definition,
+(siunitx)                add 
+(siunitx)                
+(siunitx)                    \AtBeginDocument{\RenewCommandCopy\qty\SI}
+(siunitx)                
+(siunitx)                to your preamble.
+
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/translations/translations-basic-d
+ictionary-english.trsl
+File: translations-basic-dictionary-english.trsl (english translation file `tra
+nslations-basic-dictionary')
+)
+Package translations Info: loading dictionary `translations-basic-dictionary' f
+or `english'. on input line 8.
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: hyperref package is loaded.
+Package caption Info: listings package is loaded.
+Package caption Info: End \AtBeginDocument code.
+Package hyperref Info: Link coloring OFF on input line 8.
+ (./readme.out) (./readme.out)
+\@outlinefile=\write4
+\openout4 = `readme.out'.
+
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: twoside 
+* h-part:(L,W,R)=(56.9055pt, 483.69687pt, 56.9055pt)
+* v-part:(T,H,B)=(71.13188pt, 672.50832pt, 101.40665pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=483.69687pt
+* \textheight=672.50832pt
+* \oddsidemargin=-15.36449pt
+* \evensidemargin=-15.36449pt
+* \topmargin=-33.0119pt
+* \headheight=12.0pt
+* \headsep=19.8738pt
+* \topskip=12.0pt
+* \footskip=30.0pt
+* \marginparwidth=98.0pt
+* \marginparsep=7.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.8pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+Package biblatex Info: Trying to load language 'english'...
+Package biblatex Info: ... file 'english.lbx' found.
+(/usr/local/texlive/2022/texmf-dist/tex/latex/biblatex/lbx/english.lbx
+File: english.lbx 2022/07/12 v3.18b biblatex localization (PK/MW)
+)
+Package biblatex Info: Input encoding 'utf8' detected.
+Package biblatex Info: Automatic encoding selection.
+(biblatex)             Assuming data encoding 'utf8'.
+Package biblatex Info: Input encoding 'utf8' detected.
+Package biblatex Info: Data encoding 'utf8' specified.
+(biblatex)             No need to reencode data.
+\openout3 = `readme-blx.bib'.
+
+Package biblatex Info: Trying to load bibliographic data...
+Package biblatex Info: ... file 'readme.bbl' found.
+
+(./readme.bbl
+
+Package biblatex Warning: BibTeX reported the following issues
+(biblatex)                with 'Martinez1985':
+(biblatex)                - Invalid format of field 'month'.
+
+)
+Package biblatex Info: Reference section=0 on input line 8.
+Package biblatex Info: Reference segment=0 on input line 8.
+
+Package chemgreek Info: Activating mapping `default' on line 8.
+
+\c@lstlisting=\count472
+LaTeX Font Info:    Trying to load font information for U+msa on input line 10.
+
+ (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/microtype/mt-msa.cfg
+File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 10.
+
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/microtype/mt-msb.cfg
+File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+) [1
+
+
+{/usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+<wise_logo_2016.pdf, id=175, 1084.05pt x 1084.05pt>
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 10.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 10.
+Package epstopdf Info: Output file is already uptodate.
+<fine_cornell_logo_red_cmyk-eps-converted-to.pdf, id=176, 351.3125pt x 109.4087
+5pt>
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 10.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[2
+
+ <./wise_logo_2016.pdf> <./fine_cornell_logo_red_cmyk-eps-converted-to.pdf>]
+(./readme.toc [3])
+\tf@toc=\write5
+\openout5 = `readme.toc'.
+
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 11.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 11.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 11.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[4]
+Chapter 1.
+LaTeX Font Info:    Trying to load font information for U+euf on input line 23.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/ueuf.fd
+File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/microtype/mt-euf.cfg
+File: mt-euf.cfg 2006/07/03 v1.1 microtype config. file: AMS Euler Fraktur (RS)
+
+) [5
+
+]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 70.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 70.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 70.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[6]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 88.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 88.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 88.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[7]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 88.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 88.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 88.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[8
+
+]
+Chapter 2.
+<initial_condition.pdf, id=446, 535.30722pt x 146.17117pt>
+File: initial_condition.pdf Graphic file (type pdf)
+<use initial_condition.pdf>
+Package pdftex.def Info: initial_condition.pdf  used on input line 114.
+(pdftex.def)             Requested size: 183.1129pt x 50.0pt.
+[9 <./initial_condition.pdf>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 128.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 128.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 128.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[10]
+Chapter 3.
+
+LaTeX Warning: Reference `chap:example' on page 11 undefined on input line 132.
+
+
+[11
+
+]
+LaTeX Font Info:    Calculating math sizes for size <8.4> on input line 191.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.2> not available
+(Font)              size <5> substituted on input line 191.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.2> not available
+(Font)              size <5> substituted on input line 191.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.2> not available
+(Font)              size <5> substituted on input line 191.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 213.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 213.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 213.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[12]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 261.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 261.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 261.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[13]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 301.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 301.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 301.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[14]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 351.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 351.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 351.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[15]
+Overfull \hbox (22.9926pt too wide) in paragraph at lines 368--376
+[] 
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 403.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 403.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 403.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[16]
+Overfull \hbox (35.3458pt too wide) in paragraph at lines 404--406
+\OT1/cmr/m/n/12 (-20) ate a rea-son-ably strong sig-nal. The strength of noise 
+is con-trolled by ``num[]photon[]noise[]per[]band''. 
+ []
+
+
+Overfull \hbox (22.47948pt too wide) in paragraph at lines 437--439
+\OT1/cmr/m/n/12 (-20) The name of the GMMNLSE shown on the progress bar. If not
+ set (no ``sim.progress[]bar[]name''),
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 441.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 441.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 441.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[17]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 441.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 441.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 441.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[18
+
+]
+Chapter 4.
+[19]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 506.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 506.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 506.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[20]
+Chapter 5.
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.2> not available
+(Font)              size <5> substituted on input line 526.
+
+[21
+
+]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 532.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 532.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 532.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[22
+
+]
+Chapter 6.
+[23]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 610.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 610.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 610.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[24]
+<Yb (Liekki).jpg, id=577, 887.315pt x 665.48625pt>
+File: Yb (Liekki).jpg Graphic file (type jpg)
+<use Yb (Liekki).jpg>
+Package pdftex.def Info: Yb (Liekki).jpg  used on input line 627.
+(pdftex.def)             Requested size: 145.11053pt x 108.82565pt.
+<Yb (Nufern).jpg, id=578, 887.315pt x 665.48625pt>
+File: Yb (Nufern).jpg Graphic file (type jpg)
+<use Yb (Nufern).jpg>
+Package pdftex.def Info: Yb (Nufern).jpg  used on input line 632.
+(pdftex.def)             Requested size: 145.11053pt x 108.82565pt.
+<Er (optiwave).jpg, id=579, 887.315pt x 665.48625pt>
+File: Er (optiwave).jpg Graphic file (type jpg)
+<use Er (optiwave).jpg>
+Package pdftex.def Info: Er (optiwave).jpg  used on input line 637.
+(pdftex.def)             Requested size: 145.11053pt x 108.82565pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 658.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 658.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 658.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[25 <./Yb (Liekki).jpg> <./Yb (Nufern).jpg> <./Er (optiwave).jpg>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 698.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 698.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 698.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[26]
+Overfull \hbox (4.86389pt too wide) in paragraph at lines 720--721
+\OT1/cmr/m/n/12 (-20) If this isn't spec-i-fied or left empty, gain[]info() wil
+l load mode pro-files from gain[]rate[]eqn.MM[]folder. 
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 736.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 736.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 736.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[27]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 753.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 753.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 753.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[28]
+Chapter 7.
+
+Overfull \hbox (19.11623pt too wide) in paragraph at lines 782--783
+\OT1/cmr/m/n/12 (-20) I list them be-low. If both equa-vi-lence are spec-i-fied
+ un-for-tu-nately, the al-lowed GMMNLSE[]propagate()
+ []
+
+
+Overfull \hbox (13.58403pt too wide) in paragraph at lines 786--794
+ [][] 
+ []
+
+[29
+
+]
+LaTeX Font Info:    Trying to load font information for OML+cmr on input line 8
+28.
+ (/usr/local/texlive/2022/texmf-dist/tex/latex/base/omlcmr.fd
+File: omlcmr.fd 2022/07/10 v2.5l Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <10> not available
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 828.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 849.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 849.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 849.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[30]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 900.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 900.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 900.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[31]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 935.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 935.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 935.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[32]
+Chapter 8.
+<calling diagram.pdf, id=760, 1601.56424pt x 779.51364pt>
+File: calling diagram.pdf Graphic file (type pdf)
+<use calling diagram.pdf>
+Package pdftex.def Info: calling diagram.pdf  used on input line 940.
+(pdftex.def)             Requested size: 483.69687pt x 235.42596pt.
+[33
+
+ <./calling diagram.pdf>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 947.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 947.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 947.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[34
+
+]
+Chapter 9.
+<reflective grating compressor.jpg, id=818, 337.26pt x 192.72pt>
+File: reflective grating compressor.jpg Graphic file (type jpg)
+<use reflective grating compressor.jpg>
+Package pdftex.def Info: reflective grating compressor.jpg  used on input line 
+969.
+(pdftex.def)             Requested size: 241.84843pt x 138.20248pt.
+<reflective Treacy_grating phase.pdf, id=821, 84.28363pt x 77.12743pt>
+File: reflective Treacy_grating phase.pdf Graphic file (type pdf)
+<use reflective Treacy_grating phase.pdf>
+Package pdftex.def Info: reflective Treacy_grating phase.pdf  used on input lin
+e 978.
+(pdftex.def)             Requested size: 96.73788pt x 88.52635pt.
+[35]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1006.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1006.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1006.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[36 <./reflective grating compressor.jpg> <./reflective Treacy_grating phase.pd
+f>]
+<transmission grating.pdf, id=859, 318.18726pt x 227.4415pt>
+File: transmission grating.pdf Graphic file (type pdf)
+<use transmission grating.pdf>
+Package pdftex.def Info: transmission grating.pdf  used on input line 1010.
+(pdftex.def)             Requested size: 241.84843pt x 172.88162pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1044.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1044.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1044.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[37 <./transmission grating.pdf>]
+<prism.pdf, id=900, 1079.73933pt x 327.30736pt>
+File: prism.pdf Graphic file (type pdf)
+<use prism.pdf>
+Package pdftex.def Info: prism.pdf  used on input line 1052.
+(pdftex.def)             Requested size: 483.69687pt x 146.62769pt.
+<prism_enlarged.pdf, id=903, 613.81444pt x 275.36455pt>
+File: prism_enlarged.pdf Graphic file (type pdf)
+<use prism_enlarged.pdf>
+Package pdftex.def Info: prism_enlarged.pdf  used on input line 1066.
+(pdftex.def)             Requested size: 193.47578pt x 86.7949pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1083.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1083.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1083.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[38 <./prism.pdf>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1127.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1127.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1127.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[39 <./prism_enlarged.pdf>]
+<prism_GDD.pdf, id=979, 1079.73933pt x 327.30736pt>
+File: prism_GDD.pdf Graphic file (type pdf)
+<use prism_GDD.pdf>
+Package pdftex.def Info: prism_GDD.pdf  used on input line 1151.
+(pdftex.def)             Requested size: 483.69687pt x 146.62769pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1174.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1174.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1174.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[40]
+<grism v2.pdf, id=1001, 721.21318pt x 394.51672pt>
+File: grism v2.pdf Graphic file (type pdf)
+<use grism v2.pdf>
+Package pdftex.def Info: grism v2.pdf  used on input line 1180.
+(pdftex.def)             Requested size: 338.58632pt x 185.2182pt.
+<grism_enlarged v2.pdf, id=1002, 425.16455pt x 305.80232pt>
+File: grism_enlarged v2.pdf Graphic file (type pdf)
+<use grism_enlarged v2.pdf>
+Package pdftex.def Info: grism_enlarged v2.pdf  used on input line 1187.
+(pdftex.def)             Requested size: 193.47578pt x 139.15894pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1208.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1208.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1208.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[41 <./prism_GDD.pdf> <./grism v2.pdf
+
+pdfTeX warning: /usr/local/texlive/2022/bin/x86_64-linux/pdflatex (file ./grism
+ v2.pdf): PDF inclusion: multiple pdfs with page group included in a single pag
+e
+>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1244.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1244.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1244.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[42 <./grism_enlarged v2.pdf>]
+<grism v3.pdf, id=1136, 1099.66669pt x 384.6492pt>
+File: grism v3.pdf Graphic file (type pdf)
+<use grism v3.pdf>
+Package pdftex.def Info: grism v3.pdf  used on input line 1249.
+(pdftex.def)             Requested size: 338.58632pt x 118.43005pt.
+<grism_enlarged v3.pdf, id=1137, 711.68001pt x 279.71655pt>
+File: grism_enlarged v3.pdf Graphic file (type pdf)
+<use grism_enlarged v3.pdf>
+Package pdftex.def Info: grism_enlarged v3.pdf  used on input line 1256.
+(pdftex.def)             Requested size: 193.47578pt x 76.04091pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1283.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1283.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1283.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[43 <./grism v3.pdf> <./grism_enlarged v3.pdf
+
+pdfTeX warning: /usr/local/texlive/2022/bin/x86_64-linux/pdflatex (file ./grism
+_enlarged v3.pdf): PDF inclusion: multiple pdfs with page group included in a s
+ingle page
+>]
+Overfull \hbox (13.18765pt too wide) in paragraph at lines 1331--1332
+[]\OT1/cmr/m/n/12 (-20) Due to the re-quire-ment of min-i-mum de-vi-a-tion, $\O
+ML/cmm/m/it/12 ^^R[]\OT1/cmr/m/n/12 (-20) (\OML/cmm/m/it/12 ^^U[]\OT1/cmr/m/n/1
+2 (-20) ) = []$, lead-ing to $\OML/cmm/m/it/12 ^^R[]\OT1/cmr/m/n/12 (-20) (\OML
+/cmm/m/it/12 ^^U[]\OT1/cmr/m/n/12 (-20) ) = [][](\OML/cmm/m/it/12 n\OT1/cmr/m/n
+/12 (-20) (\OML/cmm/m/it/12 ^^U[]\OT1/cmr/m/n/12 (-20) ) [] [])$.
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1335.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1335.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1335.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[44]
+<Martinez stretcher.pdf, id=1237, 643.61137pt x 282.72704pt>
+File: Martinez stretcher.pdf Graphic file (type pdf)
+<use Martinez stretcher.pdf>
+Package pdftex.def Info: Martinez stretcher.pdf  used on input line 1338.
+(pdftex.def)             Requested size: 483.69687pt x 212.48047pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1381.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1381.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1381.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[45 <./Martinez stretcher.pdf>]
+<Martinez stretcher (close view).pdf, id=1319, 296.39499pt x 252.44786pt>
+File: Martinez stretcher (close view).pdf Graphic file (type pdf)
+<use Martinez stretcher (close view).pdf>
+Package pdftex.def Info: Martinez stretcher (close view).pdf  used on input lin
+e 1416.
+(pdftex.def)             Requested size: 193.47578pt x 164.79022pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1447.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1447.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1447.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[46 <./Martinez stretcher (close view).pdf>]
+<transmissive Martinez_grating phase.pdf, id=1342, 87.17159pt x 82.00098pt>
+File: transmissive Martinez_grating phase.pdf Graphic file (type pdf)
+<use transmissive Martinez_grating phase.pdf>
+Package pdftex.def Info: transmissive Martinez_grating phase.pdf  used on input
+ line 1450.
+(pdftex.def)             Requested size: 87.17136pt x 82.00076pt.
+<Offner stretcher.pdf, id=1346, 150.5625pt x 38.14563pt>
+File: Offner stretcher.pdf Graphic file (type pdf)
+<use Offner stretcher.pdf>
+Package pdftex.def Info: Offner stretcher.pdf  used on input line 1479.
+(pdftex.def)             Requested size: 483.69687pt x 122.57135pt.
+<Offner stretcher (single grating).pdf, id=1352, 469.87042pt x 324.94728pt>
+File: Offner stretcher (single grating).pdf Graphic file (type pdf)
+<use Offner stretcher (single grating).pdf>
+Package pdftex.def Info: Offner stretcher (single grating).pdf  used on input l
+ine 1489.
+(pdftex.def)             Requested size: 483.69687pt x 334.52588pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1501.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1501.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1501.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[47 <./transmissive Martinez_grating phase.pdf>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1501.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1501.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1501.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[48 <./Offner stretcher.pdf> <./Offner stretcher (single grating).pdf
+
+pdfTeX warning: /usr/local/texlive/2022/bin/x86_64-linux/pdflatex (file ./Offne
+r stretcher (single grating).pdf): PDF inclusion: multiple pdfs with page group
+ included in a single page
+>]
+<Offner_close_view2.pdf, id=1455, 472.6814pt x 302.6283pt>
+File: Offner_close_view2.pdf Graphic file (type pdf)
+<use Offner_close_view2.pdf>
+Package pdftex.def Info: Offner_close_view2.pdf  used on input line 1506.
+(pdftex.def)             Requested size: 338.58632pt x 216.78394pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1528.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1528.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1528.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[49 <./Offner_close_view2.pdf>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1579.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1579.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1579.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[50]
+<transmissive Offner_grating phase.pdf, id=1504, 69.60701pt x 81.96362pt>
+File: transmissive Offner_grating phase.pdf Graphic file (type pdf)
+<use transmissive Offner_grating phase.pdf>
+Package pdftex.def Info: transmissive Offner_grating phase.pdf  used on input l
+ine 1594.
+(pdftex.def)             Requested size: 96.73788pt x 113.91908pt.
+<Offner stretcher (aberration-free double gratings).pdf, id=1507, 469.87042pt x
+ 324.94728pt>
+File: Offner stretcher (aberration-free double gratings).pdf Graphic file (type
+ pdf)
+<use Offner stretcher (aberration-free double gratings).pdf>
+Package pdftex.def Info: Offner stretcher (aberration-free double gratings).pdf
+  used on input line 1610.
+(pdftex.def)             Requested size: 483.69687pt x 334.52588pt.
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1617.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1617.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1617.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[51 <./transmissive Offner_grating phase.pdf>]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1617.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1617.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1617.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[52 <./Offner stretcher (aberration-free double gratings).pdf>]
+<Offner_stretcher_real_design.png, id=1604, 104.0688pt x 106.7187pt>
+File: Offner_stretcher_real_design.png Graphic file (type png)
+<use Offner_stretcher_real_design.png>
+Package pdftex.def Info: Offner_stretcher_real_design.png  used on input line 1
+643.
+(pdftex.def)             Requested size: 338.58632pt x 347.22733pt.
+
+Underfull \hbox (badness 3646) in paragraph at lines 1644--1644
+[]\OT1/cmr/m/n/12 (+20) Figure 9.19: |Two real con-fig-u-ra-tions of an aberrat
+ion-free double-grating Offner
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1648.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1648.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1648.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[53]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1648.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1648.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1648.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[54 <./Offner_stretcher_real_design.png>] [55
+
+
+]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+File: wise_logo_2016.pdf Graphic file (type pdf)
+<use wise_logo_2016.pdf>
+Package pdftex.def Info: wise_logo_2016.pdf  used on input line 1652.
+(pdftex.def)             Requested size: 54.20567pt x 54.20567pt.
+Package epstopdf Info: Source file: <fine_cornell_logo_red_cmyk.eps>
+(epstopdf)                    date: 2017-12-05 15:06:37
+(epstopdf)                    size: 1135890 bytes
+(epstopdf)             Output file: <fine_cornell_logo_red_cmyk-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2017-12-05 15:06:59
+(epstopdf)                    size: 41908 bytes
+(epstopdf)             Command: <repstopdf --outfile=fine_cornell_logo_red_cmyk
+-eps-converted-to.pdf fine_cornell_logo_red_cmyk.eps>
+(epstopdf)             \includegraphics on input line 1652.
+Package epstopdf Info: Output file is already uptodate.
+File: fine_cornell_logo_red_cmyk-eps-converted-to.pdf Graphic file (type pdf)
+<use fine_cornell_logo_red_cmyk-eps-converted-to.pdf>
+Package pdftex.def Info: fine_cornell_logo_red_cmyk-eps-converted-to.pdf  used 
+on input line 1652.
+(pdftex.def)             Requested size: 140.5225pt x 43.76271pt.
+
+Package fancyhdr Warning: \footskip is too small (30.0pt): 
+(fancyhdr)                Make it at least 58.55571pt, for example:
+(fancyhdr)                \setlength{\footskip}{58.55571pt}.
+
+[56] (./readme.aux)
+
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 2.90001pt have occurred.
+
+
+LaTeX Warning: There were undefined references.
+
+Package rerunfilecheck Info: File `readme.out' has not changed.
+(rerunfilecheck)             Checksum: 8001C7F403ADCAB92CAE565DA4543D93;6690.
+
+Package biblatex Warning: Please (re)run BibTeX on the file(s):
+(biblatex)                readme
+(biblatex)                and rerun LaTeX afterwards.
+
+Package logreq Info: Writing requests to 'readme.run.xml'.
+\openout1 = `readme.run.xml'.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 32368 strings out of 476065
+ 618131 string characters out of 5791028
+ 2145305 words of memory out of 5000000
+ 51703 multiletter control sequences out of 15000+600000
+ 544474 words of font info for 227 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 80i,20n,80p,1899b,3067s stack positions out of 10000i,1000n,20000p,200000b,200000s
+{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
+}</usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb
+></usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
+</usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></
+usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></u
+sr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></us
+r/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr
+/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/l
+ocal/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/loc
+al/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local
+/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/t
+exlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/tex
+live/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texliv
+e/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2
+022/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl12.pfb></usr/local/texlive/20
+22/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/202
+2/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2022/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2022/t
+exmf-dist/fonts/type1/public/amsfonts/euler/eufm10.pfb></usr/local/texlive/2022
+/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/
+2022/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/20
+22/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
+Output written on readme.pdf (56 pages, 2737341 bytes).
+PDF statistics:
+ 1859 PDF objects out of 2073 (max. 8388607)
+ 1557 compressed objects within 16 object streams
+ 486 named destinations out of 1000 (max. 500000)
+ 78283 words of extra memory for PDF output out of 89155 (max. 10000000)
+

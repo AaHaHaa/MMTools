@@ -18,7 +18,7 @@ pump_power_backward = 1.4; % W
 % Please find details of all the parameters in "gain_info.m" if not specified here.
 % Note that the use of single spatial mode is different from multi-spatial modes.
 % "reuse_data" and "linear_oscillator_model" are activated and some related parameters are set.
-gain_rate_eqn.cross_section_filename = 'Liekki Yb_AV_20160530.txt';
+gain_rate_eqn.gain_medium = 'Yb'; % specify the gain medium
 gain_rate_eqn.core_diameter = 6; % um
 gain_rate_eqn.cladding_diameter = 125; % um
 gain_rate_eqn.core_NA = 0.12;
@@ -31,7 +31,6 @@ gain_rate_eqn.reuse_data = true; % For a ring or linear cavity, the pulse will e
                                  % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.
 gain_rate_eqn.linear_oscillator = true; % For a linear oscillator, there are pulses from both directions simultaneously, which will deplete the gain;
                                         % therefore, the backward-propagating pulses need to be taken into account.
-gain_rate_eqn.tau = 840e-6; % lifetime of Yb in F_(5/2) state (Paschotta et al., "Lifetme quenching in Yb-doped fibers"); in "s"
 gain_rate_eqn.t_rep = 1/15e6; % Assume 4 MHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
                              % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.
 gain_rate_eqn.export_N2 = true; % whether to export N2, the ion density in the upper state or not

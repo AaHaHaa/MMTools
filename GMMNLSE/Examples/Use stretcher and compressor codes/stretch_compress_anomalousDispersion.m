@@ -38,9 +38,14 @@ f = 0.75; % m; focal length of the Martinez stretcher
 
 % stretched by a Martinez stretcher
 fprintf('Start stretching...... \n');
-[stretched_l,stretched_field] = pulse_stretcher_addAnomalousDispersion( 'Martinez',target_duration,incident_angle*pi/180,wavelength0,t,input.fields,grating_spacing,f,true,true,-1 );
+[stretched_l,stretched_field,~,~,~,~,recover_info] = pulse_stretcher_addAnomalousDispersion( 'Martinez',target_duration,incident_angle*pi/180,wavelength0,t,input.fields,grating_spacing,f,true,true,-1 );
 title('Stretched pulse (Martinez stretcher)');
 fprintf('Finish stretching.\n\n');
+
+% Recover the field directly by applying the phase reversely
+fprintf('Start compressing by applying a sign-reversed phase...... \n');
+recovered_field = pulse_recover_stretching_dechirping(stretched_field,recover_info,true,t);
+fprintf('\n');
 
 % compressed by an Offner-type single-grating compressor
 R = 2; % m; radius of curvature of the mirror in an Offner stretcher/compressor

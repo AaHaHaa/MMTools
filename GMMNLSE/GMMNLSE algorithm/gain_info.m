@@ -136,7 +136,10 @@ if gain_rate_eqn.linear_oscillator
     gain_rate_eqn.reuse_data = true; % Force to reuse the previously calculated data because it's a linear oscillator
 end
 
-%% Yb Cross sections
+%% Read information based on the gain medium to use
+gain_rate_eqn = gain_medium(gain_rate_eqn);
+
+%% Cross sections
 % "lambda" must be a column vector.
 if size(lambda,1) == 1
     lambda = lambda.';
@@ -155,12 +158,24 @@ end
 necessary_lambda = [gain_rate_eqn.absorption_wavelength_to_get_N_total*1e-9; ...
                     gain_rate_eqn.pump_wavelength*1e-9; ...
                     lambda*1e-9];
-[absorption,emission] = read_cross_sections(gain_rate_eqn.cross_section_filename,necessary_lambda); % read the file
-absorption = absorption*1e12; % change the unit to um^2
-emission = emission*1e12;
+switch gain_rate_eqn.gain_medium
+    case 'Yb'
+        [absorption,emission] = read_cross_sections_Yb(gain_rate_eqn.cross_section_filename,necessary_lambda); % read the file
+        absorption = absorption*1e12; % change the unit to um^2
+        emission = emission*1e12;
+        
+        cross_sections_pump = struct('absorption',absorption(2),'emission',emission(2)); % pump
+        cross_sections = struct('absorption',absorption(3:end),'emission',emission(3:end)); % signal, ASE
+    case {'Er','Nd'} % consider excited-state absorption
+        [absorption,emission,ESA] = read_cross_sections_Er_Nd(gain_rate_eqn.cross_section_filename,necessary_lambda); % read the file
+        absorption = absorption*1e12; % change the unit to um^2
+        emission = emission*1e12;
+        ESA = ESA*1e12;
+        
+        cross_sections_pump = struct('absorption',absorption(2),'emission',emission(2),'ESA',ESA(2)); % pump
+        cross_sections = struct('absorption',absorption(3:end),'emission',emission(3:end),'ESA',ESA(3:end)); % signal, ASE
+end
 
-cross_sections_pump = struct('absorption',absorption(2),'emission',emission(2)); % pump
-cross_sections = struct('absorption',absorption(3:end),'emission',emission(3:end)); % signal, ASE
 cross_sections = structfun(@(x) permute(x,[2 3 4 5 1]),cross_sections,'UniformOutput',false); % change it to the size (1,1,1,1,N)
 
 %% Overlap factor of the field and the dopping area

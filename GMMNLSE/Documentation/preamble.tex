@@ -1,0 +1,79 @@
+\usepackage{tabularx,titlesec}
+\usepackage{graphicx,color,fancyhdr,microtype}
+\usepackage{booktabs,enumerate}
+\usepackage{framed}
+\usepackage{amsmath,amssymb,nth,mathtools,commath,nicefrac,siunitx,bigints,subcaption}
+\usepackage{csquotes}
+
+\usepackage[CJKbookmarks]{hyperref}
+\hypersetup{
+    colorlinks=false,
+    %linkcolor=blue,
+    %filecolor=magenta,      
+    %urlcolor=cyan,
+    %pdftitle={Overleaf Example},
+    %pdfpagemode=FullScreen,
+    }
+    
+\usepackage[a4paper,top=2.5cm,left=2cm,right=2cm]{geometry}
+\usepackage{caption,subcaption} % use "subfigure"
+
+\usepackage{xfrac} % use slanted fraction
+
+\usepackage{physics} % to use bra, ket
+
+\usepackage[utf8]{inputenc} % tell latex it's under utf8
+
+\pagestyle{fancy}
+\lfoot{\includegraphics[scale=.05]{wise_logo_2016.pdf}}
+\rfoot{\includegraphics[scale=.4]{fine_cornell_logo_red_cmyk.eps}}
+
+% bibliography
+\usepackage[
+	backend=bibtex,
+	bibstyle=phys,
+	citestyle=numeric-comp,
+	articletitle=true,
+	biblabel=brackets,
+	sorting=none
+	]{biblatex}
+\addbibresource{reference.bib}
+
+\newcommand*{\Exp}{\mathrm{e}}
+\newcommand{\sgn}{\operatorname{sgn}}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\newcommand{\pvec}[1]{\vec{#1}\mkern2mu\vphantom{#1}}
+
+% Line break if equations are too long
+\allowdisplaybreaks[1]
+
+% Differential "d" in the integral. It needs amsmath
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+\newcommand*\Diff[1]{\mathop{}\!\mathrm{d^#1}}
+
+\usepackage[version=3]{mhchem}
+
+% MATLAB code
+\usepackage{listings,lstautogobble,verbatim}
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+\definecolor{codebg}{RGB}{237,245,207}
+\lstset{language=matlab,
+	backgroundcolor=\color{codebg},
+    basicstyle=\footnotesize,
+    breaklines=true,%
+    morekeywords={matlab2tikz},
+    keywordstyle=\color{blue},
+    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+    identifierstyle=\color{black},
+    stringstyle=\color{mylilas},
+    commentstyle=\color{mygreen},
+    showstringspaces=false,%without this there will be a symbol in the places where there is a space
+    numbers=left,%
+    numberstyle={\tiny \color{black}},% size of the numbers
+    numbersep=9pt, % this defines how far the numbers are from the text
+    emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasise
+    autogobble=true,
+}
+
+\mathchardef\mhyphen="2D % use hyphen in the math mode; "2D is the ASDII
