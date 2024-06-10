@@ -12,7 +12,7 @@ addpath('../../../GMMNLSE algorithm/','../../../user_helpers/');
 % Please find details of all the parameters in "gain_info.m" if not specified here.
 % Note that the use of single spatial mode is different from multi-spatial modes.
 % "reuse_data" and "linear_oscillator_model" are activated and some related parameters are set.
-gain_rate_eqn.cross_section_filename = 'Liekki Yb_AV_20160530.txt';
+gain_rate_eqn.gain_medium = 'Yb';
 gain_rate_eqn.core_diameter = 6; % um
 gain_rate_eqn.cladding_diameter = 125; % um
 gain_rate_eqn.core_NA = 0.12;

@@ -133,15 +133,20 @@ end
     
 % Global optimization
 if global_opt && abs(feval1/desired_duration) > 0.001
-    problem = createOptimProblem('fmincon',...
-        'objective',find_optimum_stretcher_distance,...
-        'x0',initial_guess,... % try with a different initial value
-        'lb',min_distance,'ub',max_distance,...
-        'options',optimoptions(@fmincon,'Display','off','TolX',1e-10));
-    gs = GlobalSearch('MaxTime',60,'NumTrialPoints',130,'NumStageOnePoints',20,'MaxWaitCycle',5,'Display','off');
-    %gs = MultiStart('MaxTime',120,'Display','off','UseParallel',true,'StartPointsToRun','bounds-ineqs');
-    %[optimal_offcenter2,feval2] = run(gs,problem,20);
-    [optimal_value2,feval2] = run(gs,problem);
+    try
+        problem = createOptimProblem('fmincon',...
+            'objective',find_optimum_stretcher_distance,...
+            'x0',initial_guess,... % try with a different initial value
+            'lb',min_distance,'ub',max_distance,...
+            'options',optimoptions(@fmincon,'Display','off','TolX',1e-10));
+        gs = GlobalSearch('MaxTime',60,'NumTrialPoints',130,'NumStageOnePoints',20,'MaxWaitCycle',5,'Display','off');
+        %gs = MultiStart('MaxTime',120,'Display','off','UseParallel',true,'StartPointsToRun','bounds-ineqs');
+        %[optimal_offcenter2,feval2] = run(gs,problem,20);
+        [optimal_value2,feval2] = run(gs,problem);
+    catch % Sometimes "gs()" gives an error. I'll spend time solving it in the future. For now, it's skipped if an error occurs.
+        optimal_value2 = 0;
+        feval2 = inf;
+    end
 else
     optimal_value2 = 0;
     feval2 = inf;
