@@ -22,7 +22,7 @@ Although adaptive-step-size control for RK4IP isn't new with published papers, a
 3. Support broadband scenarios by having $\beta_p(\omega)$. Please see the "Broadband SPM-based supercontinuum" examples and understand the necessity of applying this scheme in some situations.
 
 > Note:<br>
-In addition to $\beta(\omega)$ vs. $\beta_{(0)}+\beta_((1))(\omega-\omega_0)+\cdots$, this package is always solved in the frequency domain such that the nonlinear term has a $\omega$ prefactor, rather than $\omega_0(1+\frac{i}{\omega_0}\partial_t)$ with the shock-wave term. Shock-wave term is a first-order Taylor-series term of the frequency-dependent nonlinearity. There is no point using it; just use the general $\omega$, which cannot be simpler.
+This package is always solved in the frequency domain such that the nonlinear term has a $\omega$ prefactor, rather than $\omega_0(1+\frac{i}{\omega_0}\partial_t)$ with the shock-wave term. Shock-wave term is a first-order Taylor-series term of the frequency-dependent nonlinearity. There is no point using it; just use the general $\omega$, which cannot be simpler.
 
 3. Support both scalar and polarized scenarios. Controlled with `sim.scalar=true/false`.
 4. Support random mode coupling.
