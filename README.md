@@ -5,8 +5,14 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 
 ## Capabilities:<br>
 1. It solves the pulse propagation with
-   - RK4IP if single mode
-   - MPA if multimode
+   - RK4IP (Runge-Kutta under the interaction picture) if single mode.
+
+> Note:<br>
+I know that split-step algorithm is common, but I'd like to advocate people to abandon it and switch to RK4IP since RK4IP has a higher-order truncation error, which allows higher precision or larger step size (and faster simulation).
+
+   - MPA (massively parallel algorithm) if multimode
+
+For the details of two algorithms, see `readme.pdf` and their reference papers.
 2. Support both scalar and polarized scenarios. Controlled with `sim.scalar=true/false`.
 3. Adaptive step-size control are implemented for both RK4IP and MPA. Only under limited scenarios is adaptive-step method turned off, such as considering ASE and using `saved_data` for fast oscillator convergence. User doesn't choose whether to use the adaptive-step method, which is controlled by this package.
 
