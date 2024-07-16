@@ -17,7 +17,7 @@ Although adaptive-step-size control for RK4IP isn't new with published papers, a
 5. Support both passive and gain fibers
    - Gain model includes Gaussian gain and rate-equation gain, for both single-mode and multimode scenarios.
    - For rate-equation-gain modeling, all pumping schemes are implemented: copumping, counterpumping, co+counter-pumping, as well as with and without ASE.
-   - If ASE is included, the effect of ASE to the coherent signal field is simulated, rather than only a separate power variable $P_{\text{ASE}}(\omega)$ from the coherent signal field $F[A](\omega)$.
+   - If ASE is included, the effect of ASE to the coherent signal field is simulated, rather than only a separate power variable $P_{\text{ASE}}(\omega)$ from the coherent signal field ${F[A]}(\omega)$.
    - Rate-equation model supports Nd, Yb, Er, Tm, Ho. For more details, see `readme.pdf`.
    - Support ring- and linear-oscillator configurations with fast convergence (with the use of `saved_data`). For linear oscillators, inclusion of influence from pulses of both directions to the gain medium is considered. As an example, please see the numerical section of http://josab.osa.org/abstract.cfm?URI=josab-38-3-743 to understand the necessity of this two-pulse saturation effect in a linear oscillator.
 6. Support the addition of spontaneous Raman scattering and input-pulse shot noise. For details, see the supplement of https://doi.org/10.1063/5.0189749. Although this paper is for gas-filled HCF, its Raman formulation actually works generally anywhere, such as solid-core fibers. It's just a mathematical description of how to treat the sinusoidal Raman response under different temporal scales.
