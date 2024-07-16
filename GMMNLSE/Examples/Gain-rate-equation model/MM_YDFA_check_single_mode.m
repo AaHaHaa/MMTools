@@ -29,6 +29,7 @@ fiber.S_tensors_filename = 'S_tensors_3modes.mat';
 
 %% Gain info
 gain_rate_eqn.gain_medium = 'Yb'; % specify the gain medium
+gain_rate_eqn.base_medium = 'silica'; % specify the base medium
 gain_rate_eqn.core_diameter = 10; % um
 gain_rate_eqn.cladding_diameter = 125; % um
 gain_rate_eqn.core_NA = 0.08; % in fact, this is only used in single-mode

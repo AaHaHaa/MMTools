@@ -16,6 +16,7 @@ fiber.S_tensors_filename = 'S_tensors_3modes.mat';
 
 %% Gain info
 gain_rate_eqn.gain_medium = 'Yb'; % specify the gain medium
+gain_rate_eqn.base_medium = 'silica'; % specify the base medium
 gain_rate_eqn.reuse_data = false; % For a ring or linear cavity, the pulse will enter a steady state eventually.
                                   % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.
 gain_rate_eqn.linear_oscillator = false; % For a linear oscillator, there are pulses from both directions simultaneously, which will deplete the gain;

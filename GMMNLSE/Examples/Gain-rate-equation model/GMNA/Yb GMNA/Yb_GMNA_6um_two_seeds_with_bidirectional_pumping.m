@@ -19,6 +19,7 @@ pump_power_backward = 1.4; % W
 % Note that the use of single spatial mode is different from multi-spatial modes.
 % "reuse_data" and "linear_oscillator_model" are activated and some related parameters are set.
 gain_rate_eqn.gain_medium = 'Yb'; % specify the gain medium
+gain_rate_eqn.base_medium = 'silica'; % specify the base medium
 gain_rate_eqn.core_diameter = 6; % um
 gain_rate_eqn.cladding_diameter = 125; % um
 gain_rate_eqn.core_NA = 0.12;

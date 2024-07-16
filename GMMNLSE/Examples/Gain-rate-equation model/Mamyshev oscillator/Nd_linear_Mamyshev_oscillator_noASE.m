@@ -13,6 +13,7 @@ addpath('../../../GMMNLSE algorithm/','../../../user_helpers/');
 % Note that the use of single spatial mode is different from multi-spatial modes.
 % "reuse_data" and "linear_oscillator_model" are activated and some related parameters are set.
 gain_rate_eqn.gain_medium = 'Nd'; % specify the gain medium
+gain_rate_eqn.base_medium = 'silica'; % specify the base medium
 gain_rate_eqn.core_diameter = 4.7; % um
 gain_rate_eqn.cladding_diameter = 77; % um
 gain_rate_eqn.core_NA = 0.16;

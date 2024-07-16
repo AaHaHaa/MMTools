@@ -36,6 +36,7 @@ fiber.n2 = 3.07e-20; % m^2/W; nonlinear refractive index
 % Activating "reuse_data" or "linear_oscillator_model" requires setting other parameters.
 % Check the example or "gain_info.m".
 gain_rate_eqn.gain_medium = 'Yb'; % specify the gain medium
+gain_rate_eqn.base_medium = 'silica'; % specify the base medium
 gain_rate_eqn.core_diameter = 20; % um
 gain_rate_eqn.cladding_diameter = 400; % um
 gain_rate_eqn.core_NA = 0.06;
