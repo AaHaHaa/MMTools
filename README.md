@@ -20,6 +20,7 @@ Although adaptive-step-size control for RK4IP isn't new with published papers, a
    - If ASE is included, the effect of ASE to the coherent signal field is simulated, rather than only a separate power variable $P_{\text{ASE}}(\omega)$ from the coherent signal field $F[A](\omega)$.
    - Rate-equation model supports Nd, Yb, Er, Tm, Ho. For more details, see `readme.pdf`.
    - Support ring- and linear-oscillator configurations. For linear oscillators, inclusion of influence from pulses of both directions to the gain medium is considered. As an example, please see the numerical section of http://josab.osa.org/abstract.cfm?URI=josab-38-3-743 to understand the necessity of this two-pulse saturation effect in a linear oscillator.
+6. Support the addition of spontaneous Raman scattering and input-pulse shot noise. For details, see the supplement of https://doi.org/10.1063/5.0189749. Although this paper is for gas-filled HCF, its Raman formulation actually works generally anywhere, such as solid-core fibers. It's just a mathematical description of how to treat the sinusoidal Raman response under different temporal scales.
 6. For multimode, GPU computations (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
 
 ## Notes:<br>
