@@ -1,5 +1,5 @@
 % This code acts as a checker for symbolically calculating the rate
-% equations of Er populations.
+% equations of Nd populations.
 
 %% Define variables
 syms N0 N1 N2 N3 N4 N5 N6 N7 N8 N9 N10 N11; % populations

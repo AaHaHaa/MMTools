@@ -8,9 +8,12 @@ r = @(x) [10*(x(2,:,:,:)-x(1,:,:,:).^3).^2+(1-x(1,:,:,:)).^2;...
           10*(x(1,:,:,:)-x(2,:,:,:).^3).^2+(1-x(2,:,:,:)).^2];
 % and the Jacobian matrix
 J = @(x) [-60*(x(2,:,:,:).*x(1,:,:,:).^2-x(1,:,:,:).^5)-2*(1-x(1,:,:,:)), 20*(x(2,:,:,:)-x(1,:,:,:).^3);...
-    20*(x(1,:,:,:)-x(2,:,:,:).^3),   -60*(x(1,:,:,:).*x(2,:,:,:).^2-x(2,:,:,:).^5)-2*(1-x(2,:,:,:))];
+           20*(x(1,:,:,:)-x(2,:,:,:).^3),   -60*(x(1,:,:,:).*x(2,:,:,:).^2-x(2,:,:,:).^5)-2*(1-x(2,:,:,:))];
 % Initial conditions; size: (2,1,3) for simultaneously three optimizations for each (x1;x2) pair
-x0 = cat(3,[50;10],[10;-100],[-1;-200]);
+% 1. multimode test
+%x0 = cat(3,[50;10],[10;-100],[-1;-200]);
+% 2. signle-mode test
+x0 = cat(3,[50;10]);
 % Parameter for non-monotone function evaluations in trust-region method
 N = 5;
 % Threshold value of stopping optimization processes
