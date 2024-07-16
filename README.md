@@ -1,9 +1,11 @@
 # MMTools
 This is the shared package to simulate pulse propagation in a solid-core fiber with GMMNLSE/MM-UPPE with MATLAB.
 
+It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and nonlinear gain-managed nonlinear amplification (GMNA).
+
 ## Capabilities:<br>
-1. It solves the pulse propagation 
-   - with RK4IP if single mode
+1. It solves the pulse propagation with
+   - RK4IP if single mode
    - MPA if multimode
 2. Support both scalar and polarized scenarios. Controlled with `sim.scalar=true/false`.
 3. Adaptive step-size control are implemented for both RK4IP and MPA.
@@ -15,7 +17,9 @@ Although adaptive-step-size control for RK4IP isn't new with published papers, a
 5. Support both passive and gain fibers
    - Gain model includes Gaussian gain and rate-equation gain, for both single-mode and multimode scenarios.
    - For rate-equation-gain modeling, all pumping schemes are implemented: copumping, counterpumping, co+counter-pumping, as well as with and without ASE.
+   - If ASE is included, the effect of ASE to the coherent signal field is simulated, rather than only a separate power variable $P_{\text{ASE}}(\omega)$ from the coherent signal field $F[A](\omega)$.
    - Rate-equation model supports Nd, Yb, Er, Tm, Ho. For more details, see `readme.pdf`.
+   - Support ring- and linear-oscillator configurations. For linear oscillators, inclusion of influence from pulses of both directions to the gain medium is considered. As an example, please see the numerical section of http://josab.osa.org/abstract.cfm?URI=josab-38-3-743 to understand the necessity of this two-pulse saturation effect in a linear oscillator.
 6. For multimode, GPU computations (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
 
 ## Notes:<br>
@@ -44,4 +48,5 @@ There is a significant bug in CUDA related to spontaneous Raman scattering that 
 * 5/20/2024:<br>
 Finish the initial implementation of Er and Nd rate-equation gain modeling. More tests will be done for verification.
 * 7/17/2024:<br>
-I've fixed bugs related to multimode mode-locking. Thanks Yi Zhou, from Univeristy of Hong Kong, for asking me add examples for a few multimode functions. Please check the "MM ANDi" example in "ANDi oscillator/" folder in "Examples/". In addition, I've finished implementing all types of gain media. Please take a look. More tests need to be done.
+I've fixed bugs related to multimode mode-locking. Thanks Yi Zhou, from Univeristy of Hong Kong, for asking me add examples for a few multimode functions. Please check the "MM ANDi" example in "ANDi oscillator/" folder in "Examples/". In addition, I've finished implementing all types of gain media. Please take a look. More tests need to be done.  
+Addition of ASE to the coherent signal field is corrected, which was wrong previously. See the comments in the `stepping_RK4IP/MPA_rategain.m` for details.
