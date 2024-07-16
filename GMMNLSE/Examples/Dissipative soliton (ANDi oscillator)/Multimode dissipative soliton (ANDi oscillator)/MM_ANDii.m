@@ -43,7 +43,7 @@ clearvars; close all;
 addpath('../../../GMMNLSE algorithm/','../../../user_helpers/'); % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
 % For 50-um OM4 highly-multimode fiber
-% This code is only for demonstration purpose, so ony 6 modes are considered.
+% This code is only for demonstration purpose, so only 6 modes are considered.
 num_modes_OM4 = 6;
 fiber_OM4.MM_folder = '../../../Fibers/OM4_wavelength1030nm/';
 fiber_OM4.betas_filename = 'betas.mat';
@@ -218,7 +218,6 @@ offset = 5; % um
 spatial_hwhm = 5e-6; % um
 filter_type = 'pinhole';
 offcenter = [0,0]*1e-6; % m
-% Because calc_filter_matrix() relies on the unit "m", we scale our inputs accordingly.
 spatial_filter_matrix = calc_filter_matrix(mode_profiles_OM4, mode_profiles_OM4_x*1e-6, spatial_hwhm, offcenter, filter_type);
 
 % Make the two mode profiles have the same spatial window size
