@@ -8,7 +8,7 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
    - RK4IP if single mode
    - MPA if multimode
 2. Support both scalar and polarized scenarios. Controlled with `sim.scalar=true/false`.
-3. Adaptive step-size control are implemented for both RK4IP and MPA.
+3. Adaptive step-size control are implemented for both RK4IP and MPA. Only under limited scenarios is adaptive-step method turned off, such as considering ASE and using `saved_data` for fast oscillator convergence. User doesn't choose whether to use the adaptive-step method, which is controlled by this package.
 
 > Note:<br>
 Although adaptive-step-size control for RK4IP isn't new with published papers, adaptive-step-size control for MPA is new. I didn't publish a separate paper discussing this numerical scheme, which is perhaps the fastest and the most convenient numerical scheme for general multimode situations (as in step-index, graded-index, or hollow-core fibers, etc.) by far (written on 2/14/2024). The implementation detail is described in the supplement of https://doi.org/10.1364/JOSAB.500586.
