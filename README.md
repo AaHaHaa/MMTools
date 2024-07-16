@@ -5,7 +5,7 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 
 ## Capabilities:<br>
 1. It solves the pulse propagation with
-   - RK4IP (Runge-Kutta under the interaction picture) if single mode.
+   - RK4IP (Runge-Kutta under the interaction picture) if single-mode.
 
 > I know that split-step algorithm is common, but I'd like to advocate people to abandon it and switch to RK4IP since RK4IP has a higher-order truncation error, which allows higher precision or larger step size (and faster simulation).
 
@@ -27,7 +27,7 @@ For the details of two algorithms, see `readme.pdf` and their reference papers.
    - Gain model includes Gaussian gain and rate-equation gain, for both single-mode and multimode scenarios.
    - For rate-equation-gain modeling, all pumping schemes are implemented: copumping, counterpumping, co+counter-pumping, as well as with and without ASE.
    - If ASE is included, the effect of ASE to the coherent signal field is simulated, rather than only a separate "power" variable $P_{\text{ASE}}(\omega)$ from the coherent signal "field" $A(t)$.
-   - Rate-equation model supports Nd, Yb, Er, Tm, Ho. For more details, see `readme.pdf`.
+   - Rate-equation model supports `Nd`, `Yb`, `Er`, `Tm`, `Ho`. For more details, see `readme.pdf`.
    - Support ring- and linear-oscillator configurations with fast convergence (with the use of `saved_data`). For linear oscillators, inclusion of influence from pulses of both directions to the gain medium is considered. As an example, please see the numerical section of http://josab.osa.org/abstract.cfm?URI=josab-38-3-743 to understand the necessity of this two-pulse saturation effect in a linear oscillator.
 6. Support the addition of spontaneous Raman scattering and input-pulse shot noise. For details, see the supplement of https://doi.org/10.1063/5.0189749. Although this paper is for gas-filled HCF, its Raman formulation actually works generally anywhere, such as solid-core fibers. It's just a mathematical description of how to treat the sinusoidal Raman response under different temporal scales.
 7. For multimode, GPU computations (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
