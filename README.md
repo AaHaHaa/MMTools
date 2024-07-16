@@ -21,16 +21,16 @@ For the details of two algorithms, see `readme.pdf` and their reference papers.
 
 > This package is always solved in the frequency domain such that the nonlinear term has a $\omega$ prefactor, rather than $\omega_0(1+\frac{i}{\omega_0}\partial_t)$ with the shock-wave term. Shock-wave term is a first-order Taylor-series term of the frequency-dependent nonlinearity. There is no point using it; just use the general $\omega$, which cannot be simpler. Please see the supplement of https://doi.org/10.1063/5.0189749 for the derivation of MM-UPPE and understand how the shock-wave term appears and why it's unnecessary if MM-UPPE is solved in the frequency domain.
 
-3. Support both scalar and polarized scenarios. Controlled with `sim.scalar=true/false`.
-4. Support random mode coupling.
-5. Support both passive and gain fibers
+4. Support both scalar and polarized scenarios. Controlled with `sim.scalar=true/false`.
+5. Support random mode coupling.
+6. Support both passive and gain fibers
    - Gain model includes Gaussian gain and rate-equation gain, for both single-mode and multimode scenarios.
    - For rate-equation-gain modeling, all pumping schemes are implemented: copumping, counterpumping, co+counter-pumping, as well as with and without ASE.
    - If ASE is included, the effect of ASE to the coherent signal field is simulated, rather than only a separate "power" variable $P_{\text{ASE}}(\omega)$ from the coherent signal "field" $A(t)$.
    - Rate-equation model supports `Nd`, `Yb`, `Er`, `Tm`, `Ho`. For more details, see `readme.pdf`.
    - Support ring- and linear-oscillator configurations with fast convergence (with the use of `saved_data`). For linear oscillators, inclusion of influence from pulses of both directions to the gain medium is considered. As an example, please see the numerical section of http://josab.osa.org/abstract.cfm?URI=josab-38-3-743 to understand the necessity of this two-pulse saturation effect in a linear oscillator.
-6. Support the addition of spontaneous Raman scattering and input-pulse shot noise. For details, see the supplement of https://doi.org/10.1063/5.0189749. Although this paper is for gas-filled HCF, its Raman formulation actually works generally anywhere, such as solid-core fibers. It's just a mathematical description of how to treat the sinusoidal Raman response under different temporal scales.
-7. For multimode, GPU computations (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
+7. Support the addition of spontaneous Raman scattering and input-pulse shot noise. For details, see the supplement of https://doi.org/10.1063/5.0189749. Although this paper is for gas-filled HCF, its Raman formulation actually works generally anywhere, such as solid-core fibers. It's just a mathematical description of how to treat the sinusoidal Raman response under different temporal scales.
+8. For multimode, GPU computations (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
 
 ## Notes:<br>
 For details, please read the supplement of our paper: https://doi.org/10.1364/JOSAB.500586.  
