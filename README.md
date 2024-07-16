@@ -44,4 +44,4 @@ There is a significant bug in CUDA related to spontaneous Raman scattering that 
 * 5/20/2024:<br>
 Finish the initial implementation of Er and Nd rate-equation gain modeling. More tests will be done for verification.
 * 7/17/2024:<br>
-I've fixed bugs related to multimode mode-locking. Thanks Yi Zhou, from Univeristy of Hong Kong, for asking me add examples for a few multimode functions. Please check the "MM ANDi" example in "ANDi oscillator/" folder in "Examples/". In addition, I've finished implemented all types of gain media. Please take a look. More tests need to be done.
+I've fixed bugs related to multimode mode-locking. Thanks Yi Zhou, from Univeristy of Hong Kong, for asking me add examples for a few multimode functions. Please check the "MM ANDi" example in "ANDi oscillator/" folder in "Examples/". In addition, I've finished implementing all types of gain media. Please take a look. More tests need to be done.
