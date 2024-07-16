@@ -86,8 +86,8 @@ sim_RMC.rmc.model = true;
 % No coupling between spatial modes
 sim_RMC.rmc.varn = 0; % variance of the refractive index
 sim_RMC.rmc.stdQ_polarizedmode = 1e-2; % the coupling strength between strongly coupled polarization modes
-sim_RMC.deltaZ = 1e2; % m
-save_points = int32(fiber.L0/sim_RMC.deltaZ);
+sim_RMC.dz = 1e2; % m
+save_points = int32(fiber.L0/sim_RMC.dz);
 sim_RMC.rmc.matrices = create_rmc_matrices(fiber,sim_RMC,num_modes,save_points);
 
 output_field = GMMNLSE_propagate(fiber, soliton, sim_RMC);
@@ -103,8 +103,8 @@ sim_RMC.rmc.model = true;
 % Strong coupling for all modes
 sim_RMC.rmc.varn = 1e-5; % variance of the refractive index
 sim_RMC.rmc.stdQ_polarizedmode = 1e-2; % the coupling strength between strongly coupled polarization modes
-sim_RMC.deltaZ = 1e2; % m
-save_points = int32(fiber.L0/sim_RMC.deltaZ);
+sim_RMC.dz = 1e2; % m
+save_points = int32(fiber.L0/sim_RMC.dz);
 sim_RMC.rmc.matrices = create_rmc_matrices(fiber,sim_RMC,num_modes,save_points);
 
 output_field = GMMNLSE_propagate(fiber, soliton, sim_RMC);

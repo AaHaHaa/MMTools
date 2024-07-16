@@ -1,11 +1,11 @@
-function output = build_MMparabolic(tfwhm, time_window, total_energy, num_modes, N, varargin)
+function output = build_MMparabolic(tfwhm, time_window, total_energy, num_modes, Nt, varargin)
 %BUILD_MMPARABOLIC Build a multimode temporally-parabolic pulse using the following parameters:
 %
 % tfwhm - full width at half maximum of pulse, in ps
 % time_window - width of entire time window, in ps
 % total_energy - total energy of the pulse in all modes, in nJ
 % num_modes - number of modes
-% N - number of time grid points
+% Nt - number of time grid points
 %
 % Optional inputs (varargin):
 %   frequency_shift - a cell with two elements:
@@ -24,7 +24,7 @@ function output = build_MMparabolic(tfwhm, time_window, total_energy, num_modes,
 numvarargs = length(varargin);
 if numvarargs > 4
     error('build_MMparabolic:TooManyInputs', ...
-        'It takes only at most 3 optional inputs');
+          'It takes only at most 3 optional inputs');
 end
 
 % Set defaults for optional inputs
@@ -51,8 +51,8 @@ C = tfwhm/sqrt(2); % C = sqrt(B/A)
 B = (total_energy*1e3)/(4/3*C); % "*1e3" is make it into pJ
 A = B/C^2;
 
-dt = time_window/N;  % ps
-t = (-N/2:N/2-1)'*dt; % ps
+dt = time_window/Nt;  % ps
+t = (-Nt/2:Nt/2-1)'*dt; % ps
 
 % Construct a single parabolic electric field envelope, in W^0.5
 time_profile = sqrt(B - A*(t-t_center).^2);

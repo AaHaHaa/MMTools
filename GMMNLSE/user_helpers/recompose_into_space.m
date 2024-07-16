@@ -1,4 +1,4 @@
-function full_field_txy = recompose_into_space(use_gpu,normalized_mode_space_profiles_xym, mode_time_profiles_tm,cuda_dir_path)
+function full_field_txy = recompose_into_space(use_gpu, normalized_mode_space_profiles_xym, mode_time_profiles_tm, cuda_dir_path)
 % RECOMPOSE_INTO_SPACE Combine a set of mode time profiles with their 
 % corresponding space profiles to get the full 3D spatio-temperal field.
 %
@@ -20,7 +20,7 @@ Nt = size(mode_time_profiles_tm, 1);
 if use_gpu
     % I use cuda for GPU computing because it's faster and more memory-efficient
     if ~exist(fullfile(cuda_dir_path,'recompose_into_space.ptx'), 'file')
-        recompile_ptx('recompose_into_space.cu','recompose_into_space.ptx',cuda_dir_path);
+        recompile_ptx(cuda_dir_path,'recompose_into_space.cu','recompose_into_space.ptx');
     end
     
     try
@@ -29,7 +29,7 @@ if use_gpu
         % Compile the CUDA code again.
         % Currently found error:
         %    version mismatch due to different versions of cuda I use in Windows and Debian.
-        recompile_ptx('recompose_into_space.cu','recompose_into_space.ptx',cuda_dir_path);
+        recompile_ptx(cuda_dir_path,'recompose_into_space.cu','recompose_into_space.ptx');
         kernel = parallel.gpu.CUDAKernel(fullfile(cuda_dir_path,'recompose_into_space.ptx'), fullfile(cuda_dir_path,'recompose_into_space.cu'));
     end
     currentGPU = gpuDevice;
@@ -55,9 +55,18 @@ end
 end
 
 %% helper function
-function recompile_ptx(cudaFilename,ptxFilename,cuda_dir_path)
+function recompile_ptx(cuda_dir_path,cudaFilename,ptxFilename)
+
 if ispc
-    system(['nvcc -ptx "', fullfile(cuda_dir_path,cudaFilename), '" --output-file "', fullfile(cuda_dir_path,ptxFilename) '"']);
+    MATLAB_version = version('-release'); MATLAB_version = str2double(MATLAB_version(1:4));
+    if MATLAB_version < 2023
+        system(['nvcc -ptx "', fullfile(cuda_dir_path,cudaFilename), '" --output-file "', fullfile(cuda_dir_path,ptxFilename) '"']);
+    else
+        current_path = pwd;
+        cd(cuda_dir_path);
+        mexcuda('-ptx',cudaFilename);
+        cd(current_path);
+    end
 else % unix
     % tested: Debian 10 (Buster)
     system(['nvcc -ccbin clang -ptx "', fullfile(cuda_dir_path,cudaFilename), '" --output-file "', fullfile(cuda_dir_path,ptxFilename) '"']);
@@ -68,4 +77,5 @@ else % unix
     % Starting from Matlab 2021a, my own GPU isn't supported.
     system(['sed -i ''s/.target sm_52/.target sm_30/g'' "' fullfile(cuda_dir_path,ptxFilename) '"']); % run the shell script to change it to sm_30
 end
+
 end

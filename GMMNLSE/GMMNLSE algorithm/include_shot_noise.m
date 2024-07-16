@@ -60,13 +60,13 @@ if sim.num_photon_noise_per_bin ~= 0
     photon_noise_intensity(photon_noise_intensity<0) = 0; % no noise at negative frequencies
     photon_noise_amplitude = sqrt(photon_noise_intensity);
     if sim.gpu_yes
-        rand_value = exp(1i*2*pi*rand(Nt,size(fields,2),'gpuArray'));
+        rand_phase = exp(1i*2*pi*rand(Nt,size(fields,2),'gpuArray'));
     else
-        rand_value = exp(1i*2*pi*rand(Nt,size(fields,2)));
+        rand_phase = exp(1i*2*pi*rand(Nt,size(fields,2)));
     end
-    fields = fft(ifft(fields) + photon_noise_amplitude.*rand_value);
+    fields = fft(ifft(fields) + photon_noise_amplitude.*rand_phase);
 
-    clear hbar photon_noise_intensity photon_noise_amplitude rand_value;
+    clear hbar photon_noise_intensity photon_noise_amplitude rand_phase;
 end
 
 if sim.gpu_yes

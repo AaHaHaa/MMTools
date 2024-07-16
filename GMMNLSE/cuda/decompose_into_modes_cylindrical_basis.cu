@@ -1,5 +1,5 @@
 __global__ void decompose_into_modes_cylindrical_basis(double2* field_wm,
-                                                       const double* normalized_mode_space_profiles_xym, const double* norm_spatial_modes, const double2* full_field_xyw,
+                                                       const double* mode_space_profiles_xym, const double* norm_spatial_modes, const double2* full_field_xyw,
                                                        const double* r, const double dr, const double dtheta,
                                                        const unsigned int sM, const unsigned int sX, const unsigned int sY, const unsigned int sW) {
     unsigned int thread_idx = threadIdx.x + blockIdx.x*blockDim.x;
@@ -20,8 +20,8 @@ __global__ void decompose_into_modes_cylindrical_basis(double2* field_wm,
 
     // blockDim.x = sX*sY
     for (unsigned int mi = 0; mi<sM; mi++) {
-        sum_field[threadIdx.x+blockDim.x*mi].x = normalized_mode_space_profiles_xym[threadIdx.x+blockDim.x*mi]*full_field_xyw[thread_idx].x*this_r[ri];
-        sum_field[threadIdx.x+blockDim.x*mi].y = normalized_mode_space_profiles_xym[threadIdx.x+blockDim.x*mi]*full_field_xyw[thread_idx].y*this_r[ri];
+        sum_field[threadIdx.x+blockDim.x*mi].x = mode_space_profiles_xym[threadIdx.x+blockDim.x*mi]*full_field_xyw[thread_idx].x*this_r[ri];
+        sum_field[threadIdx.x+blockDim.x*mi].y = mode_space_profiles_xym[threadIdx.x+blockDim.x*mi]*full_field_xyw[thread_idx].y*this_r[ri];
     }
     __syncthreads();
 

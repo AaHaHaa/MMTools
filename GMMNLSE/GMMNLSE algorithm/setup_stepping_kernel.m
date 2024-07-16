@@ -88,4 +88,3 @@ end
 cuda_sponRS = setup_kernel_SRSK(sponRS_filename,sim.cuda_dir_path,Nt,M,num_operations_sponRS,num_modes^2);
 
 end
-

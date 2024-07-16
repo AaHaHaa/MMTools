@@ -64,7 +64,7 @@ function foutput = GMMNLSE_propagate_without_adaptive_rmc(fiber, initial_conditi
 %                   (2,1) column vector;
 %                   if not set, no "sim.betas", the simulation will be run relative to the first mode
 %           f0 - center frequency, in THz
-%           deltaZ - step size, in m
+%           dz - step size, in m
 %           save_period - spatial period between saves, in m
 %                         0 = only save input and output (save_period = fiber.L0)
 %
@@ -148,7 +148,7 @@ function foutput = GMMNLSE_propagate_without_adaptive_rmc(fiber, initial_conditi
 % foutput.fields - (N, num_modes, num_save_points) matrix with the multimode field at each save point
 % foutput.dt - time grid point spacing, to fully identify the field
 % foutput.z - the propagation length of the saved points
-% foutput.deltaZ - the (small) step size for each saved points
+% foutput.dz - the (small) step size for each saved points
 % foutput.betas - the [betas0,betas1] used for the moving frame
 % foutput.t_delay - the time delay of each pulse which is centered in the time window during propagation
 % foutput.seconds - time spent in the main loop
@@ -176,23 +176,23 @@ if sim.save_period == 0
     sim.save_period = fiber.L0;
 end
 
-% MPA performs M "sim.deltaZ/M" in parallel
-num_zSteps = fiber.L0/sim.deltaZ;
-num_zPoints_persave = sim.save_period/sim.deltaZ;
+% MPA performs M "sim.dz/M" in parallel
+num_zSteps = fiber.L0/sim.dz;
+num_zPoints_persave = sim.save_period/sim.dz;
 num_saveSteps = fiber.L0/sim.save_period;
 
 % Because of machine error, "rem" alone to determine divisibility isn't
 % enough. eps() is included here.
 if rem(num_zSteps,1) && rem(num_zSteps+eps(num_zSteps),1) && rem(num_zSteps-eps(num_zSteps),1)
     error('GMMNLSE_propagate:SizeIncommemsurateError',...
-        'The large step size is %f m and the fiber length is %f m, which are not commensurate', sim.deltaZ, fiber.L0)
+        'The large step size is %f m and the fiber length is %f m, which are not commensurate', sim.dz, fiber.L0)
 else
     num_zSteps = round(num_zSteps);
 end
 
 if rem(num_zPoints_persave,1) && rem(num_zPoints_persave+eps(num_zPoints_persave),1) && rem(num_zPoints_persave-eps(num_zPoints_persave),1)
     error('GMMNLSE_propagate:SizeIncommemsurateError',...
-        'The large step size is %f m and the save period is %f m, which are not commensurate', sim.deltaZ, sim.save_period)
+        'The large step size is %f m and the save period is %f m, which are not commensurate', sim.dz, sim.save_period)
 else
     num_zPoints_persave = round(num_zPoints_persave);
 end
@@ -246,15 +246,15 @@ if ~isfield(fiber,'n2') || isempty(fiber.n2)
 end
 prefactor = 1i*fiber.n2*(omegas+2*pi*sim.f0)/c; % m/W
 
-%% Deal with deltaZ
-% After this line, the code starts to use deltaZ in variables important in simulations.
+%% Deal with dz
+% After this line, the code starts to use dz in variables important in simulations.
 if sim.gpu_yes
-    sim.deltaZ = gpuArray(sim.deltaZ);
+    sim.dz = gpuArray(sim.dz);
 end
 
 % Small step size for MPA
 % It's the step size between parallelization planes
-sim.small_deltaZ = sim.deltaZ/sim.MPA.M;
+sim.small_dz = sim.dz/sim.MPA.M;
 
 %% % We can pre-compute exp(D_op*z) and exp(-D_op*z) for all z
 % Variable "z" for the computation of the dispersion operator
@@ -268,7 +268,7 @@ else
     idx0 = idx0 + ceil(Nt/2);
 end
 
-z = sim.small_deltaZ*permute((0:sim.MPA.M)',[2,3,1]); % to make "Dz" into (N,num_modes,M+1)
+z = sim.small_dz*permute((0:sim.MPA.M)',[2,3,1]); % to make "Dz" into (N,num_modes,M+1)
 Dz = (D_op-D_op(idx0,:)).*z;
 D = struct('pos', exp( Dz),...
            'neg', exp(-Dz));
@@ -382,7 +382,7 @@ if sim.gain_model == 2 % rate-equation-gain model
                                          num_zPoints,save_points,num_zPoints_persave,...
                                          initial_condition,...
                                          prefactor,...
-                                         SRa_info, SRb_info, SK_info,...
+                                         SK_info, SRa_info, SRb_info,...
                                          omegas, D,...
                                          haw, hbw,...
                                          haw_sponRS, hbw_sponRS, sponRS_prefactor,...
@@ -393,7 +393,7 @@ else % No gain, Gaussian gain
                                             num_zPoints,save_points,num_zPoints_persave,...
                                             initial_condition,...
                                             prefactor,...
-                                            SRa_info, SRb_info, SK_info,...
+                                            SK_info, SRa_info, SRb_info,...
                                             D,...
                                             haw, hbw,...
                                             haw_sponRS, hbw_sponRS, sponRS_prefactor);

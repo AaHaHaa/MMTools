@@ -1,6 +1,6 @@
 function A1 = stepping_MPA_MMGaussianGain_rmc(A0, dt,...
                                               sim, prefactor,...
-                                              SRa_info, SRb_info, SK_info,...
+                                              SK_info, SRa_info, SRb_info,...
                                               D, rmc_D,...
                                               haw, hbw,...
                                               haw_sponRS, hbw_sponRS, sponRS_prefactor,...
@@ -12,7 +12,7 @@ function A1 = stepping_MPA_MMGaussianGain_rmc(A0, dt,...
 %    A0 - initial field in the frequency domain (N, num_modes); sqrt(W)
 %    dt - time grid point spacing; ps
 %
-%    sim.deltaZ - step size; m
+%    sim.dz - step size; m
 %
 %    sim.MPA.M - parallel extent, 1 is no parallelization
 %    sim.MPA.n_tot_max - maximum number of iterations
@@ -27,7 +27,7 @@ function A1 = stepping_MPA_MMGaussianGain_rmc(A0, dt,...
 %    sim.Raman_model - which Raman model is used
 %    sim.Raman_sponRS - consider spontaneous Raman or not
 %
-%    sim.adaptive_deltaZ.threshold - the accuracy used to determined whether to increase or decrease the step size
+%    sim.adaptive_dz.threshold - the accuracy used to determined whether to increase or decrease the step size
 %
 %    prefactor - 1i*n2*omega/c; m/W
 %
@@ -56,7 +56,7 @@ function A1 = stepping_MPA_MMGaussianGain_rmc(A0, dt,...
 % Output:
 %    A1 - the field (in the frequency domain) after one step size (N, num_modes)
 %    dummy_a5 - unused variable
-%    opt_deltaZ - recommended step size
+%    opt_dz - recommended step size
 %    success - whether the current step size is sufficiently small for the required tolerance
 
 anisotropic_Raman_included = ~sim.scalar & sim.Raman_model==2;
@@ -353,7 +353,7 @@ for n_it = 1:sim.MPA.n_tot_max
     if sim.gpu_yes
         gain_term = permute(pagefun(@mldivide, transfer_matrix,gain_rhs),[2 1 3 4]);
     else % CPU
-        gain_term = permute(multbslash(transfer_matrix,gain_rhs),[2 1 3 4]);
+        gain_term = permute(pagemldivide(transfer_matrix,gain_rhs),[2 1 3 4]);
     end
     % Put the separated polarization modes back into the same dimension of array.
     if ~sim.scalar
@@ -403,11 +403,11 @@ for n_it = 1:sim.MPA.n_tot_max
     % Multiply the nonlinear factor
     nonlinear = prefactor.*ifft(nonlinear);
     
-    % Incorporate deltaZ and D.neg term for the integration.
+    % Incorporate dz and D.neg term for the integration.
     nonlinear = permute(nonlinear + gain_term,[1,3,2]); % (N,num_modes,M+1)
     nonlinear = add_D_and_rmc(false,...
                               D,rmc_D,...
-                              sim.small_deltaZ*nonlinear,...
+                              sim.small_dz*nonlinear,...
                               N,num_modes,sim.MPA.M+1,...
                               sim.rmc.cuda_mypagemtimes); % (N, num_modes, M+1)
 

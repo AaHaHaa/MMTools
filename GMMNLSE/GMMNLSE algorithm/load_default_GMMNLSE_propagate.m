@@ -29,7 +29,7 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %       fiber.material = 'silica';
 %       fiber.n2 = 2.3e-20;
 %
-%       sim.deltaZ = 1000e-6;
+%       sim.dz = 1000e-6;
 %       sim.save_period = 0;
 %       sim.ellipticity = 0; % linear polarization
 %
@@ -40,7 +40,7 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %
 %       sim.scalar = true;
 %
-%       sim.adaptive_deltaZ.threshold = 1e-6;
+%       sim.adaptive_dz.threshold = 1e-6;
 %
 %       sim.include_sponRS = true; % include spontaneous Raman scattering
 %
@@ -132,7 +132,7 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %    [fiber,sim] = load_default_GMMNLSE_propagate(fiber,[]); % single_mode
 %
 %    % If there are "sim" settings
-%    sim.adaptive_deltaZ.model = 0;
+%    sim.adaptive_dz.model = 0;
 %    [fiber,sim] =  load_default_GMMNLSE_propagate(fiber,sim); % single_mode
 %
 %    % Use only user-defined "sim", not "fiber"
@@ -234,7 +234,7 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %                   if not set, no "sim.betas", the simulation will be run relative to the first mode
 %           midx - mode index; an integer array
 %           f0 - center frequency, in THz
-%           deltaZ - step size, in m
+%           dz - step size, in m
 %           save_period - spatial period between saves, in m
 %                         0 = only save input and output (save_period = fiber.L0)
 %
@@ -264,9 +264,9 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %
 %       Adaptive method -->
 %
-%           adaptive_deltaZ.threshold - a scalar;
+%           adaptive_dz.threshold - a scalar;
 %                                       the accuracy used to determined whether to increase or decrease the step size.
-%           adaptive_deltaZ.max_deltaZ - a scalar; the maximum adaptive step size
+%           adaptive_dz.max_dz - a scalar; the maximum adaptive step size
 %
 %       Algorithms to use -->
 %
@@ -528,7 +528,7 @@ end
 % -------------------------------------------------------------------------
 % Basic settings
 default_sim.f0 = c/default_sim.lambda0; % THz
-default_sim.deltaZ = 1000e-6; % m
+default_sim.dz = 1000e-6; % m
 default_sim.save_period = 0; % m
 default_sim.ellipticity = 0; % linear polarization
 
@@ -544,12 +544,12 @@ default_sim.scalar = true;
 % Adaptive method
 if strcmp(type_of_mode,'single_mode')
     % Threshold error for adaptive RK4IP
-    default_sim.adaptive_deltaZ.threshold = 1e-6; % the threshold of the adaptive method
-                                                  % Recommended value is less than 1e-5.
-                                                  % Values larger than 1e-3 are too large.
+    default_sim.adaptive_dz.threshold = 1e-6; % the threshold of the adaptive method
+                                              % Recommended value is less than 1e-5.
+                                              % Values larger than 1e-3 are too large.
 else
     % Threshold error for adaptive Adams-Moulton method in MPA
-    default_sim.adaptive_deltaZ.threshold = 1e-3;
+    default_sim.adaptive_dz.threshold = 1e-3;
 end
 
 % Algorithms to use

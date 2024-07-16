@@ -5,8 +5,8 @@ function [Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power,fig] = a
 % Input:
 %   t: (N,1); time (ps)
 %   f: (N,1); frequency (THz)
-%   field: (N,?); the field to be analyzed
-%                 If ? isn't 1, it'll choose the most energetic field
+%   field: (Nt,?); the field to be analyzed
+%                  If ? isn't 1, it'll choose the most energetic field
 %   compressor_type: 'Treacy-r': reflection grating pair,
 %                    'Treacy-t': transmission grating pair,
 %                    'Treacy-beta2': consider only "beta2" term of a reflection grating pair
@@ -114,10 +114,10 @@ field = field(:,mi(1));
 
 c = 299792.458; % nm/ps
 wavelength = c./f; % nm
-N = size(field,1);
+Nt = size(field,1);
 dt = t(2)-t(1); % ps
-factor_correct_unit = (N*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
-                                    % "/1e3" is to make pJ into nJ
+factor_correct_unit = (Nt*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
+                                     % "/1e3" is to make pJ into nJ
 spectrum = abs(fftshift(ifft(field),1)).^2*factor_correct_unit; % in frequency domain
 
 % -------------------------------------------------------------------------
@@ -127,16 +127,16 @@ spectrum = abs(fftshift(ifft(field),1)).^2*factor_correct_unit; % in frequency d
 %   
 %   spectrum_unknown_unit = abs(fftshift(ifft(field),1)).^2;
 %
-%   Parseval's theorem: sum(intensity) = sum(spectrum_unknown_unit)*N;
+%   Parseval's theorem: sum(intensity) = sum(spectrum_unknown_unit)*Nt;
 %                       * Note that spectrum_unknown_unit is from "ifft".
-%   therefore sum(intensity)*dt = sum(spectrum_unknown_unit)*N*dt
-%                               = sum(spectrum_unknown_unit)*(N*dt)^2/(N*dt)
-%                               = sum(spectrum_unknown_unit)*(N*dt)^2*df
+%   therefore sum(intensity)*dt = sum(spectrum_unknown_unit)*Nt*dt
+%                               = sum(spectrum_unknown_unit)*(Nt*dt)^2/(Nt*dt)
+%                               = sum(spectrum_unknown_unit)*(Nt*dt)^2*df
 %                               = sum(spectrum_f)*df
 %
-%   spectrum_f = spectrum_unknown_unit*(N*dt)^2;
+%   spectrum_f = spectrum_unknown_unit*(Nt*dt)^2;
 %   energy = trapz(f,spectrum_f) = trapz(spectrum_f)*df      % pJ
-%                                = trapz(spectrum_f)/(N*dt);
+%                                = trapz(spectrum_f)/(Nt*dt);
 %
 %   c = 299792.458;     % nm/ps
 %   wavelength = c./f;  % nm
@@ -175,12 +175,12 @@ num_interp = 5;
 FWHM_sampling_num = 50;
 % Guess the required number of sampling points from the transform-limited pulse duration
 while increase_sampling
-    insert_idx = [linspace(1,N,(num_interp+1)*(N-1)+1)'; N+(1:num_interp)'/(num_interp+1)];
+    insert_idx = [linspace(1,Nt,(num_interp+1)*(Nt-1)+1)'; Nt+(1:num_interp)'/(num_interp+1)];
     t_interp = interp1(t,insert_idx,'linear','extrap');
 
     field_f = ifft(field);
-    field_f = cat(1,field_f(1:ceil(N/2),:),zeros(N*num_interp,1),field_f(ceil(N/2)+1:end,:));
-    f_interp = (-floor(N/2):ceil(N/2)-1)'/(N*dt) + f(floor(N/2)+1);
+    field_f = cat(1,field_f(1:ceil(Nt/2),:),zeros(Nt*num_interp,1),field_f(ceil(Nt/2)+1:end,:));
+    f_interp = (-floor(Nt/2):ceil(Nt/2)-1)'/(Nt*dt) + f(floor(Nt/2)+1);
     field_interp = fft(field_f);
     
     [transform_limited_field,~,transform_limited_FWHM,pulse_FWHM] = calc_transform_limited( field_interp,0,t_interp );
@@ -227,7 +227,7 @@ if verbose
     left = floor(center-span);
     right = ceil(center+span);
     if left < 1, left = 1; end
-    if right > N*(num_interp+1), right = N*(num_interp+1); end
+    if right > Nt*(num_interp+1), right = Nt*(num_interp+1); end
 
     fig(2) = figure('Name','Transform-limited vs. Dechirped');
     fp = get(gcf,'position');

@@ -60,23 +60,19 @@ else
 end
 
 % Calculate the normalization constants for both sets of modes
-norms1 = zeros(num_modes1, 1);
-for midx = 1:num_modes1
-    norms1(midx) = sqrt(sum(sum(abs(standard_mode_profiles1(:, :, midx)).^2)));
-end
+norms1 = sqrt(sum(sum(abs(standard_mode_profiles1).^2,1),2));
+norms2 = sqrt(sum(sum(abs(standard_mode_profiles2).^2,1),2));
 
-norms2 = zeros(num_modes2, 1);
-for midx = 1:num_modes2
-    norms2(midx) = sqrt(sum(sum(abs(standard_mode_profiles2(:, :, midx)).^2)));
-end
+% Normalize the profiles
+standard_mode_profiles1 = standard_mode_profiles1./norms1;
+standard_mode_profiles2 = standard_mode_profiles2./norms2;
 
 % Finally, calcaulte the coupling matrix
 coupling_matrix = zeros(num_modes2, num_modes1);
 
 for midx1 = 1:num_modes2
     for midx2 = 1:num_modes1
-         coupling_matrix(midx1, midx2) = sum(sum(standard_mode_profiles2(:, :, midx1).*standard_mode_profiles1(:, :, midx2)))/ ...
-                    (norms2(midx1)*norms1(midx2));
+         coupling_matrix(midx1, midx2) = sum(sum(standard_mode_profiles2(:, :, midx1).*standard_mode_profiles1(:, :, midx2),1),2);
     end
 end
 

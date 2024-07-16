@@ -3,15 +3,15 @@ clearvars; close all;
 addpath('helpers/');
 
 %% Set parameters (users modify only this block)
-modes_used = 1:3; % In general the modes do not have to be consecutive
-Nx = 800; % number of spatial grid points for each mode
-gpu_yes = true; % true = run on GPU, false = run on CPU
-folder_name = 'YB1200-10_125DC-PM_wavelength1030nm'; % folder containing the calculated modes
+modes_used = 1:6; % an array; in general the modes do not have to be consecutive
+Nx = 400; % number of spatial grid points for each mode
+gpu_yes = false; % true = run on GPU, false = run on CPU
+folder_name = 'step-10_125DC_wavelength1030nm'; % folder containing the calculated modes
 
 % File name parameters:
 Nf = 10;
 lambda0 = 1030e-9; % center wavelength in nm; an "integer"
-freq_range = 100; % THz; frequency range. Should be the same as the range used to calculate the modes. Usually 100 THz.
+freq_range = 50; % THz; frequency range. Should be the same as the range used to calculate the modes. Usually 100 THz.
 bandwidth = 'narrowband'; % 'narrowband' or 'broadband'
 
 polynomial_fit_order = 7;

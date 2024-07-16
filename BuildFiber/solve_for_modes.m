@@ -11,13 +11,13 @@ addpath('helpers/');
 % Frequency window
 Nf = 10; % number of frequency points at which the modes will be calculated; usually 20
 wavelength0 = 1030e-9; % center wavelength, in m
-freq_range = 100; % THz; frequency range, in m. If 0, only the center wavelength will be used. Usually 100 THz.
-num_modes = 3; % number of modes to compute; you can use a large number, since this code can find the maximum supported modes itself
+freq_range = 50; % THz; frequency range, in m. If 0, only the center wavelength will be used. Usually 100 THz.
+num_modes = 6; % number of modes to compute; you can use a large number, since this code can find the maximum supported modes itself
 include_cladding_modes = false;
 
 % Spatial profile
-Nx = 800; % number of spatial grid points
-spatial_window = 30; % full spatial window size, in um, usually set to 100 um
+Nx = 400; % number of spatial grid points
+spatial_window = 20; % full spatial window size, in um, usually set to 100 um
 
 % Extra parameters:
 % (1) step fiber:
@@ -25,20 +25,20 @@ spatial_window = 30; % full spatial window size, in um, usually set to 100 um
 % (2) GRIN fiber:
 alpha = 2; % Shape parameter
 
-use_fiber_collection = true; % use fibers in "fiber_collections" function
+use_fiber_collection = false; % use fibers in "fiber_collections" function
 if use_fiber_collection
-    fiber = 'YB1200-10_125DC-PM';
+    fiber = 'YB1200-25_250DC-PM';
     
     [fiber_type,core_diameter,clad_diameter,core_NA,clad_NA,fname_user_defined,alpha] = fiber_collections(fiber,wavelength0);
 else
-    fiber_type = 'GRIN'; % type of fiber
-    core_diameter = 55; % core diameter of fiber, in um
-    clad_diameter = 400; % cladding diameter of fiber, in um
+    fiber_type = 'step'; % type of fiber
+    core_diameter = 10; % core diameter of fiber, in um
+    clad_diameter = 125; % cladding diameter of fiber, in um
     % Since I found out most commercial fibers show only NA, it's more convenient to use NA here.
-    core_NA = 0.2;
+    core_NA = 0.15;
     clad_NA = 0.22;
 
-    fname_user_defined = 'GRIN-55_400_wavelength1064nm'; % the folder name
+    fname_user_defined = 'step-10_125DC_wavelength1030nm'; % the folder name
 end
 
 % Sellmeier coefficients

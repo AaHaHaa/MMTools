@@ -1,12 +1,12 @@
 function [A1, dummy_a5,...
-          opt_deltaZ,success] = stepping_MPA_MMGaussianGain_adaptive(A0, dt,...
-                                                                     sim, prefactor,...
-                                                                     SRa_info, SRb_info, SK_info,...
-                                                                     D_op,...
-                                                                     haw, hbw,...
-                                                                     haw_sponRS, hbw_sponRS, sponRS_prefactor,...
-                                                                     dummy_a5_1,...
-                                                                     G, saturation_intensity)
+          opt_dz,success] = stepping_MPA_MMGaussianGain_adaptive(A0,dt,...
+                                                                 sim,prefactor,...
+                                                                 SK_info,SRa_info,SRb_info,...
+                                                                 D_op,...
+                                                                 haw,hbw,...
+                                                                 haw_sponRS,hbw_sponRS,sponRS_prefactor,...
+                                                                 dummy_a5_1,...
+                                                                 G,saturation_intensity)
 %STEPPING_MPA_MMGAUSSIANGAIN_ADAPTIVE Take one step with MPA with a 
 %spatially saturating gain model
 %
@@ -14,7 +14,7 @@ function [A1, dummy_a5,...
 %    A0 - initial field in the frequency domain (N, num_modes); sqrt(W)
 %    dt - time grid point spacing; ps
 %
-%    sim.deltaZ - step size; m
+%    sim.dz - step size; m
 %
 %    sim.MPA.M - parallel extent, 1 is no parallelization
 %    sim.MPA.n_tot_max - maximum number of iterations
@@ -29,7 +29,7 @@ function [A1, dummy_a5,...
 %    sim.Raman_model - which Raman model is used
 %    sim.Raman_sponRS - consider spontaneous Raman or not
 %
-%    sim.adaptive_deltaZ.threshold - the accuracy used to determined whether to increase or decrease the step size
+%    sim.adaptive_dz.threshold - the accuracy used to determined whether to increase or decrease the step size
 %
 %    prefactor - 1i*n2*omega/c; m/W
 %
@@ -58,10 +58,10 @@ function [A1, dummy_a5,...
 % Output:
 %    A1 - the field (in the frequency domain) after one step size (N, num_modes)
 %    dummy_a5 - unused variable
-%    opt_deltaZ - recommended step size
+%    opt_dz - recommended step size
 %    success - whether the current step size is sufficiently small for the required tolerance
 
-small_deltaZ = sim.deltaZ/sim.MPA.M; % the step size between each parallelization plane in MPA
+small_dz = sim.dz/sim.MPA.M; % the step size between each parallelization plane in MPA
 
 anisotropic_Raman_included = ~sim.scalar & sim.Raman_model==2;
 
@@ -95,7 +95,7 @@ end
 
 % We can pre-compute exp(D_op*z) and exp(-D_op*z) for all z.
 z = permute((0:sim.MPA.M)',[2,3,1]);% to make "Dz" into (N,num_modes,M+1)
-Dz = D_op*small_deltaZ.*z;
+Dz = D_op*small_dz.*z;
 D = struct('pos', exp(Dz), 'neg', exp(-Dz));
 
 % Set initial values for psi
@@ -111,17 +111,17 @@ for n_it = 1:sim.MPA.n_tot_max
 
     % Set up matrices for the following Kerr, Ra, Rb, transfer_matrix computations
     if sim.gpu_yes
-        Kerr = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
-        Ra = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
-        Rb = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
+        Kerr = complex(zeros(N,sim.MPA.M+1,num_modes,num_modes, 'gpuArray'));
+        Ra = complex(zeros(N,sim.MPA.M+1,num_modes,num_modes, 'gpuArray'));
+        Rb = complex(zeros(N,sim.MPA.M+1,num_modes,num_modes, 'gpuArray'));
 
-        transfer_matrix = complex(zeros(sim.MPA.M+1, num_spatial_modes, num_spatial_modes, polar, 'gpuArray'));
+        transfer_matrix = complex(zeros(sim.MPA.M+1,num_spatial_modes,num_spatial_modes,polar,'gpuArray'));
     else
-        Kerr = complex(zeros(N, sim.MPA.M+1, num_modes));
-        Ra = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
-        Rb = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
+        Kerr = complex(zeros(N,sim.MPA.M+1,num_modes));
+        Ra = complex(zeros(N,sim.MPA.M+1,num_modes,num_modes));
+        Rb = complex(zeros(N,sim.MPA.M+1,num_modes,num_modes));
 
-        transfer_matrix = complex(zeros(sim.MPA.M+1, num_spatial_modes, num_spatial_modes, polar));
+        transfer_matrix = complex(zeros(sim.MPA.M+1,num_spatial_modes,num_spatial_modes,polar));
     end
     % Spontaneous Raman scattering
     if sim.include_sponRS
@@ -358,7 +358,7 @@ for n_it = 1:sim.MPA.n_tot_max
     if sim.gpu_yes
         gain_term = permute(pagefun(@mldivide, transfer_matrix,gain_rhs),[2 1 3 4]);
     else % CPU
-        gain_term = permute(multbslash(transfer_matrix,gain_rhs),[2 1 3 4]);
+        gain_term = permute(pagemldivide(transfer_matrix,gain_rhs),[2 1 3 4]);
     end
     % Put the separated polarization modes back into the same dimension of array.
     if ~sim.scalar
@@ -408,9 +408,9 @@ for n_it = 1:sim.MPA.n_tot_max
     % Multiply the nonlinear factor
     nonlinear = prefactor.*ifft(nonlinear);
     
-    % Incorporate deltaZ and D.neg term for the integration.
+    % Incorporate dz and D.neg term for the integration.
     nonlinear = permute(nonlinear + gain_term,[1,3,2]); % (N,num_modes,M+1)
-    nonlinear = small_deltaZ*D.neg.*nonlinear; % (N, num_modes, M+1)
+    nonlinear = small_dz*D.neg.*nonlinear; % (N, num_modes, M+1)
 
     % Save the previous psi at the right end, then compute the new psis
     last_psi_half_parallelization = current_psi_half_parallelization;
@@ -468,12 +468,12 @@ err = sqrt(sum(abs(current_psi_half_parallelization-psi_full_parallelization).^2
 err(isnan(err)) = 0; % exclude modes with all zero fields
 err = sum(err);
 if isnan(err) % the computation is just so wrong, so we reduce the step size and do it again
-    opt_deltaZ = 0.5*sim.deltaZ;
+    opt_dz = 0.5*sim.dz;
     success = false;
 else
-    opt_deltaZ = max(0.5,min(2,0.8*(sim.adaptive_deltaZ.threshold/err)^(1/3)))*sim.deltaZ; % limit the optimal step size to 0.5~2 times as the current step size
+    opt_dz = max(0.5,min(2,0.8*(sim.adaptive_dz.threshold/err)^(1/3)))*sim.dz; % limit the optimal step size to 0.5~2 times as the current step size
 
-    success = err < sim.adaptive_deltaZ.threshold;
+    success = err < sim.adaptive_dz.threshold;
 end
 
 dummy_a5 = dummy_a5_1; % unused variable

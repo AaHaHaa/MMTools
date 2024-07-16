@@ -17,7 +17,7 @@ function func = analyze_sim
 %   fig = analyze_ASE(f,ASE,saved_z,splice_z,midx);
 %   fig = func.animation(t,f,fields,saved_z,varargin);
 
-func.extract_saved_field               = @extract_saved_fields;
+func.extract_saved_field = @extract_saved_fields;
 func.analyze_fields      = @analyze_fields;
 func.analyze_ellipticity = @analyze_ellipticity;
 func.analyze_gain        = @analyze_gain;
@@ -112,7 +112,7 @@ function fig = analyze_fields(t,f,fields,saved_z,splice_z,midx)
 
 sf = size(fields);
 
-N = sf(1);
+Nt = sf(1);
 num_modes = sf(2);
 
 if ~exist('midx','var')
@@ -129,8 +129,8 @@ positive_wavelength = wavelength>0; % exclude those negative wavelengths due to 
 intensity = abs(fields).^2; % W
 %peak_power = permute(max(intensity),[3 2 1]);
 energy = permute(trapz(intensity),[3 2 1])*dt/1e3; % nJ
-factor_correct_unit = (N*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
-                                    % "/1e3" is to make pJ into nJ
+factor_correct_unit = (Nt*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
+                                     % "/1e3" is to make pJ into nJ
 Ef = fftshift(ifft(ifftshift(fields,1)),1);
 spectrum = abs(Ef).^2*factor_correct_unit; % in frequency domain
 
@@ -231,7 +231,7 @@ if length(midx) == 1
     set(gca,'fontsize',14);
     hold on;
     for i = 1:length(splice_z)
-        h = plot(splice_z(i)*ones(N,1),t);
+        h = plot(splice_z(i)*ones(Nt,1),t);
         set(h,'linewidth',2,'linestyle','--','color','white','marker','none');
     end
     hold off;
@@ -284,7 +284,7 @@ function fig = analyze_ellipticity(fields,saved_z,ellipticity)
 %fields within the cavity.
 %
 % Input:
-%   fields: (N,2,num_fields); the fields along the fibers
+%   fields: (Nt,2,num_fields); the fields along the fibers
 %           Because it calculates the ellipticity, so of course it needs 2
 %           orthogonal polarization modes.
 %   saved_z: (1,num_saved_z); the z position of each field
@@ -294,12 +294,12 @@ function fig = analyze_ellipticity(fields,saved_z,ellipticity)
 % Output:
 %   fig: the figure handle of the plot
 
-N = size(fields,1);
+Nt = size(fields,1);
 
 % Ellipticity within the cavity
 [ellipticity_phi,ellipticity_theta] = calc_ellipticity( fields,ellipticity );
 [~,peak_idx] = max(abs(fields(:,1,:)).^2);
-peak_idx = peak_idx + permute(0:N:(N*length(peak_idx)-1),[1 3 2]);
+peak_idx = peak_idx + permute(0:Nt:(Nt*length(peak_idx)-1),[1 3 2]);
 peak_phi = squeeze(ellipticity_phi(peak_idx));
 peak_theta = squeeze(ellipticity_theta(peak_idx));
 
@@ -321,7 +321,7 @@ set(gca,'fontsize',20);
 end
 
 %%
-function fig = analyze_gain(saved_z,splice_z,pump,N2)
+function fig = analyze_gain(saved_z,splice_z,pump,population)
 %ANALYZE_GAIN_WITHIN_CAVITY This function generates two plots of the
 %pump power and the ion density of the upper state for the gain rate-eqn
 %model.
@@ -329,7 +329,7 @@ function fig = analyze_gain(saved_z,splice_z,pump,N2)
 %   saved_z - (1,num_z); the z coordinate of each point of the fiber
 %   splice_z - (1,num_splice); the z coordinate of each splice
 %   pump - (1,1,num_z); the pump power along the gain fiber
-%   N2 - (1,1,num_z);
+%   population - (1,1,num_z,num_population);
 %        the ion density of the upper state, or the inversion,
 %        for the computation of the fundamental-mode gain rate equation
 %        For multimode, N2 is of the size (Nx,Nx,num_z), where Nx is the
@@ -361,16 +361,17 @@ hold off;
 legend('Forward pump','Backward pump');
 
 if nargin > 3
-    N2 = N2*100; % in "%"
+    population = cat(4,population,1-sum(population,4));
+    population = population*100; % in "%"
     subplot(2,1,2);
-    h = plot(saved_z,squeeze(N2));
+    h = plot(saved_z,squeeze(population));
     xlim([min(saved_z) max(saved_z)]);
     xlabel('Propagation distance (m)'); ylabel('Doped ion excitation (%)');
     title('Doped ion excitation within the cavity');
     set(h,'linewidth',2); set(gca,'fontsize',20);
     hold on;
     for i = 1:length(splice_z)
-        h = plot(splice_z(i)*[1 1],[min(N2) max(N2)]);
+        h = plot(splice_z(i)*[1 1],[min(population(:)) max(population(:))]);
         set(h,'linewidth',2,'linestyle','--','color','black','marker','none');
     end
     hold off;
@@ -388,9 +389,9 @@ function fig = analyze_ASE(f,ASE,saved_z,splice_z,midx)
 % the fibers.
 %
 % Input:
-%   f: (N,1); frequency (THz)
-%   ASE.forward:  (N,num_modes,num_fields); the forward ASE along the fibers
-%   ASE.backward: (N,num_modes,num_fields); the backward ASE along the fibers
+%   f: (Nt,1); frequency (THz)
+%   ASE.forward:  (Nt,num_modes,num_fields); the forward ASE along the fibers
+%   ASE.backward: (Nt,num_modes,num_fields); the backward ASE along the fibers
 %   saved_z: (1,num_saved_z); the z position of each field
 %   splice_z: (1,num_splice); the z position of the splice (default: [])
 %   midx: the mode index (default: all the modes = 1:num_modes)
@@ -398,7 +399,7 @@ function fig = analyze_ASE(f,ASE,saved_z,splice_z,midx)
 
 sASE = size(ASE.forward);
 
-N = sASE(1);
+Nt = sASE(1);
 num_modes = sASE(2);
 
 if ~exist('midx','var')
@@ -438,7 +439,7 @@ if length(midx) == 1
     set(gca,'fontsize',14);
     hold on;
     for i = 1:length(splice_z)
-        h = plot(splice_z(i)*ones(N,1),f);
+        h = plot(splice_z(i)*ones(Nt,1),f);
         set(h,'linewidth',2,'linestyle','--','color','white','marker','none');
     end
     hold off;
@@ -450,7 +451,7 @@ if length(midx) == 1
     set(gca,'fontsize',14);
     hold on;
     for i = 1:length(splice_z)
-        h = plot(splice_z(i)*ones(N,1),f);
+        h = plot(splice_z(i)*ones(Nt,1),f);
         set(h,'linewidth',2,'linestyle','--','color','white','marker','none');
     end
     hold off;
@@ -479,9 +480,9 @@ function fig = animation(t,f,fields,saved_z,varargin)
 %ANIMATION_WITHIN_CAVITY It shows the evolution of the pulse by plotting
 %its spectrogram, field, and spectrum along the fibers.
 %
-%   t - (N,1); time (ps)
-%   f - (N,1); frequency (THz)
-%   fields - (N,num_modes,num_fields_in_fibers); the pulse field
+%   t - (Nt,1); time (ps)
+%   f - (Nt,1); frequency (THz)
+%   fields - (Nt,num_modes,num_fields_in_fibers); the pulse field
 %   saved_z - (1,num_fields_in_fibers); the propagation length of each saved field
 %
 %   Optional arguments:
@@ -522,10 +523,10 @@ save_point = size(fields,3);
 
 c = 299792.458; % nm/ps
 wavelength = c./f; % nm
-N = size(fields,1);
+Nt = size(fields,1);
 dt = t(2)-t(1); % ps
-factor_correct_unit = (N*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
-                                    % "/1e3" is to make pJ into nJ
+factor_correct_unit = (Nt*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
+                                     % "/1e3" is to make pJ into nJ
 factor = c./wavelength.^2; % change the spectrum from frequency domain into wavelength domain
 spectrum = abs(fftshift(ifft(fields(:,midx,:)),1)).^2*factor_correct_unit.*factor; % in wavelength domain
 intensity = abs(fields(:,midx,:)).^2;
@@ -552,16 +553,16 @@ end
 %   
 %   spectrum_unknown_unit = abs(fftshift(ifft(field),1)).^2;
 %
-%   Parseval's theorem: sum(intensity) = sum(spectrum_unknown_unit)*N;
+%   Parseval's theorem: sum(intensity) = sum(spectrum_unknown_unit)*Nt;
 %                       * Note that spectrum_unknown_unit is from "ifft".
-%   therefore sum(intensity)*dt = sum(spectrum_unknown_unit)*N*dt
-%                               = sum(spectrum_unknown_unit)*(N*dt)^2/(N*dt)
-%                               = sum(spectrum_unknown_unit)*(N*dt)^2*df
+%   therefore sum(intensity)*dt = sum(spectrum_unknown_unit)*Nt*dt
+%                               = sum(spectrum_unknown_unit)*(Nt*dt)^2/(Nt*dt)
+%                               = sum(spectrum_unknown_unit)*(Nt*dt)^2*df
 %                               = sum(spectrum_f)*df
 %
-%   spectrum_f = spectrum_unknown_unit*(N*dt)^2;
+%   spectrum_f = spectrum_unknown_unit*(Nt*dt)^2;
 %   energy = trapz(f,spectrum_f) = trapz(spectrum_f)*df      % pJ
-%                                = trapz(spectrum_f)/(N*dt);
+%                                = trapz(spectrum_f)/(Nt*dt);
 %
 %   c = 299792.458;     % nm/ps
 %   wavelength = c./f;  % nm

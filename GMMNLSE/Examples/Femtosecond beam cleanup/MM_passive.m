@@ -31,8 +31,8 @@ sim.rmc.model = true;
 % weaker coupling for spatial modes
 sim.rmc.varn = 1e-4; % variance of the refractive index
 num_modes = length(sim.midx);
-sim.deltaZ = 1e-3; % m
-save_points = int32(fiber.L0/sim.deltaZ);
+sim.dz = 1e-3; % m
+save_points = int32(fiber.L0/sim.dz);
 sim.rmc.matrices = create_rmc_matrices(fiber,sim,num_modes,save_points);
 effective_matrix = calc_effective_rmc_matrix(fiber,sim,Nt,dt,...
                                              sim.rmc.matrices);

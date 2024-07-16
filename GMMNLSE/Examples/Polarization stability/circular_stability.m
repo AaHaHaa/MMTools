@@ -76,8 +76,8 @@ sim.rmc.model = true;
 
 % weaker coupling for spatial modes
 sim.rmc.stdQ_polarizedmode = 10; % the coupling strength between polarization modes
-sim.deltaZ = 100e-6; % m
-save_points = int32(fiber.L0/sim.deltaZ);
+sim.dz = 100e-6; % m
+save_points = int32(fiber.L0/sim.dz);
 sim.rmc.matrices = create_rmc_matrices(fiber,sim,2,save_points);
 effective_matrix = calc_effective_rmc_matrix(fiber,sim,Nt,dt,...
                                              sim.rmc.matrices,...

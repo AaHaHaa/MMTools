@@ -1,4 +1,4 @@
-function output = build_noisy_MMgaussian(tfwhm, tfwhm_noise, time_window, pulse_energy, noise_energy, num_modes, N, varargin)
+function output = build_noisy_MMgaussian(tfwhm, tfwhm_noise, time_window, pulse_energy, noise_energy, num_modes, Nt, varargin)
 %BUILD_NOISY_MMGAUSSIAN Generate an initial input pulse with random noise based on "build_MMgaussian".
 %
 % tfwhm - full width at half maximum of pulse, in ps
@@ -7,7 +7,7 @@ function output = build_noisy_MMgaussian(tfwhm, tfwhm_noise, time_window, pulse_
 % pulse_energy - total energy of the small pulses in all modes, in nJ
 % noise_energy - the energy of the background noise, in nJ
 % num_modes - number of modes
-% N - number of time grid points
+% Nt - number of time grid points
 %
 % Optional inputs:
 %	
@@ -34,7 +34,7 @@ end
 
 if noise_energy == 0
         error('build_noisy_MMgaussian:NoiseEnergyError',...
-            '"Noise energy" can''t be zero in this function. Please use "build_MMgaussian" for pure gaussian pulses.');
+              '"Noise energy" can''t be zero in this function. Please use "build_MMgaussian" for pure gaussian pulses.');
 end
 
 % Set defaults for optional inputs
@@ -56,24 +56,24 @@ if size(coeffs,2) == 1
 end
 
 %% Gaussian main pulses
-pulse_gaussian = build_MMgaussian(tfwhm, time_window, pulse_energy, num_modes, N, varargin{:});
+pulse_gaussian = build_MMgaussian(tfwhm, time_window, pulse_energy, num_modes, Nt, varargin{:});
 dt = pulse_gaussian.dt;
 
 %% Noise
 if isinf(tfwhm_noise)
     noise_region = 1;
 else
-    noise_region = build_MMgaussian(tfwhm_noise,time_window,pulse_energy,1,N,frequency_shift,1,center,1); % pulse_energy isn't important here
+    noise_region = build_MMgaussian(tfwhm_noise,time_window,pulse_energy,1,Nt,frequency_shift,1,center,1); % pulse_energy isn't important here
     noise_region = noise_region.fields/max(noise_region.fields);
 end
 
 span_ratio = 2;
 
 % Noise fields
-noise_resolution_pulse = build_MMgaussian(time_window*noise_resolution,time_window,pulse_energy,1,N,frequency_shift,1,center,1); % pulse_energy isn't important here
+noise_resolution_pulse = build_MMgaussian(time_window*noise_resolution,time_window,pulse_energy,1,Nt,frequency_shift,1,center,1); % pulse_energy isn't important here
 noise_energy = noise_energy*coeffs.^2;
-noise = exp(1i*rand(N,num_modes)*2*pi);
-decay_region = build_MMgaussian(tfwhm*span_ratio,time_window,pulse_energy,1,N,frequency_shift,1,center,3);
+noise = exp(1i*rand(Nt,num_modes)*2*pi);
+decay_region = build_MMgaussian(tfwhm*span_ratio,time_window,pulse_energy,1,Nt,frequency_shift,1,center,3);
 decay_region = 1 - decay_region.fields/max(decay_region.fields);
 noise = noise.*decay_region;
 noise = fftshift(fft(ifft(noise).*ifft(noise_resolution_pulse.fields)),1).*noise_region;

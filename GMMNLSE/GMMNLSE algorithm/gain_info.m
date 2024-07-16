@@ -76,7 +76,7 @@ function gain_rate_eqn = gain_info( fiber,sim,gain_rate_eqn,lambda,mode_profiles
 %
 %       rate equation model algorithm info -->
 %
-%           export_N2 - 1(true) or 0(false); Whether to export N2, the ion density of the upper state, or not
+%           export_N - 1(true) or 0(false); Whether to export N, the ion density of each energy level, or not
 %           ignore_ASE - 1(true) or 0(false)
 %           max_iterations - the maximum number of iterations
 %           tol - the tolerance of this iteration loop. If the difference between the last two results is smaller than this tolerance, we're done. 
@@ -123,9 +123,11 @@ end
 current_path = mfilename('fullpath');
 sep_pos = strfind(current_path,sep_char);
 upper_folder = current_path(1:sep_pos(end-1));
-addpath([upper_folder 'Gain_rate_eqn/'],[upper_folder 'Gain_rate_eqn/gain cross sections/']);
+addpath([upper_folder 'Gain_rate_eqn/'],...
+        [upper_folder 'Gain_rate_eqn/gain cross sections/'],...
+        [upper_folder 'Gain_rate_eqn/Judd-Ofelt theory/Material data/']);
 
-%% Add a more-verbose parameter
+%% Add more-verbose parameters
 gain_rate_eqn.include_ASE = ~gain_rate_eqn.ignore_ASE;
 gain_rate_eqn.load_profiles = (isfield(fiber,'MM_folder') && ~isempty(fiber.MM_folder));
 
@@ -136,13 +138,16 @@ if gain_rate_eqn.linear_oscillator
     gain_rate_eqn.reuse_data = true; % Force to reuse the previously calculated data because it's a linear oscillator
 end
 
-%% Read information based on the gain medium to use
-gain_rate_eqn = gain_medium(gain_rate_eqn);
-
 %% Cross sections
 % "lambda" must be a column vector.
 if size(lambda,1) == 1
     lambda = lambda.';
+end
+if any(lambda(:)<0)
+    error('gain_info:lambdaError',...
+          ['Wavelength, the "lambda" input variable, cannot be negative.\n',...
+           'If possible, don''t use the pulse frequency as the center of the frequency window, which helps offset the frequency window from getting close to zero.\n',...
+           'Use find_tw_f0() to help do this.']);
 end
 % MATLAB before 2017 doesn't have "issortedrows()" and 'monotonic' argument in "issorted()"
 MATLAB_version = version('-release'); MATLAB_version = str2double(MATLAB_version(1:4));
@@ -154,31 +159,17 @@ end
 if do_ifftshift_on_lambda
     lambda = ifftshift(lambda,1);
 end
-% Read cross sections from the file.
-necessary_lambda = [gain_rate_eqn.absorption_wavelength_to_get_N_total*1e-9; ...
-                    gain_rate_eqn.pump_wavelength*1e-9; ...
-                    lambda*1e-9];
-switch gain_rate_eqn.gain_medium
-    case 'Yb'
-        [absorption,emission] = read_cross_sections_Yb(gain_rate_eqn.cross_section_filename,necessary_lambda); % read the file
-        absorption = absorption*1e12; % change the unit to um^2
-        emission = emission*1e12;
-        
-        cross_sections_pump = struct('absorption',absorption(2),'emission',emission(2)); % pump
-        cross_sections = struct('absorption',absorption(3:end),'emission',emission(3:end)); % signal, ASE
-    case {'Er','Nd'} % consider excited-state absorption
-        [absorption,emission,ESA] = read_cross_sections_Er_Nd(gain_rate_eqn.cross_section_filename,necessary_lambda); % read the file
-        absorption = absorption*1e12; % change the unit to um^2
-        emission = emission*1e12;
-        ESA = ESA*1e12;
-        
-        cross_sections_pump = struct('absorption',absorption(2),'emission',emission(2),'ESA',ESA(2)); % pump
-        cross_sections = struct('absorption',absorption(3:end),'emission',emission(3:end),'ESA',ESA(3:end)); % signal, ASE
-end
 
-cross_sections = structfun(@(x) permute(x,[2 3 4 5 1]),cross_sections,'UniformOutput',false); % change it to the size (1,1,1,1,N)
+%% Function container to read necessary parameters based on the gain medium to use later
+gain_func = gain_medium();
 
-%% Overlap factor of the field and the dopping area
+% Read necessary parameters and cross sections based on the gain medium to use
+gain_rate_eqn = gain_func.load_medium_parameters(gain_rate_eqn);
+[gain_rate_eqn,...
+ cross_sections,cross_sections_pump,...
+ GSA_find_Ntotal] = gain_func.load_cross_sections(gain_rate_eqn,lambda);
+
+%% Overlap factor of the field and the doping area
 % Load mode profiles for multimode
 if gain_rate_eqn.load_profiles % ready to load mode profiles
     lambda0 = int16(lambda(1));
@@ -244,44 +235,19 @@ else % multimode or higher-order modes
 end
 
 %% Doped ion density
-% For small-signal absorption, N2~0 and N1~N_total.
+% For small-signal absorption, N1~0 and N0~N_total.
 % pump is proportional to "exp(-integral2(overlap_factor.pump)*N_total*absorption_cross_section*L)", L: propagation length
 % absorption_dB/m =10*log10( exp(-integral2(overlap_factor.pump)*N_total*absorption_cross_section*(L=1m)) )
-N_total = log(10^(gain_rate_eqn.absorption_to_get_N_total/10))./(((gain_rate_eqn.core_diameter/gain_rate_eqn.cladding_diameter)^2)*absorption(1)*1e6); % doped ion density based on absorption at a specific wavelength; in "1/um^3"
+N_total = log(10^(gain_rate_eqn.absorption_to_get_N_total/10))./(((gain_rate_eqn.core_diameter/gain_rate_eqn.cladding_diameter)^2)*GSA_find_Ntotal*1e6); % doped ion density based on absorption at a specific wavelength; in "1/um^3"
 if gain_rate_eqn.load_profiles && ... % not fundamental-mode of a step-index fiber
        isequal(sim.step_method,'MPA') % multimode
     N_total = N_total*core_region; % size: (Nx,Nx)
 end
 
+%% Read necessary parameters based on the gain medium to use
+gain_rate_eqn = gain_func.load_N_related_parameters(gain_rate_eqn,N_total);
+
 %% Check the validity of the code
-% Because I use the approximation, sqrt(1+x)=1+x/2 if x is small, in
-% calculating signal fields with MPA, the code will give error here if
-% this approximation is bad.
-if isequal(sim.step_method,'MPA') && ... % multimode with MPA
-        (gain_rate_eqn.include_ASE || gain_rate_eqn.reuse_data || gain_rate_eqn.linear_oscillator) % with a fixed-step method (so the appropriateness of deltaZ needs to be checked here)
-    relative_N2 = 0:0.1:0.5;
-    relative_gain = relative_N2.*cross_sections.emission - (1-relative_N2).*cross_sections.absorption;
-    relative_gain(relative_gain<0) = 0; % I think (?) it only neds to resolve the "gain" correctly
-    
-    tol_approximation = 1e-4; % I've found that 1e-3 is not enough
-    approx_error = @(x)abs((sqrt(1+x)-(1+x/2))./sqrt(1+x));
-    if approx_error( 2*(sim.deltaZ/sim.MPA.M*1e6)*max(N_total(:))*max(relative_gain(:)) ) > tol_approximation
-        error('gain_info:deltaZError',...
-              'The deltaZ is too large for this code to run because of the approximation of "sqrt(1+x)=1+x/2" I use for calculating the gain for multimode cases.');
-    end
-end
-
-% This code assumes the population inversion reaches the steady state
-% because of high repetition rate of pulses.
-% I'll check the highest recovery lifetime for the inversion. This should
-% be larger than repetition rate for this assumption to be true.
-h = 6.626e-34; % J*s
-c = 299792458; % m/s
-tc = 1/(max(overlap_factor.pump(:))*(gain_rate_eqn.pump_wavelength*1e-9)/(h*c)*(cross_sections_pump.absorption+cross_sections_pump.emission)*max(gain_rate_eqn.copump_power,gain_rate_eqn.counterpump_power)+1/gain_rate_eqn.tau);
-if tc < gain_rate_eqn.t_rep
-    warning('The repetition rate isn''t high enough for this code to be accurate.');
-end
-
 % Number of ASE spatial modes
 % For LMA fibers, there are more than one spatial modes for ASE although
 % the signal field mostly stays only within the fundamental mode. In this
@@ -300,15 +266,23 @@ if gain_rate_eqn.include_ASE
 end
 
 %% Pre-compute the integral of "overlap_factor*N_total"
-if gain_rate_eqn.load_profiles && ... % there are loaded mode profiles for multimode, higher-order modes, or user-defined modes
-       isequal(sim.step_method,'MPA') % multimode with MPA
-    trapz2 = @(x) trapz(trapz(x,1),2)*gain_rate_eqn.mode_profile_dx^2; % take the integral w.r.t. the x-y plane
-    FmFnN = trapz2(overlap_factor.signal.*N_total);
-    GammaN = trapz2(overlap_factor.pump.*N_total);
-else
+% For coupled equtions with more than or equal to two levels,
+% pre-computations aren't necessary.
+if length(gain_rate_eqn.energy_levels) == 2 % two-level system
+    if gain_rate_eqn.load_profiles && ... % there are loaded mode profiles for multimode, higher-order modes, or user-defined modes
+           isequal(sim.step_method,'MPA') % multimode with MPA
+        trapz2 = @(x) trapz(trapz(x,1),2)*gain_rate_eqn.mode_profile_dx^2; % take the integral w.r.t. the x-y plane
+        FmFnN = trapz2(overlap_factor.signal.*N_total);
+        GammaN = trapz2(overlap_factor.pump.*N_total);
+    else
+        FmFnN = [];
+        GammaN = [];
+    end
+else % multi-level system
     FmFnN = [];
     GammaN = [];
 end
+
 
 %% Query the gpuDevice
 if sim.gpu_yes
@@ -332,7 +306,7 @@ if ~isfield(gain_rate_eqn,'memory_limit')
             freemem = stats(end); % B; availabel memory
             gain_rate_eqn.memory_limit = freemem/2;
         else % iOS
-            error('OSError:GMMNLSE_gain_rate_eqn',...
+            error('gain_info:OSError',...
                   'iOS is not well supported yet.');
         end
     end
@@ -342,6 +316,13 @@ end
 if ~isfield(gain_rate_eqn,'saved_data')
     gain_rate_eqn.saved_data = [];
 end
+
+%% Reorganize cross sections into an array for faster numerical computations
+% The 8th dimension is to store various cross-section data
+% Dimension: (1,1,1,1,Nt,1,1,num_cross_sections),
+% which each stands for, in gain computations, (Nx,Nx,num_spatial_modes,num_spatial_modes,Nt,M,num_polarization,num_cross_sections), where M: parallelization in MPA
+cross_sections_pump = permute(cell2mat(struct2cell(cross_sections_pump)),[8,2,3,4,5,6,7,1]);
+cross_sections = permute(cell2mat(struct2cell(cross_sections)),[8,2,3,4,5,6,7,1]);
 
 %% Put all information into "gain_rate_eqn"
 gain_rate_eqn.cross_sections_pump = cross_sections_pump;

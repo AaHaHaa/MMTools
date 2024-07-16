@@ -48,10 +48,10 @@ if ~ismember(sim.gain_model,[0,1,2])
 end
 
 %% Determine whether to use adaptive-step-size method based on the gain model and the random mode coupling
-adaptive_deltaZ_str = 'with';
+adaptive_dz_str = 'with';
 if sim.gain_model == 2 % rate-eqn-gain mdoel
     if gain_rate_eqn.include_ASE || gain_rate_eqn.reuse_data || gain_rate_eqn.linear_oscillator
-        adaptive_deltaZ_str = 'without';
+        adaptive_dz_str = 'without';
         
         if sim.rmc.model
             error('GMMNLSE_propagate:rmc_modelError',...
@@ -62,13 +62,13 @@ else % no gain or Gaussian-gain model
     gain_rate_eqn = [];
 end
 if sim.rmc.model % random mode coupling
-    adaptive_deltaZ_str = 'without';
+    adaptive_dz_str = 'without';
     rmc_str = '_rmc';
 else
     rmc_str = '';
 end
 
-GMMNLSE_propgation_func = str2func(['GMMNLSE_propagate_', adaptive_deltaZ_str, '_adaptive', rmc_str]);
+GMMNLSE_propgation_func = str2func(['GMMNLSE_propagate_', adaptive_dz_str, '_adaptive', rmc_str]);
 
 %% Run the pulse propagation
 foutput = GMMNLSE_propgation_func(fiber, initial_condition, sim, gain_rate_eqn);

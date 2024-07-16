@@ -31,7 +31,7 @@ sim.gpu_yes = false; % don't use GPU
 % sim.save_period = 0; Save only the fields at the beginning and the end fiber
 % sim.ellipticity = 0; Linear polarization
 % sim.scalar = true; Use scalar propagation
-% sim.adaptive_deltaZ.threshold = 1e-5; the threshold of the adaptive-step method
+% sim.adaptive_dz.threshold = 1e-5; the threshold of the adaptive-step method
 % sim.gpu_yes = true; Use GPU
 % sim.Raman_model = 1; Use the isotropic Raman model
 % sim.gain_model = 0; Don't use gain model = passive propagation

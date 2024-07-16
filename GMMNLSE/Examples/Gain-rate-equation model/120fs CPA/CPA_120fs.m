@@ -29,11 +29,11 @@ sim.f0 = 2.99792458e-4/sim.lambda0;
 sim_Gain = sim;
 sim_Gain.gain_model = 2;
 sim_Gain.progress_bar_name = 'Gain (6um)';
-fiber_Gain.L0 = 1.5;
-fiber_Gain.MFD = 35;
+fiber_Gain.L0 = 1.5; % m; fiber length
+fiber_Gain.MFD = 35; % um; mode-field diameter
 
-% passive fiber
-fiber_passive.L0 = 10;
+% Passive fiber
+fiber_passive.L0 = 10; % m; fiber length
 
 % Load default parameters like 
 %
@@ -71,7 +71,6 @@ gain_rate_eqn.linear_oscillator = false; % For a linear oscillator, there are pu
                                          % therefore, the backward-propagating pulses need to be taken into account.
 gain_rate_eqn.t_rep = 1/5e6; % Assume 5 MHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
                              % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.
-gain_rate_eqn.export_N2 = true; % whether to export N2, the ion density in the upper state or not
 gain_rate_eqn.ignore_ASE = true;
 gain_rate_eqn.sponASE_spatial_modes = []; % In LMA fibers, the number of ASE modes can be larger than one as the signal field, so this factor is used to correctly considered ASE. If empty like [], it's length(sim.midx).
 gain_rate_eqn.max_iterations = 50; % If there is ASE, iterations are required.
@@ -101,11 +100,6 @@ prop_output0 = GMMNLSE_propagate(fiber_passive, initial_pulse, sim_passive);
 prop_output = GMMNLSE_propagate(fiber_Gain, prop_output0, sim_Gain, gain_rate_eqn); 
 
 %% Finish the simulation and save the data
-N2 = prop_output.N2;
-pump = prop_output.Power.pump.forward;
-output_field = prop_output.fields(:,:,end);
-
-% -----------------------------------------------------------------
 % Energy of the output field
 energy = squeeze(sum(trapz(abs(prop_output.fields).^2,1),2)*prop_output.dt/10^3); % energy in nJ
 
@@ -114,7 +108,8 @@ energy = squeeze(sum(trapz(abs(prop_output.fields).^2,1),2)*prop_output.dt/10^3)
 
 [Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power] = analyze_field( t,f,prop_output.fields(:,:,end),'Treacy-t',pi/6,1e-6,true,false );
 
-gain = pi*(gain_rate_eqn.core_diameter/2)^2*fftshift(permute(gain_rate_eqn.overlap_factor.signal*((gain_rate_eqn.cross_sections.emission+gain_rate_eqn.cross_sections.absorption).*prop_output.N2*gain_rate_eqn.N_total-gain_rate_eqn.cross_sections.absorption*gain_rate_eqn.N_total),[5,3,1,2,4]),1)*1e6;
+Ntmp = permute(cat(4,prop_output.population,1-prop_output.population),[1,2,3,5,6,7,8,4])*gain_rate_eqn.N_total;
+gain = pi*(gain_rate_eqn.core_diameter/2)^2*fftshift(permute(gain_rate_eqn.overlap_factor.signal.*sum(gain_rate_eqn.plusminus.*gain_rate_eqn.cross_sections.*Ntmp(:,:,:,:,:,:,:,gain_rate_eqn.N_idx),8),[5,3,1,2,4]),1)*1e6;
 g2 = gain; %g2(g2<0) = 0;
 figure;
 h = plot(lambda,10*log10(exp(1))*g2); set(h,'linewidth',2); clear h;
@@ -143,9 +138,9 @@ ylabel('PDS (norm.)');
 set(gca,'fontsize',20);
 xlim([980,1100]);
 
-filtered_lambda = 1040;
-filtered_pulse = edgepass_spectral_filter('lowpass', prop_output, sim.f0, filtered_lambda, 0.3,1,true);
-analyze_field( t,f,filtered_pulse.fields(:,:,end),'Treacy-t',pi/6,1e-6,true,false );
+%filtered_lambda = 1040;
+%filtered_pulse = edgepass_spectral_filter('lowpass', prop_output, sim.f0, filtered_lambda, 0.3,1,true);
+%analyze_field( t,f,filtered_pulse.fields(:,:,end),'Treacy-t',pi/6,1e-6,true,false );
 
 % Save the final output field
 %save('CPA_120fs.mat','-v7.3');

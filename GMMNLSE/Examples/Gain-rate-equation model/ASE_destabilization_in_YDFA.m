@@ -30,9 +30,8 @@ gain_rate_eqn.absorption_to_get_N_total = 0.55; % dB/m
 gain_rate_eqn.pump_wavelength = 976; % nm
 gain_rate_eqn.copump_power = 2; % W
 gain_rate_eqn.counterpump_power = 0; % W
-gain_rate_eqn.t_rep = 1/10e6; % assume 5 MHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
-                             % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.
-gain_rate_eqn.export_N2 = false; % whether to export N2, the ion density in the upper state or not
+gain_rate_eqn.t_rep = 1/10e6; % assume 10 MHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
+                              % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.
 gain_rate_eqn.ignore_ASE = false;
 gain_rate_eqn.sponASE_spatial_modes = []; % In LMA fibers, the number of ASE modes can be larger than one as the signal field, so this factor is used to correctly considered ASE. If empty like [], it's length(sim.midx).
 gain_rate_eqn.max_iterations = 5; % If there is ASE, iterations are required.
@@ -57,7 +56,7 @@ sim.gain_model = 2;
 [fiber,sim] = load_default_GMMNLSE_propagate(fiber,sim);
 
 %% Initial pulse
-total_energy = 0.1; % nJ
+total_energy = 0.01; % nJ
 tfwhm = 1; % ps
 input_field = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
 input_field.Power.ASE.forward = zeros(size(input_field.fields));

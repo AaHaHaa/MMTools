@@ -33,8 +33,8 @@ function [optimal_value,dechirped_FWHM,dechirped_field,varargout] = pulse_compre
 %   theta_in: a scalar; For a grating pair, the incident angle on the grating (rad)
 %             'prism' doesn't need this input since it's determined by the operation of minimum deviation. Just use [].
 %   wavelength0: a scalar; central wavelength (nm)
-%   time: (N,1); the time grid points (ps)
-%   field: (N,1); the electric field in time domain
+%   time: (Nt,1); the time grid points (ps)
+%   field: (Nt,1); the electric field in time domain
 %   grating_spacing: a scalar; the spacing between each grating line (m)
 %   alpha: the apex angle of prisms in a prism compressor (rad)
 %   prism_material: material in Sellmeier_coefficients.m in GMMNLSE_algorithm/
@@ -109,6 +109,9 @@ function [optimal_value,dechirped_FWHM,dechirped_field,varargout] = pulse_compre
 %       * grating_size, roof_mirror_size, lens1_size, lens2_size are optional outputs
 %       * verbose, global_opt, and m are optional inputs
 
+% -------------------------------------------------------------------------
+% Input arguments
+% -------------------------------------------------------------------------
 switch compressor_type
     case {'Treacy-r','Treacy-t','Treacy-beta2'}
         grating_spacing = varargin{1};
@@ -155,6 +158,10 @@ optargs = {false false -1};
 % Load paramters
 optargs(1:length(varargin)) = varargin;
 [verbose,global_opt,m] = optargs{:};
+
+% -------------------------------------------------------------------------
+% Start dechirping
+% -------------------------------------------------------------------------
 switch compressor_type
     case {'Treacy-beta2','Treacy-r','Treacy-t'}
         [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,recover_info] = Treacy(compressor_type,theta_in,wavelength0,time,field,grating_spacing,verbose,m,global_opt);
@@ -194,10 +201,10 @@ end
 function [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,recover_info] = Treacy(compressor_type,theta_in,wavelength0,time,field,grating_spacing,verbose,m,global_opt)
 %TREACY
 
-N = length(time); % the number of time points
+Nt = length(time); % the number of time points
 dt = abs(time(2)-time(1)); % ps
 c = 299792.458; % nm/ps
-wavelength = c./((-N/2:N/2-1)'/N/dt + c/wavelength0); % nm
+wavelength = c./((-Nt/2:Nt/2-1)'/Nt/dt + c/wavelength0); % nm
 if size(time,1) == 1
     time = time';
 end
@@ -371,10 +378,10 @@ end
 function [optimal_separation,dechirped_FWHM,dechirped_field,prism_height,roof_mirror_size,theta_in,recover_info] = prism(wavelength0,time,field,alpha,prism_material,verbose,global_opt)
 %PRISM
 
-N = length(time); % the number of time points
+Nt = length(time); % the number of time points
 dt = abs(time(2)-time(1)); % ps
 c = 299792.458; % nm/ps
-wavelength = c./((-N/2:N/2-1)'/N/dt + c/wavelength0); % nm
+wavelength = c./((-Nt/2:Nt/2-1)'/Nt/dt + c/wavelength0); % nm
 if size(time,1) == 1
     time = time';
 end
@@ -556,10 +563,10 @@ end
 function [optimal_separation,dechirped_FWHM,dechirped_field,grism_height,roof_mirror_size,recover_info] = grism(compressor_type,theta_in,wavelength0,time,field,grating_spacing,alpha,prism_material,verbose,m,global_opt)
 %GRISM
 
-N = length(time); % the number of time points
+Nt = length(time); % the number of time points
 dt = abs(time(2)-time(1)); % ps
 c = 299792.458; % nm/ps
-wavelength = c./((-N/2:N/2-1)'/N/dt + c/wavelength0); % nm
+wavelength = c./((-Nt/2:Nt/2-1)'/Nt/dt + c/wavelength0); % nm
 if size(time,1) == 1
     time = time';
 end
@@ -780,10 +787,10 @@ end
 function [optimal_value,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = Offner(compressor_type,theta_in,wavelength0,time,field,grating_spacing,R,offcenter,verbose,m,global_opt)
 %OFFNER
 
-N = length(time); % the number of time points
+Nt = length(time); % the number of time points
 dt = abs(time(2)-time(1)); % ps
 c = 299792.458; % nm/ps
-wavelength = c./((-N/2:N/2-1)'/N/dt + c/wavelength0); % nm
+wavelength = c./((-Nt/2:Nt/2-1)'/Nt/dt + c/wavelength0); % nm
 if size(time,1) == 1
     time = time';
 end
@@ -1074,10 +1081,10 @@ end
 function [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = Martinez(theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,m,global_opt)
 %Martinez
 
-N = length(time); % the number of time points
+Nt = length(time); % the number of time points
 dt = abs(time(2)-time(1)); % ps
 c = 299792.458; % nm/ps
-wavelength = c./((-N/2:N/2-1)'/N/dt + c/wavelength0); % nm
+wavelength = c./((-Nt/2:Nt/2-1)'/Nt/dt + c/wavelength0); % nm
 if size(time,1) == 1
     time = time';
 end
@@ -1480,5 +1487,27 @@ theta_out = theta_in - atan(h_in/f); % with paraxial approximation
 % colors still propagate with different path lengths. This is compensated
 % by the lens thickness.
 added_path_length = f - sqrt(h_in.^2 + f^2);
+
+end
+
+%%
+function [RMS,T1] = calc_RMS(x,y)
+%CALC_RMS It calculates RMS width
+%
+%   x: a column or row vector
+%   y: a multidimensional array composed of "column vectors".
+%      y should be intensities of pulses or spectra, instead of complex-number fields
+
+sx = size(x);
+if length(sx)==2 && sx(1)==1
+    x = x';
+end
+
+area = trapz(x,y);
+
+T1 = trapz(x,x.*y)./area;
+T2 = trapz(x,x.^2.*y)./area;
+
+RMS = sqrt(T2-T1.^2);
 
 end

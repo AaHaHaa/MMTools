@@ -1,7 +1,7 @@
-clearvars; close all;
+clearvars; %close all;
 
 %filename = 'Liekki Yb_AV_20160530.txt';
-%filename = 'Yb_Gen_VIII_Cross_Section (Nufern).txt';
+filename = 'Yb_Gen_VIII_Cross_Section (Nufern).txt';
 
 %% Reading data from the specified file
 delimiter = ',';

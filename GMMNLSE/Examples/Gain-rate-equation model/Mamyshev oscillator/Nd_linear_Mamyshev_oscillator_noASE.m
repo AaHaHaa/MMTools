@@ -1,6 +1,6 @@
 % This code computes the 4-um Nd linear Mamyshev oscillator with only one
 % gain fiber without any passive one.
-% Note that the final pump power and the inversion, N2, are the same at
+% Note that the final pump power and the inversion, N1, are the same at
 % each point of the gain fiber for co- and counter-pumping because the gain
 % can't respond to the pulse in time and sees only the average effect
 % including both the forward and backward propagating pulses.
@@ -25,7 +25,6 @@ gain_rate_eqn.reuse_data = true; % For a ring or linear cavity, the pulse will e
                                  % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.
 gain_rate_eqn.linear_oscillator = true; % For a linear oscillator, there are pulses from both directions simultaneously, which will deplete the gain;
                                         % therefore, the backward-propagating pulses need to be taken into account.
-gain_rate_eqn.export_N2 = true; % whether to export N2, the ion density in the upper state or not
 gain_rate_eqn.ignore_ASE = true;
 gain_rate_eqn.sponASE_spatial_modes = []; % In LMA fibers, the number of ASE modes can be larger than one as the signal field, so this factor is used to correctly considered ASE. If empty like [], it's length(sim.midx).
 gain_rate_eqn.max_iterations = 50; % If there is ASE, iterations are required.
@@ -38,8 +37,8 @@ gain_rate_eqn.verbose = true; % show the information(final pulse energy) during 
 % General parameters
 sim.lambda0 = 920e-9; % m
 sim.f0 = 2.99792458e-4/sim.lambda0; % THz
-sim.deltaZ = 1000e-6; % um
-sim.save_period = 0.05;
+sim.dz = 1000e-6; % um
+sim.save_period = 0.05; % m
 sim.gpu_yes = false; % For only the fundamental mode, running with CPU is faster if the number of points is lower than 2^(~18).
 
 % -------------------------------------------------------------------------
@@ -48,8 +47,8 @@ sim.gpu_yes = false; % For only the fundamental mode, running with CPU is faster
 % Gain fiber
 sim_Gain = sim;
 sim_Gain.gain_model = 2;
-fiber_Gain.L0 = 1.5; % the length of the gain fiber
-fiber_Gain.MFD = 4;
+fiber_Gain.L0 = 1.5; % m; the length of the gain fiber
+fiber_Gain.MFD = 4; % um; mode-field diameter
 
 % Load default parameters like 
 %
@@ -66,11 +65,11 @@ fiber_cavity = [fiber_Gain fiber_Gain];
 
 %% Setup general cavity parameters
 max_rt = 100; % maximum number of roundtrips
-N = 2^13; % the number of points
+Nt = 2^13; % the number of points
 time_window = 50; % ps
-dt = time_window/N;
-f = sim.f0+(-N/2:N/2-1)'/(N*dt); % THz
-t = (-N/2:N/2-1)'*dt; % ps
+dt = time_window/Nt;
+f = sim.f0+(-Nt/2:Nt/2-1)'/(Nt*dt); % THz
+t = (-Nt/2:Nt/2-1)'*dt; % ps
 c = 299792458; % m/s
 lambda = c./(f*1e12)*1e9; % 
 OC = 0.8; % output coupler
@@ -88,6 +87,8 @@ n_silica = n_from_Sellmeier(lambda/1e3);
 fiber.betas = n_silica*2*pi./(lambda*1e-9);
 
 %% Filter parameters
+gaussexpo = 1;
+plot_filter_yes = true;
 spectral_filter = struct('bw',1.7, ... % bandwidth (nm)
                          'cw',{920,912}); % center wavelength (nm)
 
@@ -95,16 +96,16 @@ spectral_filter = struct('bw',1.7, ... % bandwidth (nm)
 tfwhm = 1; % ps
 total_energy = 10; % nJ
 pedestal_energy = 0.1; % nJ
-prop_output = build_noisy_MMgaussian(tfwhm, inf, time_window, total_energy,pedestal_energy,1,N,0.01);
+prop_output = build_noisy_MMgaussian(tfwhm, inf, time_window, total_energy,pedestal_energy,1,Nt,0.01);
             
 %% Saved field information
 field = cell(1,max_rt);
-N2 = cell(1,max_rt);
+N1 = cell(1,max_rt);
 pump = cell(1,max_rt);
 splice_z = cumsum([fiber_cavity.L0]);
 filter_displacement = sim.save_period/25;
 splice_z = [splice_z(1) splice_z(1)+filter_displacement splice_z(2)+filter_displacement];
-output_field = zeros(N,1,max_rt);
+output_field = zeros(Nt,1,max_rt);
 max_save_per_fiber = 100;
 
 %% Load gain parameters
@@ -155,8 +156,8 @@ while rt_num < max_rt
     field{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_field;
     saved_z(zn:zn+size(saved_field,3)-1) = saved_z_this_fiber;
     % Save the gain info
-    saved_N2 = func.extract_saved_field( prop_output.N2,max_save_per_fiber,current_z,sim.save_period );
-    N2{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_N2;
+    saved_N1 = func.extract_saved_field( 1-prop_output.population,max_save_per_fiber,current_z,sim.save_period );
+    N1{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_N1;
     saved_pump_backward = func.extract_saved_field( prop_output.Power.pump.backward,max_save_per_fiber,current_z,sim.save_period );
     pump{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_pump_backward;
     
@@ -170,7 +171,7 @@ while rt_num < max_rt
     if rt_num ~= 1
         close(fig_filter);
     end
-    [prop_output,fig_filter] = gaussian_spectral_filter(prop_output, sim.f0, spectral_filter(1).cw, spectral_filter(1).bw,1,true); % Filter
+    [prop_output,fig_filter] = gaussian_spectral_filter(prop_output, sim.f0, spectral_filter(1).cw, spectral_filter(1).bw, gaussexpo ,plot_filter_yes); % Filter
     % Loss
     prop_output.fields(:,:,end) = prop_output.fields(:,:,end)*sqrt(1-loss);
 
@@ -194,8 +195,8 @@ while rt_num < max_rt
     field{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_field;
     saved_z(zn:zn+size(saved_field,3)-1) = saved_z_this_fiber;
     % Save the gain info
-    saved_N2 = func.extract_saved_field( prop_output.N2,max_save_per_fiber,current_z,sim.save_period );
-    N2{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_N2;
+    saved_N1 = func.extract_saved_field( 1-prop_output.population,max_save_per_fiber,current_z,sim.save_period );
+    N1{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_N1;
     saved_pump_forward = func.extract_saved_field( prop_output.Power.pump.forward,max_save_per_fiber,current_z,sim.save_period );
     pump{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_pump_forward;
     
@@ -215,7 +216,7 @@ while rt_num < max_rt
     % ---------------------------------------------------------------------
     % Spectral filter
     close(fig_filter);
-    [prop_output,fig_filter] = gaussian_spectral_filter(prop_output, sim.f0, spectral_filter(2).cw, spectral_filter(2).bw,1,true); % Filter
+    [prop_output,fig_filter] = gaussian_spectral_filter(prop_output, sim.f0, spectral_filter(2).cw, spectral_filter(2).bw, gaussexpo ,plot_filter_yes); % Filter
     
     % ---------------------------------------------------------------------
     % Energy of the output field
@@ -253,7 +254,7 @@ while rt_num < max_rt
     end
     pump_plot.forward = cat(3,zeros(1,1,length(saved_z)/2),pump{rt_num}(1,1,length(saved_z)/2+1:end));
     pump_plot.backward = cat(3,pump{rt_num}(1,1,1:length(saved_z)/2),zeros(1,1,length(saved_z)/2));
-    fig_gain = func.analyze_gain(saved_z,splice_z,pump_plot,N2{rt_num});
+    fig_gain = func.analyze_gain(saved_z,splice_z,pump_plot,N1{rt_num});
     
     % ---------------------------------------------------------------------
     % Break if converged
@@ -272,7 +273,7 @@ end
 %% Finish the simulation and save the data
 % Clear reducdant parts of the data
 field = field(1:rt_num);
-N2 = N2(1:rt_num);
+N1 = N1(1:rt_num);
 pump = pump(1:rt_num);
 output_field = output_field(:,:,1:rt_num);
 energy = output_energy(arrayfun(@any,output_energy)); % clear zero
@@ -282,7 +283,7 @@ energy = output_energy(arrayfun(@any,output_energy)); % clear zero
 if pulse_survives
     save('Nd_linear_Mamyshev_oscillator_noASE.mat', 't','f','output_field','time_delay','energy',...
                                                  'saved_z','splice_z','field',...
-                                                 'pump','N2','gain_rate_eqn_copumping','gain_rate_eqn_counterpumping',...
+                                                 'pump','N1','gain_rate_eqn_copumping','gain_rate_eqn_counterpumping',...
                                                  '-v7.3'); % saved mat file version
 end
 % -------------------------------------------------------------------------

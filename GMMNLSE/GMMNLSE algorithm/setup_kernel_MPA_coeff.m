@@ -40,7 +40,15 @@ end
 function recompile_ptx(cuda_dir_path,cudaFilename,ptxFilename)
 
 if ispc
-    system(['nvcc -ptx "', fullfile(cuda_dir_path,cudaFilename), '" --output-file "', fullfile(cuda_dir_path,ptxFilename) '"']);
+    MATLAB_version = version('-release'); MATLAB_version = str2double(MATLAB_version(1:4));
+    if MATLAB_version < 2023
+        system(['nvcc -ptx "', fullfile(cuda_dir_path,cudaFilename), '" --output-file "', fullfile(cuda_dir_path,ptxFilename) '"']);
+    else
+        current_path = pwd;
+        cd(cuda_dir_path);
+        mexcuda('-ptx',cudaFilename);
+        cd(current_path);
+    end
 else % unix
     % tested: Debian 10 (Buster)
     system(['nvcc -ccbin clang -ptx "', fullfile(cuda_dir_path,cudaFilename), '" --output-file "', fullfile(cuda_dir_path,ptxFilename) '"']);

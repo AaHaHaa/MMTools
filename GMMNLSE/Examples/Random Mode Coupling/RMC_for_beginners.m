@@ -31,7 +31,7 @@ fiber.L0 = 1; % fiber length (m)
 sim.save_period = fiber.L0/100; % save the fields every...
 
 % Simulation details
-%sim.deltaZ = 1e-6; % the simulation z step
+%sim.dz = 1e-6; % the simulation z step
 sim.lambda0 = 1550e-9; % the center wavelength
 sim.midx = [1 2 3]; % included modes;
                     % Because I have six modes of all my betas and S_tensors,
@@ -66,8 +66,8 @@ sim.rmc.model = true;
 % Strong coupling for all modes
 sim.rmc.varn = 5e-2; % variance of the refractive index
 sim.rmc.stdQ_polarizedmode = 10; % the coupling strength between strongly coupled polarization modes
-sim.deltaZ = 100e-6; % m
-save_points = int32(fiber.L0/sim.deltaZ);
+sim.dz = 100e-6; % m
+save_points = int32(fiber.L0/sim.dz);
 sim.rmc.matrices = create_rmc_matrices(fiber,sim,num_modes,save_points);
 
 % Calculate the effective transmission matrix of the entire multimode fiber

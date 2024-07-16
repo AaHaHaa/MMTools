@@ -47,7 +47,7 @@ L_op = D_op_expand + rmc_matrices;
 
 L = eye(size(D_op_expand,1));
 for i = 1:size(rmc_matrices,3)
-    L = expm(L_op(:,:,i).*sim.deltaZ)*L;
+    L = expm(L_op(:,:,i).*sim.dz)*L;
 end
 
 end

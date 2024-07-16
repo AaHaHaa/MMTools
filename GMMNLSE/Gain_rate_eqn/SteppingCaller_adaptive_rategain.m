@@ -1,14 +1,14 @@
 function [signal_fields_out,Power_out,...
-          save_z,save_deltaZ,...
+          save_z,save_dz,...
           T_delay_out,...
-          N2] = SteppingCaller_adaptive_rategain(sim, gain_rate_eqn,...
-                                                 save_z0, save_points,...
-                                                 initial_condition,...
-                                                 prefactor,...
-                                                 omegas, D_op,...
-                                                 SK_info, SRa_info, SRb_info,...
-                                                 haw, hbw,...
-                                                 haw_sponRS, hbw_sponRS, sponRS_prefactor)
+          N] = SteppingCaller_adaptive_rategain(sim, gain_rate_eqn,...
+                                                save_z0, save_points,...
+                                                initial_condition,...
+                                                prefactor,...
+                                                omegas, D_op,...
+                                                SK_info, SRa_info, SRb_info,...
+                                                haw, hbw,...
+                                                haw_sponRS, hbw_sponRS, sponRS_prefactor)
 %STEPPINGCALLER_ADAPTIVE_RATEGAIN It attains the field after propagation 
 %inside the gain medium solved by the rate equations with the adaptive-step
 %RK4IP algorithm.
@@ -112,9 +112,9 @@ counterpump_ratio_R = counterpump_ratio;
 while (binary_L == 0 || binary_R == 0) || ...
       (counterpump_ratio_L < 0.5 || counterpump_ratio_R > 2)
     [signal_fields,Power_pump_forward,Power_pump_backward,...
-     save_z,save_deltaZ,...
+     save_z,save_dz,...
      T_delay_out,...
-     N2]          = gain_propagate('forward',...
+     N]          = gain_propagate('forward',...
                                    sim,gain_rate_eqn,...
                                    save_points,save_z0,...
                                    Nt,prefactor,omegas,D_op,...
@@ -178,9 +178,9 @@ if ~isequal(gain_rate_eqn.pump_direction,'co')
         binary_m = binary_L*(binary_R_counterpump_power-gain_rate_eqn.counterpump_power)/(binary_R_counterpump_power-binary_L_counterpump_power) + binary_R*(gain_rate_eqn.counterpump_power-binary_L_counterpump_power)/(binary_R_counterpump_power-binary_L_counterpump_power);
         
         [signal_fields,Power_pump_forward,Power_pump_backward,...
-         save_z,save_deltaZ,...
+         save_z,save_dz,...
          T_delay_out,...
-         N2]          = gain_propagate('forward',...
+         N]          = gain_propagate('forward',...
                                        sim,gain_rate_eqn,...
                                        save_points,save_z,...
                                        Nt,prefactor,omegas,D_op,...
@@ -244,7 +244,7 @@ end
 dt = initial_condition.dt;
 num_modes = size(initial_condition.fields,2);
 
-save_deltaZ = zeros(save_points,1);
+save_dz = zeros(save_points,1);
 T_delay_out = zeros(save_points,1);
 
 % Pulse centering based on the moment of its intensity
@@ -263,7 +263,7 @@ if sim.pulse_centering
         if sim.gpu_yes
             TCenter = gather(TCenter);
         end
-        T_delay = TCenter*initial_condition.dt;
+        T_delay = TCenter*dt;
     else
         T_delay = 0;
     end
@@ -275,7 +275,11 @@ initial_condition.fields = ifft(initial_condition.fields);
 
 switch direction
     case 'forward'
-        [signal_fields,Power_pump_forward,Power_pump_backward] = initialization(sim,gain_rate_eqn,Nt,num_modes,save_points,initial_condition,input_Power_pump_backward);
+        [signal_fields,...
+         Power_pump_forward,Power_pump_backward] = initialization(sim,gain_rate_eqn,...
+                                                                  Nt,num_modes,...
+                                                                  save_points,...
+                                                                  initial_condition,input_Power_pump_backward);
         last_Power_pump_forward = Power_pump_forward{1};
         last_Power_pump_backward = Power_pump_backward{1};
         last_signal_fields      = signal_fields     {1}; % = initial_condition.fields
@@ -283,19 +287,15 @@ switch direction
         last_Power_pump_backward = gain_rate_eqn.counterpump_power;
 end
 
-% Initialize N2 to be exported, the ion density of the upper state
-if gain_rate_eqn.export_N2
-    N2 = zeros([size(gain_rate_eqn.N_total) save_points]);
-else
-    N2 = [];
-end
+% Initialize N to be exported, the ion density of the upper state
+N = zeros([size(gain_rate_eqn.N_total) save_points,length(gain_rate_eqn.energy_levels)-1]);
 
 if sim.progress_bar
     if ~isfield(sim,'progress_bar_name')
         sim.progress_bar_name = '';
     elseif ~ischar(sim.progress_bar_name)
         error('GMMNLSE_propagate:ProgressBarNameError',...
-            '"sim.progress_bar_name" should be a string.');
+              '"sim.progress_bar_name" should be a string.');
     end
     h_progress_bar = waitbar(0,sprintf('%s   0.0%%',sim.progress_bar_name),...
         'Name',sprintf('Running GMMNLSE: %s...',sim.progress_bar_name),...
@@ -312,26 +312,28 @@ if sim.progress_bar
     progress_bar_i = 1;
 end
 
-% max deltaZ
-if ~isfield(sim.adaptive_deltaZ,'max_deltaZ')
-    sim.adaptive_deltaZ.max_deltaZ = sim.save_period/10;
+% max dz
+if ~isfield(sim.adaptive_dz,'max_dz')
+    sim.adaptive_dz.max_dz = sim.save_period/10;
 end
 
-sim.deltaZ = 1e-6; % m; start with a small value to avoid initial blowup
-save_deltaZ(1) = sim.deltaZ;
+sim.dz = 1e-6; % m; start with a small value to avoid initial blowup
+save_dz(1) = sim.dz;
 
 % Then start the propagation
 z = 0;
 save_i = 2; % the 1st one is the initial field
 a5 = []; % the temporary variable in the forward propagation
 p5 = []; % the temporary variable in the backward propagation
-sim.last_deltaZ = 1; % randomly put a number, 1, for initialization
+last_N = cat(8, ones([size(gain_rate_eqn.N_total),1,1,1,1,1,1]).*gain_rate_eqn.N_total,...
+               zeros([size(gain_rate_eqn.N_total),1,1,1,1,1,length(gain_rate_eqn.energy_levels)-2])); % initial guess for solving the population during propagation
+sim.last_dz = 1; % randomly put a number, 1, for initialization
 GMMNLSE_rategain_func = str2func(['stepping_',sim.step_method,'_rategain_adaptive']);
 while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical error
     % Check for Cancel button press
     if sim.progress_bar && getappdata(h_progress_bar,'canceling')
         error('GMMNLSE_propagate:ProgressBarBreak',...
-        'The "cancel" button of the progress bar has been clicked.');
+              'The "cancel" button of the progress bar has been clicked.');
     end
     
     switch direction
@@ -349,22 +351,24 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
 
                 [last_signal_fields, a5,...
                  last_Power_pump_forward,last_Power_pump_backward,...
-                 opt_deltaZ,success,...
-                 last_N2] = GMMNLSE_rategain_func(last_signal_fields,dt,sim,gain_rate_eqn,...
-                                                  SK_info,SRa_info,SRb_info,...
-                                                  haw,hbw,...
-                                                  haw_sponRS,hbw_sponRS,sponRS_prefactor,...
-                                                  prefactor,omegas,D_op,...
-                                                  last_Power_pump_forward,last_Power_pump_backward,a5,...
-                                                  dummy_var);
+                 opt_dz,success,...
+                 last_N] = GMMNLSE_rategain_func(last_signal_fields,last_N,...
+                                                 dt,...
+                                                 sim,gain_rate_eqn,...
+                                                 SK_info,SRa_info,SRb_info,...
+                                                 haw,hbw,...
+                                                 haw_sponRS,hbw_sponRS,sponRS_prefactor,...
+                                                 prefactor,omegas,D_op,...
+                                                 last_Power_pump_forward,last_Power_pump_backward,a5,...
+                                                 dummy_var);
 
                 if ~success
                     ever_fail = true;
 
-                    sim.deltaZ = opt_deltaZ;
+                    sim.dz = opt_dz;
                 end
             end
-            sim.last_deltaZ = sim.deltaZ; % previous deltaZ
+            sim.last_dz = sim.dz; % previous dz
             
             % Apply the damped frequency window
             last_signal_fields = last_signal_fields.*sim.damped_freq_window;
@@ -404,7 +408,7 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
             end
 
             % Update z
-            z = z + sim.deltaZ;
+            z = z + sim.dz;
             % Because the adaptive-step algorithm determines the step size by 
             % checking the error of the spectral intensities from RK3 and RK4, it
             % might ignore changes at the weakest part of the spectrum. This
@@ -421,73 +425,98 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
             eff_range_D = find_range_D(abs(last_signal_fields).^2,imag(D_op));
             min_beat_length = 2*pi/eff_range_D;
             if strcmp(sim.step_method,'MPA')
-                deltaZ_resolve_beat_length = min_beat_length/4*sim.MPA.M;
+                dz_resolve_beat_length = min_beat_length/4*sim.MPA.M;
             else
-                deltaZ_resolve_beat_length = min_beat_length/4;
+                dz_resolve_beat_length = min_beat_length/4;
             end
             % Because I use the approximation, sqrt(1+x)=1+x/2 if x is small, in
             % calculating signal fields with MPA, the code will give error here if
             % this approximation is bad.
             if isequal(sim.step_method,'MPA')
-                relative_N2 = max(last_N2(:));
-                relative_gain = relative_N2.*gain_rate_eqn.cross_sections.emission - (max(gain_rate_eqn.N_total(:))-relative_N2).*gain_rate_eqn.cross_sections.absorption;
+                relative_N1 = max(gain_rate_eqn.N_total-last_N(:,:,:,:,:,:,:,1));
+                switch gain_rate_eqn.gain_medium
+                    case {'Yb','Er','Nd'}
+                        emi10 = gain_rate_eqn.cross_sections(:,:,:,:,:,:,:,2);
+                        GSA01 = gain_rate_eqn.cross_sections(:,:,:,:,:,:,:,1);
+                    case 'Tm'
+                        emi10 = gain_rate_eqn.cross_sections(:,:,:,:,:,:,:,end-1);
+                        GSA01 = gain_rate_eqn.cross_sections(:,:,:,:,:,:,:,1);
+                end
+                relative_gain = relative_N1.*emi10 - (max(gain_rate_eqn.N_total(:))-relative_N1).*GSA01;
                 relative_gain(relative_gain<0) = 0; % I think (?) it only neds to resolve the "gain" correctly
 
                 tol_approximation = 1e-4; % I've found that 1e-3 is not enough
                 approx_error = @(x)abs((sqrt(1+x)-(1+x/2))./sqrt(1+x));
-                while approx_error( 2*(opt_deltaZ/sim.MPA.M*1e6)*max(relative_gain(:)) ) > tol_approximation
-                    opt_deltaZ = opt_deltaZ/2;
+                while approx_error( 2*(opt_dz/sim.MPA.M*1e6)*max(relative_gain(:)) ) > tol_approximation
+                    opt_dz = opt_dz/2;
                 end
             end
-            sim.deltaZ = min([opt_deltaZ,save_z(end)-z,sim.adaptive_deltaZ.max_deltaZ,deltaZ_resolve_beat_length]);
+            sim.dz = min([opt_dz,save_z(end)-z,sim.adaptive_dz.max_dz,dz_resolve_beat_length]);
 
             % If it's time to save, get the result from the GPU if necessary,
             % transform to the time domain, and save it
-            if z == sim.last_deltaZ
-                ready_save_N2 = true;
+            if z == sim.last_dz
+                ready_save_N = true;
             end
-            if gain_rate_eqn.export_N2
-                if z >= save_z(end)-eps(z) % save the last N2
-                    if sim.gpu_yes
-                        z_last_N2 = gather(z);
-                        N2(:,:,end) = gather(last_N2);
-                    else
-                        z_last_N2 = z;
-                        N2(:,:,end) = last_N2;
-                    end
+            if z >= save_z(end)-eps(z) % save the last N
+                sim.small_dz = sim.dz/sim.MPA.M; % dummy variable for the following solve_gain_rate_eqn() to run correctly
+                if gain_rate_eqn.counterpump_power == 0 % copumping
+                    [~,~,~,...
+                     ~,last_N] = solve_gain_rate_eqn('forward',...
+                                                     sim,gain_rate_eqn,...
+                                                     last_N,...
+                                                     last_signal_fields,dummy_var,...
+                                                     last_Power_pump_forward,dummy_var,...
+                                                     dummy_var,dummy_var,...
+                                                     omegas,dt,...
+                                                     false );
+                else % bi-pumping or counterpumping
+                    [~,~,~,~,...
+                     ~,last_N] = solve_gain_rate_eqn_linear_oscillator(sim,gain_rate_eqn,...
+                                                                       last_N,...
+                                                                       last_signal_fields,dummy_var,...
+                                                                       last_Power_pump_forward,last_Power_pump_backward,...
+                                                                       dummy_var,dummy_var,...
+                                                                       omegas,dt);
                 end
-                % Below saves N2:
-                % Current N2 is computed by the next propagating step, so 
-                % there is "ready_save_N2" is to delay the saving process 
-                % by one propagating step with the "save_i-1" command.
-                % Coincidentally, this command also helps save the first
-                % N2.
-                if ready_save_N2
-                    if sim.gpu_yes
-                        N2(:,:,save_i-1) = gather(last_N2);
-                    else
-                        N2(:,:,save_i-1) = last_N2;
-                    end
-                    ready_save_N2 = false; % finish saving, then reset it back to false
+
+                if sim.gpu_yes
+                    N(:,:,end,:) = permute(gather(last_N),[1,2,3,8,5,6,7,4]); % (Nx,Nx,1,num_levels-1)
+                else
+                    N(:,:,end,:) = permute(last_N,[1,2,3,8,5,6,7,4]); % (Nx,Nx,1,num_levels-1)
                 end
+                
+                N = N/gather(max(gain_rate_eqn.N_total(:)));
+            end
+            % Below saves N, the population of each energy level:
+            % Current N is computed by the next propagating step, so 
+            % there is "ready_save_N" is to delay the saving process 
+            % by one propagating step with the "save_i-1" command.
+            % Coincidentally, this command also helps save the first
+            % N.
+            if ready_save_N
+                if sim.gpu_yes
+                    N(:,:,save_i-1,:) = permute(gather(last_N),[1,2,3,8,5,6,7,4]); % (Nx,Nx,1,num_levels-1)
+                else
+                    N(:,:,save_i-1,:) = permute(last_N,[1,2,3,8,5,6,7,4]); % (Nx,Nx,1,num_levels-1)
+                end
+                ready_save_N = false; % finish saving, then reset it back to false
             end
             if z >= save_z(save_i)-eps(z)
                 if sim.gpu_yes
                     save_z(save_i) = gather(z);
-                    save_deltaZ(save_i) = gather(sim.last_deltaZ);
+                    save_dz(save_i) = gather(sim.last_dz);
                     Power_pump_forward{save_i} = gather(last_Power_pump_forward);
                     Power_pump_backward{save_i} = gather(last_Power_pump_backward);
                     signal_fields{save_i} = gather(last_signal_fields);
                 else
                     save_z(save_i) = z;
-                    save_deltaZ(save_i) = sim.last_deltaZ;
+                    save_dz(save_i) = sim.last_dz;
                     Power_pump_forward{save_i} = last_Power_pump_forward;
                     Power_pump_backward{save_i} = last_Power_pump_backward;
                     signal_fields{save_i} = last_signal_fields;
                 end
-                if gain_rate_eqn.export_N2
-                    ready_save_N2 = true;
-                end
+                ready_save_N = true;
 
                 T_delay_out(save_i) = T_delay;
 
@@ -558,22 +587,24 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
                 end
 
                 [last_Power_pump_backward, p5,...
-                 opt_deltaZ,success] = pumpStepping_RK4IP_rategain_adaptive(sim, gain_rate_eqn,...
-                                                                            last_Power_pump_backward, p5,...
-                                                                            omegas, dt,...
-                                                                            dummy_var);
+                 last_N,...
+                 opt_dz,success] = pumpStepping_RK4IP_rategain_adaptive(sim, gain_rate_eqn,...
+                                                                        last_Power_pump_backward, p5,...
+                                                                        last_N,...
+                                                                        omegas, dt,...
+                                                                        dummy_var);
 
                 if ~success
                     ever_fail = true;
 
-                    sim.deltaZ = opt_deltaZ;
+                    sim.dz = opt_dz;
                 end
             end
-            sim.last_deltaZ = sim.deltaZ; % previous deltaZ
+            sim.last_dz = sim.dz; % previous dz
             
             % Update z
-            z = z + sim.deltaZ;
-            sim.deltaZ = min([opt_deltaZ,save_z(end)-z,sim.adaptive_deltaZ.max_deltaZ]);
+            z = z + sim.dz;
+            sim.dz = min([opt_dz,save_z(end)-z,sim.adaptive_dz.max_dz]);
 
             save_i = save_i + 1;
 
@@ -590,13 +621,10 @@ end
 % Output
 switch direction
     case 'forward'
-        if gain_rate_eqn.export_N2
-            N2 = prep_for_output_N2(N2,gain_rate_eqn.N_total,z_last_N2,save_z);
-        end
         varargout = {signal_fields,Power_pump_forward,Power_pump_backward,...
-                     save_z,save_deltaZ,...
+                     save_z,save_dz,...
                      T_delay_out,...
-                     N2};
+                     N};
     case 'backward'
         varargout = {last_Power_pump_backward};
 end
@@ -604,7 +632,11 @@ end
 end
 
 %% Initialization
-function [signal_fields,Power_pump_forward,Power_pump_backward] = initialization(sim,gain_rate_eqn,N,num_modes,save_points,initial_condition,input_Power_pump_backward)
+function [signal_fields,...
+          Power_pump_forward,Power_pump_backward] = initialization(sim,gain_rate_eqn,...
+                                                                   Nt,num_modes,...
+                                                                   save_points,...
+                                                                   initial_condition,input_Power_pump_backward)
 %INITIALIZATION initializes "signal_fields" and "Power" based on
 %"segment_idx/num_segment".
 %
@@ -633,31 +665,13 @@ Power_pump_backward{1} = input_Power_pump_backward;
 % -------------------------------------------------------------------------
 % Signal field
 % "cell2mat" doesn't support "gpuArray" in a cell array, which affects the process when getting the output matrix. 
-signal_fields = initialize_zeros([N,num_modes]);
+signal_fields = initialize_zeros([Nt,num_modes]);
 signal_fields{1} = initial_condition.fields;
 
 % -------------------------------------------------------------------------
 % GPU
 if sim.gpu_yes
     [signal_fields,Power_pump_forward,Power_pump_backward] = mygpuArray(signal_fields,Power_pump_forward,Power_pump_backward);
-end
-
-end
-
-%% PREP_FOR_OUTPUT_N2
-function N2 = prep_for_output_N2( N2, N_total, z_last_N2, save_z )
-%PREP_FOR_OUTPUT_N2 It interpolates the last z-plane N2 from the other N2
-%data and transform N2 into the ratio, N2/N_total.
-
-if isequal(class(N_total),'gpuArray')
-    N_total = gather(N_total);
-end
-
-N2 = N2/max(N_total(:));
-sN2 = size(N2,3)-1;
-
-if sN2 > 1
-    N2(:,:,end) = permute(interp1([save_z(1:end-1);z_last_N2],permute(N2,[3 1 2]),save_z(end),'spline'),[2 3 1]);
 end
 
 end
@@ -687,10 +701,10 @@ end
 function eff_range_D = find_range_D(spectrum,D)
 %FIND_RANGE_D
 %
-% For an adaptive-deltaZ method, the maximum deltaZ is also limited by the 
+% For an adaptive-dz method, the maximum dz is also limited by the 
 % range of the propagation constant, beta0.
 % If the FWM, Raman, or anything else happens for multiple frequencies 
-% where deltaZ can't resolve their beta0 difference, the outcome can be 
+% where dz can't resolve their beta0 difference, the outcome can be 
 % wrong.
 % Here, I multiply the (intensity)^(1/2) of the spectrum to the beta0 to 
 % consider beta0 difference of the pulse and exclude those without the 

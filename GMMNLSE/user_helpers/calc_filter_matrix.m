@@ -1,8 +1,9 @@
-function filter_matrix = calc_filter_matrix(mode_profiles, x, spatial_hwhm, filter_type)
+function filter_matrix = calc_filter_matrix(mode_profiles, x, spatial_hwhm, offcenter, filter_type)
 %CALC_FILTER_MATRIX Calculate the matrix that applies a spatial filter to the field
-% mode_profiles - a (Nx, Nx, num_modes) matrix with the "normalized" spatial profile of each mode
+% mode_profiles - a (Nx, Nx, num_modes) matrix with the spatial profile of each mode
 % x - a Nx vector with the spatial coordinates in m
 % spatial_hwhm - the half-width at half max of the filter, i.e. the radial extent at half max, in m
+% offcenter - a (2,1) or (1,2) vector indicating offcenter values in x and y directions, respectively
 % filter_type - the type of the filter, Gaussian or pinhole(a binary hard filter)
 %
 % The filter matrix T is the matrix such that A' = TA, where A is the
@@ -15,15 +16,19 @@ function filter_matrix = calc_filter_matrix(mode_profiles, x, spatial_hwhm, filt
 
 num_modes = size(mode_profiles, 3);
 
+% Calculate the normalization constants for both sets of modes
+norms_profiles = sqrt(sum(sum(abs(mode_profiles).^2,1),2));
+mode_profiles = mode_profiles./norms_profiles;
+
 % Setup the spatial grid
 [X, Y] = meshgrid(x, x);
-P = sqrt(X.^2 + Y.^2);
 
 switch filter_type
     case 'Gaussian'
         spatial_w0 = spatial_hwhm/(2*sqrt(log(2))); % 2*sqrt(log(2))=1.665
-        filter_profile = exp(-P.^2/(2*spatial_w0^2));
+        filter_profile = exp(-((X-offcenter(1)).^2+(Y-offcenter(2)).^2)/(2*spatial_w0^2));
     case 'pinhole'
+        P = sqrt((X-offcenter(1)).^2+(Y-offcenter(2)).^2);
         filter_profile = (P<spatial_hwhm);
 end
 

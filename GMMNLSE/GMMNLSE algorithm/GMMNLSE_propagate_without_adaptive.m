@@ -46,7 +46,7 @@ function foutput = GMMNLSE_propagate_without_adaptive(fiber, initial_condition, 
 %                   if not set, no "sim.betas", the simulation will be run relative to the first mode
 %           midx - mode index; an integer array
 %           f0 - center frequency, in THz
-%           deltaZ - step size, in m
+%           dz - step size, in m
 %           save_period - spatial period between saves, in m
 %                         0 = only save input and output (save_period = fiber.L0)
 %
@@ -126,7 +126,7 @@ function foutput = GMMNLSE_propagate_without_adaptive(fiber, initial_condition, 
 % foutput.fields - (N, num_modes, num_save_points) matrix with the multimode field at each save point
 % foutput.dt - time grid point spacing, to fully identify the field
 % foutput.z - the propagation length of the saved points
-% foutput.deltaZ - the (small) step size for each saved points
+% foutput.dz - the (small) step size for each saved points
 % foutput.betas - the [betas0,betas1] used for the moving frame
 % foutput.t_delay - the time delay of each pulse which is centered in the time window during propagation
 % foutput.seconds - time spent in the main loop
@@ -159,23 +159,23 @@ if sim.save_period == 0
     sim.save_period = fiber.L0;
 end
 
-% MPA performs M "sim.deltaZ/M" in parallel
-num_zSteps = fiber.L0/sim.deltaZ;
-num_zPoints_persave = sim.save_period/sim.deltaZ;
+% MPA performs M "sim.dz/M" in parallel
+num_zSteps = fiber.L0/sim.dz;
+num_zPoints_persave = sim.save_period/sim.dz;
 num_saveSteps = fiber.L0/sim.save_period;
 
 % Because of machine error, "rem" alone to determine divisibility isn't
 % enough. eps() is included here.
 if rem(num_zSteps,1) && rem(num_zSteps+eps(num_zSteps),1) && rem(num_zSteps-eps(num_zSteps),1)
     error('GMMNLSE_propagate:SizeIncommemsurateError',...
-        'The large step size is %f m and the fiber length is %f m, which are not commensurate', sim.deltaZ, fiber.L0)
+        'The large step size is %f m and the fiber length is %f m, which are not commensurate', sim.dz, fiber.L0)
 else
     num_zSteps = round(num_zSteps);
 end
 
 if rem(num_zPoints_persave,1) && rem(num_zPoints_persave+eps(num_zPoints_persave),1) && rem(num_zPoints_persave-eps(num_zPoints_persave),1)
     error('GMMNLSE_propagate:SizeIncommemsurateError',...
-        'The large step size is %f m and the save period is %f m, which are not commensurate', sim.deltaZ, sim.save_period)
+        'The large step size is %f m and the save period is %f m, which are not commensurate', sim.dz, sim.save_period)
 else
     num_zPoints_persave = round(num_zPoints_persave);
 end
@@ -228,24 +228,24 @@ if ~isfield(fiber,'n2') || isempty(fiber.n2)
 end
 prefactor = 1i*fiber.n2*(omegas+2*pi*sim.f0)/c; % m/W
 
-%% Deal with deltaZ
-% After this line, the code starts to use deltaZ in variables important in simulations.
+%% Deal with dz
+% After this line, the code starts to use dz in variables important in simulations.
 if sim.gpu_yes
-    sim.deltaZ = gpuArray(sim.deltaZ);
+    sim.dz = gpuArray(sim.dz);
 end
 
 % Small step size for MPA
 % It's the step size between parallelization planes
 if isequal(sim.step_method,'MPA')
-    sim.small_deltaZ = sim.deltaZ/sim.MPA.M;
+    sim.small_dz = sim.dz/sim.MPA.M;
 end
 
 %% Pre-compute the dispersion operator
 if isequal(sim.step_method,'RK4IP') % RK4IP for single spatial mode
-    D = D_op*sim.deltaZ/2;
+    D = D_op*sim.dz/2;
 else % MPA for multimode
     % We can pre-compute exp(D_op*z) and exp(-D_op*z) for all z.
-    z = sim.small_deltaZ*permute((0:sim.MPA.M)',[2,3,1]); % to make "Dz" into (N,num_modes,M+1)
+    z = sim.small_dz*permute((0:sim.MPA.M)',[2,3,1]); % to make "Dz" into (N,num_modes,M+1)
     Dz = D_op.*z;
     D = struct('pos', exp(Dz), 'neg', exp(-Dz));
 end
@@ -254,7 +254,7 @@ end
 if ~isfield(fiber,'material')
     fiber.material = 'silica';
 end
-[fiber,haw,hbw] = Raman_model( fiber,sim,Nt,dt);
+[fiber,haw,hbw] = Raman_model(fiber,sim,Nt,dt);
 
 %% Include spontaneous Raman scattering
 sim.include_sponRS = (sim.Raman_model ~= 0 && sim.include_sponRS);
@@ -288,7 +288,7 @@ run_start = tic;
 % For single mode, the computation of the gain amplification
 % factor is faster with CPU if the number of point < ~2^20.
 if sim.gpu_yes && num_modes > 1 % multimode
-    gain_rate_eqn.cross_sections        = structfun(@(c) gpuArray(c),gain_rate_eqn.cross_sections,'UniformOutput',false);
+    gain_rate_eqn.cross_sections        = gpuArray(gain_rate_eqn.cross_sections);
     gain_rate_eqn.overlap_factor.signal = gpuArray(gain_rate_eqn.overlap_factor.signal);
     gain_rate_eqn.N_total               = gpuArray(gain_rate_eqn.N_total);
     gain_rate_eqn.FmFnN                 = gpuArray(gain_rate_eqn.FmFnN);
@@ -328,12 +328,12 @@ end
 GMMNLSE_rategain_func = str2func(function_name);
 
 [A_out,T_delay_out,...
- Power,N2,...
+ Power,N,...
  saved_data] = GMMNLSE_rategain_func(sim,gain_rate_eqn,...
                                      num_zPoints,save_points,num_zPoints_persave,...
                                      initial_condition,...
                                      prefactor,...
-                                     SRa_info, SRb_info, SK_info,...
+                                     SK_info, SRa_info, SRb_info,...
                                      omegas, D,...
                                      haw, hbw,...
                                      haw_sponRS, hbw_sponRS, sponRS_prefactor,...
@@ -357,9 +357,7 @@ foutput = struct('z', sim.save_period*(0:num_saveSteps)',...
                  'Power', Power);
 
 foutput.Power = Power; % pump and ASE powers
-if gain_rate_eqn.export_N2
-    foutput.N2 = N2; % upper-state population
-end
+foutput.population = N; % populations
 if gain_rate_eqn.reuse_data
     foutput.saved_data = saved_data; % the saved data for all pulses, ASE and pump powers for the future oscillator roundtrips
 end
