@@ -25,9 +25,9 @@
 %    (1) recompose_into_space() and decompose_into_modes()
 %    (2) calc_filter_matrix() and spatial_filter_moderesolved()
 %
-% One important I notice is that it's necessary to reduce the adaptive-step
-% threshold beyond the default 1e-3, such as 1e-4 or 1e-5, to guarantee
-% convergence.
+% One important point I notice is that it's necessary to reduce the 
+% adaptive-step threshold beyond the default 1e-3, such as 1e-4 or 1e-5, to
+% guarantee convergence.
 %
 % The aim of this code is to demonstrate how to use several functions
 % useful in multimode modelocking. For more details about multimode
