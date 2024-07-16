@@ -1,24 +1,20 @@
 __global__ void decompose_into_modes_Cartesian_basis(double2* field_wm,
                                                      const double* mode_space_profiles_xym, const double* norm_spatial_modes,
-                                                     const double2* full_field_xyw,
+                                                     const double2* full_field_wxy,
                                                      const double dx, const double dy,
                                                      const unsigned int sM, const unsigned int sX, const unsigned int sY, const unsigned int sW) {
     unsigned int thread_idx = threadIdx.x + blockIdx.x*blockDim.x;
 
-    if (threadIdx.x >= sM) return;
-    if (blockIdx.x >= (sX*sY*sW)) return;
-    if (thread_idx >= (sX*sY*sW*sM)) return;
+    if (thread_idx >= (sW*sM)) return;
 
     const unsigned int sXY = sX*sY;
-    const unsigned int XYi = blockIdx.x % sXY;
-    const unsigned int wi = blockIdx.x/sXY;
+    const unsigned int mi = thread_idx % sM;
+    const unsigned int wi = thread_idx / sM;
 
-    if (XYi == 0) {
-        for (unsigned int i = 0; i<sXY; i++) {
-            field_wm[wi+sW*threadIdx.x].x = field_wm[wi+sW*threadIdx.x].x + mode_space_profiles_xym[i+sXY*threadIdx.x]*full_field_xyw[i+sXY*wi].x;
-            field_wm[wi+sW*threadIdx.x].y = field_wm[wi+sW*threadIdx.x].y + mode_space_profiles_xym[i+sXY*threadIdx.x]*full_field_xyw[i+sXY*wi].y;
-        }
-        field_wm[wi+sW*threadIdx.x].x = field_wm[wi+sW*threadIdx.x].x*dx*dy*norm_spatial_modes[threadIdx.x];
-        field_wm[wi+sW*threadIdx.x].y = field_wm[wi+sW*threadIdx.x].y*dx*dy*norm_spatial_modes[threadIdx.x];
+    for (unsigned int XYi = 0; XYi<sXY; XYi++) {
+        field_wm[wi+sW*mi].x = field_wm[wi+sW*mi].x + mode_space_profiles_xym[XYi+sXY*mi]*full_field_wxy[wi+sW*XYi].x;
+        field_wm[wi+sW*mi].y = field_wm[wi+sW*mi].y + mode_space_profiles_xym[XYi+sXY*mi]*full_field_wxy[wi+sW*XYi].y;
     }
+    field_wm[wi+sW*mi].x = field_wm[wi+sW*mi].x*dx*dy*norm_spatial_modes[mi];
+    field_wm[wi+sW*mi].y = field_wm[wi+sW*mi].y*dx*dy*norm_spatial_modes[mi];
 }

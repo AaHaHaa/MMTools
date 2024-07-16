@@ -302,7 +302,7 @@ while rt_num < max_rt
     
     % -----------------------------------------------------------------
     % Saturable absorber
-    prop_output = saturable_absorber_action_3d(prop_output, saturation_power, moddepth, mode_profiles_OM4, mean(diff(mode_profiles_OM4_x*1e-6)), Aeff, sim_Gain.gpu_yes*false, sim_Gain.cuda_dir_path);
+    prop_output = saturable_absorber_action_3d(prop_output, saturation_power, moddepth, mode_profiles_OM4, mean(diff(mode_profiles_OM4_x*1e-6)), Aeff, sim_Gain.gpu_yes, sim_Gain.cuda_dir_path);
     %prop_output = saturable_absorber_action_simple(prop_output, saturation_power, moddepth);
 
     % -----------------------------------------------------------------

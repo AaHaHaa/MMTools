@@ -36,7 +36,10 @@ if use_gpu
     kernel.ThreadBlockSize = [currentGPU.MaxThreadBlockSize(1),1,1];
     kernel.GridSize =[ceil(Nt*Nx^2/kernel.ThreadBlockSize(1)), 1];
     full_field_txy = complex(zeros(Nt,Nx,Nx,'gpuArray'));
-    full_field_txy = feval(kernel,full_field_txy,normalized_mode_space_profiles_xym,mode_time_profiles_tm,ones(1,num_modes,'gpuArray'),num_modes,Nx,Nx,Nt);
+    full_field_txy = feval(kernel,...
+                           full_field_txy,...
+                           normalized_mode_space_profiles_xym,mode_time_profiles_tm,ones(1,num_modes,'gpuArray'),...
+                           num_modes,Nx,Nx,Nt);
     
     full_field_txy = gather(full_field_txy);
 else
