@@ -13,6 +13,7 @@ I know that split-step algorithm is common, but I'd like to advocate people to a
    - MPA (massively parallel algorithm) if multimode
 
 For the details of two algorithms, see `readme.pdf` and their reference papers.
+
 2. Support both scalar and polarized scenarios. Controlled with `sim.scalar=true/false`.
 3. Adaptive step-size control are implemented for both RK4IP and MPA. Only under limited scenarios is adaptive-step method turned off, such as considering ASE and using `saved_data` for fast oscillator convergence. User doesn't choose whether to use the adaptive-step method, which is controlled by this package.
 
