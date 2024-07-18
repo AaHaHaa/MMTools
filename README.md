@@ -5,7 +5,7 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 
 ## Capabilities:<br>
 1. It solves the pulse propagation with
-   - RK4IP (Runge-Kutta under the interaction picture) if single-mode.
+   - RK4IP (Runge-Kutta under the interaction picture) if single-mode (http://www.sciencedirect.com/science/article/pii/S0010465512004262).
 
 > I know that split-step algorithm is common, but I'd like to advocate people to abandon it and switch to RK4IP since RK4IP has a higher-order truncation error, which allows higher precision or larger step size (and faster simulation).
 
