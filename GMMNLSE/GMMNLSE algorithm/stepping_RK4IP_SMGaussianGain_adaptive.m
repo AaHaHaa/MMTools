@@ -52,6 +52,12 @@ function [A1,a5,...
 %    a5 - the RK4 term that can be reused in the next step
 %    opt_dz - recommended step size
 %    success - whether the current step size is sufficiently small for the required tolerance
+%
+% For adaptive-step implementation, check http://www.sciencedirect.com/science/article/pii/S0010465512004262
+%
+%    Balac and Mahe, Embedded Runge-Kutta scheme for step-size control in 
+%    the interaction picture method, "Comput. Phys. Commun. 184(4), 1211-
+%    1219 (2013)
 
 [N,num_modes] = size(A0);
 

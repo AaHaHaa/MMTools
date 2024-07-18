@@ -71,6 +71,12 @@ function [A1, a5,...
 %    opt_dz - recommended step size
 %    success - whether the current step size is sufficiently small for the required tolerance
 %    N - (Nx,Nx); the ion density/population of each energy level
+%
+% For adaptive-step implementation, check http://www.sciencedirect.com/science/article/pii/S0010465512004262
+%
+%    Balac and Mahe, Embedded Runge-Kutta scheme for step-size control in 
+%    the interaction picture method, "Comput. Phys. Commun. 184(4), 1211-
+%    1219 (2013)
 
 [Nt,num_modes] = size(A0);
 
