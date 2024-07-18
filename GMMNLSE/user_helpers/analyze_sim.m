@@ -330,11 +330,11 @@ function fig = analyze_gain(saved_z,splice_z,pump,population)
 %   splice_z - (1,num_splice); the z coordinate of each splice
 %   pump - (1,1,num_z); the pump power along the gain fiber
 %   population - (1,1,num_z,num_population);
-%        the ion density of the upper state, or the inversion,
+%        the ion density of energy states
 %        for the computation of the fundamental-mode gain rate equation
-%        For multimode, N2 is of the size (Nx,Nx,num_z), where Nx is the
-%        number of points of the fiber cross section, so it's not possible
-%        to analyze it with a 1D plot.
+%        For multimode, population is of the size (Nx,Nx,num_z), where Nx 
+%        is the number of points of the fiber cross section, so it's not 
+%        possible to analyze it with a 1D plot.
 
 pump_forward = permute(pump.forward,[3,1,2]);
 pump_backward = permute(pump.backward,[3,1,2]);
@@ -375,6 +375,12 @@ if nargin > 3
         set(h,'linewidth',2,'linestyle','--','color','black','marker','none');
     end
     hold off;
+    
+    Nname = cell(1,size(population,4));
+    for Ni = 1:size(population,4)
+        Nname{Ni} = sprintf('N%u',Ni-1);
+    end
+    legend(Nname);
 end
 
 end
