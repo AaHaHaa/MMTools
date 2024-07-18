@@ -317,7 +317,7 @@ initial_condition.fields = ifft(initial_condition.fields);
                                      initial_condition,input_Power_pump_backward);
 
 % Initialize N to be exported, the ion density of the upper state
-N = zeros([size(gain_rate_eqn.N_total) save_points,gain_rate_eqn.num_levels-1]);
+N = zeros([size(gain_rate_eqn.N_total) save_points,length(gain_rate_eqn.energy_levels)-1]);
 
 if sim.progress_bar
     if ~isfield(sim,'progress_bar_name')
@@ -342,7 +342,7 @@ end
 
 % Then start the propagation
 last_N = cat(8, ones([size(gain_rate_eqn.N_total),1,1,1,1,1,1]).*gain_rate_eqn.N_total,...
-               zeros([size(gain_rate_eqn.N_total),1,1,1,1,1,gain_rate_eqn.num_levels-2])); % initial guess for solving the population during propagation
+               zeros([size(gain_rate_eqn.N_total),1,1,1,1,1,length(gain_rate_eqn.energy_levels)-2])); % initial guess for solving the population during propagation
 switch sim.step_method
     case 'RK4IP'
         mode_str = '';

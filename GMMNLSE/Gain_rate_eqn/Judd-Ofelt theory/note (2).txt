@@ -1,0 +1,6 @@
+The MATLAB code:
+ 1. https://www.mathworks.com/matlabcentral/fileexchange/51915-judd-ofelt-analysis-of-dope-fiber
+ 2. Siamak Dawazdah Emami (2024). JUDD-OFELT analysis of dope fiber (https://www.mathworks.com/matlabcentral/fileexchange/51915-judd-ofelt-analysis-of-dope-fiber), MATLAB Central File Exchange. Retrieved June 2, 2024.
+
+Judd Ofelt theory.pdf:
+https://people.cas.uab.edu/~vfedorov/Notes/Judd%20Ofelt%20theory.pdf
