@@ -4,6 +4,13 @@
 % each point of the gain fiber for co- and counter-pumping because the gain
 % can't respond to the pulse in time and sees only the average effect
 % including both the forward and backward propagating pulses.
+%
+% I realized that this toy linear-oscillator simulation creates around 2%
+% ASE energy, which will destablize the pulse. This results in the slow or
+% impossible convergence with high tolerance, controlled by
+% tol_convergence. It'll still converged decently. Hence, to stop this
+% simulation, tol_convergence is increased to 5e-3. User can play with this
+% value.
 close all; clearvars;
 
 addpath('../../../GMMNLSE algorithm/','../../../user_helpers/');
@@ -75,7 +82,7 @@ c = 299792458; % m/s
 lambda = c./(f*1e12)*1e9; % 
 OC = 0.8; % output coupler
 loss= 0.5;
-tol_convergence = 1e-3; % the tolerance of pulse energy convergence for the oscillator
+tol_convergence = 5e-3; % the tolerance of pulse energy convergence for the oscillator
 
 %% calculate fiber betas from silica refractive index
 % Sellmeier coefficients
