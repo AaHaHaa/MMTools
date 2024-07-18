@@ -4,7 +4,7 @@ This is the shared package to simulate pulse propagation in a solid-core fiber w
 It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA).
 
 > [!WARNING]
-> Because of recent huge change of the entire code structure (mostly due to adding multi-level rare earth ions), there might be some bugs in some rate-eqn-gain examples and functions. I might forget to modify some examples accordingly. Please just let me know and I'll fix it ASAP.
+> Because of recent huge change of the entire code structure (mostly due to adding multi-level rare earth ions), there might be some bugs in some rate-eqn-gain examples and functions. I might forget to modify some examples accordingly. Please just let me know and I'll fix it ASAP. If recently you see on Github that there is any change/commit, please just re-download the entire code again. I'll try to re-run all my examples to check the code, but this will take a few days.
 
 ## Capabilities:<br>
 1. It solves the pulse propagation with
