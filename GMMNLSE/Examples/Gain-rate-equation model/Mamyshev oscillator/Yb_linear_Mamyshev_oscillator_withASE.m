@@ -7,7 +7,7 @@
 %
 % I realized that this toy linear-oscillator simulation creates around 2%
 % ASE energy, which will destablize the pulse. This results in the slow or
-% impossible convergence with high tolerance, controlled by
+% impossible convergence with strict tolerance, controlled by
 % tol_convergence. It'll still converged decently. Hence, to stop this
 % simulation, tol_convergence is increased to 5e-3. User can play with this
 % value.
