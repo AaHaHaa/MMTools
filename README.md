@@ -3,9 +3,6 @@ This is the shared package to simulate pulse propagation in a solid-core fiber w
 
 It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA).
 
-> [!WARNING]
-> Because of recent huge change of the entire code structure (mostly due to adding multi-level rare earth ions), there might be some bugs in some rate-eqn-gain examples and functions. I might forget to modify some examples accordingly. Please just let me know and I'll fix it ASAP. If recently you see on Github that there is any change/commit, please just re-download the entire code again. I'll try to re-run all my examples to check the code, but this will take a few days.
-
 ## Capabilities:<br>
 1. It solves the pulse propagation with
    - RK4IP (Runge-Kutta under the interaction picture) if single-mode (http://www.sciencedirect.com/science/article/pii/S0010465512004262).
@@ -66,3 +63,5 @@ Finish the initial implementation of Er and Nd rate-equation gain modeling. More
 * 7/17/2024:<br>
 I've fixed bugs related to multimode mode-locking. Thanks Yi Zhou, from Univeristy of Hong Kong, for asking me to add examples for a few multimode functions. Please check the "MM ANDi" example in "ANDi oscillator/" folder in "Examples/". In addition, I've finished implementing all types of gain media. Please take a look. More tests need to be done.  
 Addition of ASE to the coherent signal field is corrected, which was wrong previously. See the comments in the `stepping_RK4IP/MPA_rategain.m` for details.
+* 7/21/2024:<br>
+I've re-run all the examples, so I think there shouldn't be any forgotten bugs after the multi-level-rate-gain implementation.
