@@ -1,6 +1,9 @@
 % This code finds the ASE evolutions in a single-mode Yb-doped fiber 
 % amplifier with the gain rate equation.
 %
+% Please run with several co-pumping power, such as 20, 30, 60, 80, 100, 
+% 120 W, to compare it to the following paper:
+%
 % Wang et al., "110 W double-ended ytterbium-doped fiber superfluorescent
 % source with 𝑀2=1.6," Opt. Lett. 31, 3116-3118 (2006)
 

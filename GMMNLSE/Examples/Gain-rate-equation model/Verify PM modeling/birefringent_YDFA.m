@@ -19,7 +19,7 @@ sim.gain_model = 2; % use gain rate-equation model
 
 fiber.MFD = 6; % um; mode-field diameter of the fiber. This determines the nonlinear coefficient, SR=1/Aeff
 fiber.L0 = 4; % m; fiber length
-sim.save_period = fiber.L0/100;
+sim.save_period = fiber.L0/100; % m
 
 betas = [8.867e6; 4.903e3; 0.0208; 33.3e-6; -27.7e-9]; % at 1030nm
 beat_length = 2.7e-3; % 2.7mm at 980nm for PM980
@@ -92,7 +92,7 @@ initial_pulse = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
 random_polarization = rand(Nt,1)+1i*rand(Nt,1); random_polarization = random_polarization./abs(random_polarization);
 initial_pulse.fields = [initial_pulse.fields initial_pulse.fields/10.*random_polarization]; % 20 dB contrast
 
-% Just to calculate the characteristic length here
+% Just to calculate the characteristic lengths here
 [L_D_initial,L_NL_initial] = characteristic_lengths(abs(initial_pulse.fields(:,1)).^2,t,sim.f0,fiber.betas(3,:),1/fiber.SR);
 
 %% Propagate
@@ -125,7 +125,7 @@ figure;
 plot(lambda,spectrum.*factor,'linewidth',2);
 xlabel('Wavelength (nm)'); ylabel('Spectrum (nJ/nm)');
 set(gca,'fontsize',16);
-xlim([1020,1150]);
+xlim([1000,1150]);
 
 %% Save the data
 save('polarized.mat','Nt','t','time_window','f','lambda','fiber','sim','prop_output','energy');

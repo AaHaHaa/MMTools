@@ -3,7 +3,7 @@
 addpath('../../');
 close all; clearvars;
 
-load('nonlinear_gain_coupling2.mat');
+load('nonlinear_gain_coupling.mat');
 
 %% Results
 energy_linear = permute(trapz(abs(prop_output_linear.fields).^2,1)*dt/1e3,[3 2 1]);
@@ -190,7 +190,7 @@ for i = 1:9
     yyaxis right
     h = plot(t,[phi_elliptical{i} 270*ones(Nt,1) 90*ones(Nt,1)]);
     set(h(1),'linewidth',2);
-    xlim([-10 0]);
+    xlim([-5 5]);
     xlabel('time (ps)'); ylabel('the phase difference (deg)');
     title('Final fields');
     subplot(4,3,10:12);

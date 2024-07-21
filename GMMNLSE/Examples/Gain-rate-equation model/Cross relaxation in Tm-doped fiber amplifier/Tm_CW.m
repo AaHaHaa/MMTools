@@ -52,7 +52,7 @@ gain_rate_eqn.verbose = true; % show the information(final pulse energy) during 
 % General parameters
 sim.lambda0 = 1985e-9; % m
 sim.f0 = 2.99792458e-4/sim.lambda0; % THz
-sim.dz = 2000e-6; % um
+sim.dz = 2000e-6; % m
 sim.save_period = 0.05;
 sim.gpu_yes = false; % For only the fundamental mode, running with CPU is faster if the number of points is lower than 2^(~18).
 

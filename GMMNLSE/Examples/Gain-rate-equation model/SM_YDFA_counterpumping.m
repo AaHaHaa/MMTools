@@ -94,7 +94,7 @@ plot(lambda,abs(fftshift(ifft(output_field.fields(:,:,end)),1)).^2.*factor);
 xlabel('Wavelength (nm)');
 ylabel('PSD (a.u.)');
 title('The final output spectrum of YDFA');
-xlim([1010 1050]);
+xlim([1000 1150]);
 
 %% Save results
 save('SM_YDFA_counterpumping.mat');

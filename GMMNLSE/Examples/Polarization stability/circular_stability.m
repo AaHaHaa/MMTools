@@ -1,3 +1,7 @@
+% This code propagates a circularly-polarized light through a long gain
+% fiber with random mode coupling to show how stable the light can be, 
+% without significant polarization mixing/distortion.
+
 close all; clearvars;
 
 addpath('../../GMMNLSE algorithm/','../../user_helpers/');
@@ -26,14 +30,15 @@ sim.save_period = fiber.L0/100;
 %% Gain info
 % Please find details of all the parameters in "gain_info.m".
 % Note that the usage of single spatial mode is different from multi-spatial modes.
-gain_rate_eqn.cross_section_filename = 'Liekki Yb_AV_20160530.txt';
+gain_rate_eqn.gain_medium = 'Yb'; % specify the gain medium
+gain_rate_eqn.base_medium = 'silica'; % specify the base medium
 gain_rate_eqn.core_diameter = 6; % um
 gain_rate_eqn.cladding_diameter = 125; % um
 gain_rate_eqn.core_NA = 0.12;
 gain_rate_eqn.absorption_wavelength_to_get_N_total = 920; % nm
 gain_rate_eqn.absorption_to_get_N_total = 0.55; % dB/m
 gain_rate_eqn.pump_wavelength = 976; % nm
-gain_rate_eqn.copump_power = 4; % W
+gain_rate_eqn.copump_power = 2; % W
 gain_rate_eqn.counterpump_power = 0; % W
 gain_rate_eqn.downsampling_factor = 1; % an integer; downsample the eigenmode profiles to run faster
 gain_rate_eqn.reuse_data = false; % For a ring or linear cavity, the pulse will enter a steady state eventually.
@@ -43,7 +48,6 @@ gain_rate_eqn.linear_oscillator = false; % For a linear oscillator, there are pu
 gain_rate_eqn.t_rep = 24e-9; % Assume 24 MHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
                              % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.
 gain_rate_eqn.tau = 840e-6; % lifetime of Yb in F_(5/2) state (Paschotta et al., "Lifetme quenching in Yb-doped fibers"); in "s"
-gain_rate_eqn.export_N2 = false; % whether to export N2, the ion density in the upper state or not
 gain_rate_eqn.ignore_ASE = true;
 gain_rate_eqn.sponASE_spatial_modes = []; % In LMA fibers, the number of ASE modes can be larger than one as the signal field, so this factor is used to correctly considered ASE. If empty like [], it's length(sim.midx).
 gain_rate_eqn.max_iterations = 50; % If there is ASE, iterations are required.
@@ -130,7 +134,7 @@ legend('\sigma_+','\sigma_-','total field');
 yyaxis right
 h = plot(t,[phi_circular 270*ones(Nt,1) 90*ones(Nt,1)]);
 set(h(1),'linewidth',2);
-xlim([-10 0]);
+xlim([-5 5]);
 xlabel('time (ps)'); ylabel('the phase difference (deg)');
 title('Final fields');
 subplot(3,2,5:6);

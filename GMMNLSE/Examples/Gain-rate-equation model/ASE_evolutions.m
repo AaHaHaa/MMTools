@@ -37,7 +37,7 @@ gain_rate_eqn.verbose = true; % show the information(final pulse energy) during 
 
 %% Field and simulation parameters
 time_window = 10; % ps
-Nt = 2^13; % the number of time points
+Nt = 2^11; % the number of time points
 dt = time_window/Nt;
 t = (-Nt/2:Nt/2-1)'*dt; % ps
 

@@ -44,7 +44,7 @@ sim.gpu_yes = false; % don't use GPU
 [fiber,sim] = load_default_GMMNLSE_propagate([],sim); % load default parameters
 
 num_save = 1;
-fiber.L0 = 6;
+fiber.L0 = 20;
 sim.save_period = fiber.L0/num_save;
 fiber.n2 = 1e-100;
 

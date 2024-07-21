@@ -363,15 +363,6 @@ field = field(:,1:rt_num);
 output_field = output_field(:,:,1:rt_num);
 energy = output_energy(arrayfun(@any,output_energy)); % clear zero
 
-% -------------------------------------------------------------------------
-% Save the final output field
-if pulse_survives
-    save('MM_ANDi.mat', 't','f','lambda','output_field','energy',...
-                        'saved_z','field',...
-                        '-v7.3'); % saved mat file version
-end
-% -------------------------------------------------------------------------
-
 close(fig,fig_filter);
 
 %% Compress the pulse in the fundamental mode only
@@ -382,5 +373,7 @@ full_field_txy = recompose_into_space(sim_Gain.gpu_yes, mode_profiles_10um, outp
 
 figure;
 pcolor(mode_profiles_10um_x,mode_profiles_10um_x,squeeze(sum(abs(full_field_txy).^2,1)));
-shading interp;
-colormap(jet);
+shading interp; colormap(jet);
+xlabel('x (\mum)');
+ylabel('y (\mum)');
+title('Output spatial profile');

@@ -17,9 +17,9 @@ gain_rate_eqn.core_NA = 0.12;
 gain_rate_eqn.absorption_wavelength_to_get_N_total = 920; % nm
 gain_rate_eqn.absorption_to_get_N_total = 0.55; % dB/m
 gain_rate_eqn.pump_wavelength = 976; % nm
-gain_rate_eqn.copump_power = 2; % W
+gain_rate_eqn.copump_power = 2.3; % W
 gain_rate_eqn.counterpump_power = 0; % W
-gain_rate_eqn.reuse_data = false; % For a ring or linear cavity, the pulse will enter a steady state eventually.
+gain_rate_eqn.reuse_data = true; % For a ring or linear cavity, the pulse will enter a steady state eventually.
                                  % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.
 gain_rate_eqn.linear_oscillator = false; % For a linear oscillator, there are pulses from both directions simultaneously, which will deplete the gain;
                                          % therefore, the backward-propagating pulses need to be taken into account.
@@ -124,7 +124,7 @@ while rt_num < max_rt
     saved_z(zn:zn+length(prop_output.z)-1) = current_z + prop_output.z;
 
     % Save the gain info
-    N1(:,:,zn:zn+length(prop_output.z)-1) = 1-prop_output.population;
+    N0(:,:,zn:zn+length(prop_output.z)-1) = prop_output.population;
     pump(:,:,zn:zn+length(prop_output.z)-1) = prop_output.Power.pump.forward;
 
     current_z = prop_output.z(end);
@@ -156,7 +156,7 @@ while rt_num < max_rt
     saved_z(zn:zn+length(prop_output.z)-1) = current_z + prop_output.z;
 
     % Save the gain info
-    N1(:,:,zn:zn+length(prop_output.z)-1) = 1-prop_output.population;
+    N0(:,:,zn:zn+length(prop_output.z)-1) = prop_output.population;
     pump(:,:,zn:zn+length(prop_output.z)-1) = prop_output.Power.pump.forward;
 
     current_z = prop_output.z(end);
@@ -212,7 +212,7 @@ while rt_num < max_rt
     end
     pump_plot.forward = pump;
     pump_plot.backward = zeros(1,1,length(saved_z));
-    fig_gain = func.analyze_gain(saved_z,splice_z,pump_plot,1-N1);
+    fig_gain = func.analyze_gain(saved_z,splice_z,pump_plot,N0);
     
     % ---------------------------------------------------------------------
     % Break if converged
@@ -236,11 +236,11 @@ energy = output_energy(arrayfun(@any,output_energy)); % clear zero
 
 % -------------------------------------------------------------------------
 % Save the final output field
-save('ring_Mamyshev_oscillator.mat', 't','f','output_field','output_field2','time_delay','energy',...
-                         'saved_z','splice_z','field',...
-                         'N1','pump','gain_rate_eqn_SPM','gain_rate_eqn_GMNA',...
-                         'fiber','sim',... % cavity parameters
-                         '-v7.3'); % saved mat file version
+save('Yb_ring_Mamyshev_oscillator.mat', 't','f','output_field','output_field2','time_delay','energy',...
+                                        'saved_z','splice_z','field',...
+                                        'N0','pump','gain_rate_eqn_SPM','gain_rate_eqn_GMNA',...
+                                        'fiber','sim',... % cavity parameters
+                                        '-v7.3'); % saved mat file version
 % -------------------------------------------------------------------------
 
 close(fig,fig_filter,fig_evolution,fig_gain);

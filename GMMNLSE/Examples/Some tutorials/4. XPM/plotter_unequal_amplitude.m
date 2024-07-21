@@ -21,7 +21,7 @@ ylabel('Intensity');
 % Comparison of time
 figure;
 subplot(2,1,1);
-[x,y] = meshgrid(t/T0,z/LD);
+[x,y] = meshgrid(t/T0,prop_output.z/LD);
 pcolor(x,y,permute(abs(prop_output.fields(:,1,:)).^2,[3 1 2]));
 shading interp; colormap(jet);
 xlim([-10 10]);
@@ -29,7 +29,7 @@ xlabel('t/T_0');
 ylabel('z/LD');
 
 subplot(2,1,2);
-[x,y] = meshgrid(t/T0,z/LD);
+[x,y] = meshgrid(t/T0,prop_output.z/LD);
 pcolor(x,y,permute(abs(prop_output.fields(:,2,:)).^2,[3 1 2]));
 shading interp; colormap(jet);
 xlim([-10 10]);
@@ -39,7 +39,7 @@ ylabel('z/LD');
 % Comparison of spectra
 figure;
 subplot(2,1,1);
-[x,y] = meshgrid((f-sim.f0)*T0,z/LD);
+[x,y] = meshgrid((f-sim.f0)*T0,prop_output.z/LD);
 pcolor(x,y,permute(abs(fftshift(ifft(prop_output.fields(:,1,:)),1)).^2,[3 1 2]));
 shading interp; colormap(jet);
 xlim([-0.5 0.5]);
@@ -47,7 +47,7 @@ xlabel('(\nu-\nu_0)*T_0');
 ylabel('z/LD');
 
 subplot(2,1,2);
-[x,y] = meshgrid((f-sim.f0)*T0,z/LD);
+[x,y] = meshgrid((f-sim.f0)*T0,prop_output.z/LD);
 pcolor(x,y,permute(abs(fftshift(ifft(prop_output.fields(:,2,:)),1)).^2,[3 1 2]));
 shading interp; colormap(jet);
 xlim([-0.5 0.5]);

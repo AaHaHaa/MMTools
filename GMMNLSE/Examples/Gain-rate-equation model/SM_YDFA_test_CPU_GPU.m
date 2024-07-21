@@ -93,7 +93,7 @@ profile on
 for i = 1:2
     sim{i}.gpu_yes = false;
     
-    output_field{i} = GMMNLSE_propagate(fiber{i},input_field,sim{i},gain_param);
+    output_field{i} = GMMNLSE_propagate(fiber{i},input_field,sim{i},gain_rate_eqn);
     t_spent = datevec(output_field{i}.seconds/3600/24);
     fprintf('Running time for %s: %2u:%3.1f\n',model_name{i},t_spent(5),t_spent(6));
 end

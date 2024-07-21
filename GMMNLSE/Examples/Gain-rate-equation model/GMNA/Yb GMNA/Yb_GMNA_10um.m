@@ -44,9 +44,9 @@ gain_rate_eqn.core_diameter = 10; % um
 gain_rate_eqn.cladding_diameter = 125; % um
 gain_rate_eqn.core_NA = 0.08;
 gain_rate_eqn.absorption_wavelength_to_get_N_total = 920; % nm
-gain_rate_eqn.absorption_to_get_N_total = 1; % dB/m
+gain_rate_eqn.absorption_to_get_N_total = 1.7; % dB/m
 gain_rate_eqn.pump_wavelength = 976; % nm
-gain_rate_eqn.copump_power = 3.6; % W
+gain_rate_eqn.copump_power = 3; % W
 gain_rate_eqn.counterpump_power = 0; % W
 gain_rate_eqn.reuse_data = false; % For a ring or linear cavity, the pulse will enter a steady state eventually.
                                   % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.

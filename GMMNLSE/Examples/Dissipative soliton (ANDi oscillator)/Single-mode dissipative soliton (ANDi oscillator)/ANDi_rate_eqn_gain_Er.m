@@ -227,16 +227,6 @@ field = field(1:rt_num);
 output_field = output_field(:,:,1:rt_num);
 energy = output_energy(arrayfun(@any,output_energy)); % clear zero
 
-% -------------------------------------------------------------------------
-% Save the final output field
-if pulse_survives
-    save('ANDi_Er.mat', 't','f','lambda','output_field','energy',...
-                        'saved_z','splice_z','field',...
-                        'fiber_cavity',... % cavity parameters
-                        '-v7.3'); % saved mat file version
-end
-% -------------------------------------------------------------------------
-
 close(fig,fig_filter,fig_evolution);
 
 %% Compress the pulse

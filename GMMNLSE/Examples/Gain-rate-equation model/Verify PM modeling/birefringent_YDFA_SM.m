@@ -115,7 +115,7 @@ figure;
 plot(lambda,spectrum.*factor,'linewidth',2);
 xlabel('Wavelength (nm)'); ylabel('Spectrum (nJ/nm)');
 set(gca,'fontsize',16);
-xlim([1020,1150]);
+xlim([1000,1150]);
 
 %% Save the data
 save('scalar.mat','Nt','t','time_window','f','lambda','fiber','sim','prop_output','energy');

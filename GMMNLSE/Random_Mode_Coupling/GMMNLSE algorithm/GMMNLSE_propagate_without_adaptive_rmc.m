@@ -336,7 +336,7 @@ if sim.gain_model == 2 % rate-equation-gain model
     % For single mode, the computation of the gain amplification
     % factor is faster with CPU if the number of point < ~2^20.
     if sim.gpu_yes && num_modes > 1 % multimode
-        gain_rate_eqn.cross_sections        = structfun(@(c) gpuArray(c),gain_rate_eqn.cross_sections,'UniformOutput',false);
+        gain_rate_eqn.cross_sections        = gpuArray(gain_rate_eqn.cross_sections);
         gain_rate_eqn.overlap_factor.signal = gpuArray(gain_rate_eqn.overlap_factor.signal);
         gain_rate_eqn.N_total               = gpuArray(gain_rate_eqn.N_total);
         gain_rate_eqn.FmFnN                 = gpuArray(gain_rate_eqn.FmFnN);
@@ -377,7 +377,7 @@ if sim.gain_model == 2 % rate-equation-gain model
     GMMNLSE_rategain_func = str2func(function_name);
 
     [A_out,T_delay_out,...
-     Power,N2,...
+     Power,N,...
      saved_data] = GMMNLSE_rategain_func(sim,gain_rate_eqn,...
                                          num_zPoints,save_points,num_zPoints_persave,...
                                          initial_condition,...
@@ -415,10 +415,8 @@ foutput = struct('z', sim.save_period*(0:num_saveSteps)',...
                  'seconds', fulltime,...
                  't_delay', T_delay_out);
 if sim.gain_model == 2 % rate-equation-gain model
-    foutput.Power = Power; % pump and ASE powers
-    if gain_rate_eqn.export_N2
-        foutput.N2 = N2; % upper-state population
-    end
+    foutput.Power = Power; % pump and ASE powers\
+    foutput.population = N; % upper-state population
     if gain_rate_eqn.reuse_data
         foutput.saved_data = saved_data; % the saved data for all pulses, ASE and pump powers for the future oscillator roundtrips
     end

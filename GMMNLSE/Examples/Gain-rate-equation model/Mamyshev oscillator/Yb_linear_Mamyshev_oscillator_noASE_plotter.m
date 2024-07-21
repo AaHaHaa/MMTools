@@ -4,7 +4,7 @@
 % including both the forward and backward propagating pulses.
 close all; clearvars;
 
-filename = 'linear_Mamyshev_oscillator_noASE.mat';
+filename = 'Yb_linear_Mamyshev_oscillator_noASE.mat';
 
 load(filename);
 
@@ -17,4 +17,4 @@ func.analyze_fields(t,f,field{end},saved_z,splice_z);
 
 pump_plot.forward = cat(3,zeros(1,1,length(saved_z)/2),pump{end}(1,1,length(saved_z)/2+1:end));
 pump_plot.backward = cat(3,pump{end}(1,1,1:length(saved_z)/2),zeros(1,1,length(saved_z)/2));
-func.analyze_gain(saved_z,splice_z,pump_plot,1-N1{end});
+func.analyze_gain(saved_z,splice_z,pump_plot,N0{end});

@@ -43,9 +43,10 @@ sim.lambda0 = 1080e-9; % the center wavelength
 [fiber,sim] = load_default_GMMNLSE_propagate([],sim); % load default parameters
 
 num_save = 1;
-fiber.L0 = 300;
+fiber.L0 = 100;
 sim.save_period = fiber.L0/num_save;
 fiber.n2 = 1e-100;
+%sim.gpu_yes = false;
 
 %% Setup general parameters
 Nt = 2^18; % the number of time points

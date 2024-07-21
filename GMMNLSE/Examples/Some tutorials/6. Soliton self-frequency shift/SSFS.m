@@ -1,4 +1,4 @@
-% This code shows the soliton self-frequency shift.
+% This code shows the soliton self-frequency shift (SSFS).
 
 close all; clearvars;
 

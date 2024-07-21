@@ -12,6 +12,7 @@ addpath('../../../GMMNLSE algorithm/','../../../user_helpers/');
     
 %% Gain info
 gain_rate_eqn.gain_medium = 'Yb'; % specify the gain medium
+gain_rate_eqn.base_medium = 'silica'; % specify the base medium
 gain_rate_eqn.reuse_data = false; % For a ring or linear cavity, the pulse will enter a steady state eventually.
                                   % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.
 gain_rate_eqn.linear_oscillator = false; % For a linear oscillator, there are pulses from both directions simultaneously, which will deplete the gain;
@@ -227,16 +228,6 @@ end
 field = field(1:rt_num);
 output_field = output_field(:,:,1:rt_num);
 energy = output_energy(arrayfun(@any,output_energy)); % clear zero
-
-% -------------------------------------------------------------------------
-% Save the final output field
-if pulse_survives
-    save('ANDi.mat', 't','f','lambda','output_field','energy',...
-                     'saved_z','splice_z','field',...
-                      'fiber_cavity','sim_cavity',... % cavity parameters
-                      '-v7.3'); % saved mat file version
-end
-% -------------------------------------------------------------------------
 
 close(fig,fig_filter,fig_evolution);
 

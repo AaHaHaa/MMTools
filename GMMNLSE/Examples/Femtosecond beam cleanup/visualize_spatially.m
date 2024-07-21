@@ -12,7 +12,7 @@ for ni = 1:num_modes
     load(sprintf('%smode%uwavelength%u.mat',MM_folder,n,round(lambda0*1e10)),'phi','x');
     mode_profiles(:,:,ni) = phi;
 end
-mode_profiles = mode_profiles./sqrt(sum(sum(abs(mode_profiles).^2,1),2));
+mode_profiles = mode_profiles./sqrt(sum(sum(abs(mode_profiles).^2,1),2))/mean(diff(x*1e-6));
 
 % the fiber core to draw on the mode profiles
 radius = core_diameter/2;

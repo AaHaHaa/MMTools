@@ -181,7 +181,7 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
     % happens in cases of noise-seeded four-wave mixing and noise-seeded
     % Raman scattering far from the pulse central frequency.
     %
-    % To account for this effect, I limit the step size to be 10x smaller 
+    % To account for this effect, I limit the step size to be 4x smaller 
     % than the effective maximum beat length which is
     % 2*pi/(max(eff_betas)-min(eff_betas)).
     % eff_betas is from betas, propagation constants, throughout the time 

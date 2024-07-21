@@ -28,7 +28,7 @@ set(gca,'fontsize',14);
 
 % Pump
 figure;
-h = plot(distance,[output_field{1}.Power.pump_forward(:) output_field{2}.Power.pump_backward(:)]);
+h = plot(distance,[output_field{1}.Power.pump.forward(:) output_field{2}.Power.pump.backward(:)]);
 legend('copumping','counterpumping');
 xlabel('Propagation length (m)');
 ylabel('Power (W)');
@@ -38,9 +38,9 @@ set(gca,'fontsize',14);
 
 % ASE
 figure;
-h1 = plot(distance,permute(sum([output_field{1}.Power.ASE_forward output_field{1}.Power.ASE_backward]*1e3)/time_window,[3 2 1]));
+h1 = plot(distance,permute(sum([output_field{1}.Power.ASE.forward output_field{1}.Power.ASE.backward]*1e3)/time_window,[3 2 1]));
 hold on;
-h2 = plot(distance,permute(sum([output_field{2}.Power.ASE_forward output_field{2}.Power.ASE_backward]*1e3)/time_window,[3 2 1]));
+h2 = plot(distance,permute(sum([output_field{2}.Power.ASE.forward output_field{2}.Power.ASE.backward]*1e3)/time_window,[3 2 1]));
 hold off;
 legend('copumping (forward)','copumping (backward)','counterpumping (forward)','counterpumping (backward)');
 xlabel('Propagation length (m)');
@@ -52,11 +52,11 @@ set(gca,'fontsize',14);
 
 % N2
 figure;
-h = plot(distance,[output_field{1}.N2(:) output_field{2}.N2(:)]);
+h = plot(distance,1-[output_field{1}.population(:) output_field{2}.population(:)]);
 legend('copumping','counterpumping');
 xlabel('Propagation length (m)');
-ylabel('N2');
-title('N2 for both pumping directions');
+ylabel('N_1');
+title('N_1 for both pumping directions');
 set(h,'linewidth',2);
 set(gca,'fontsize',14);
 

@@ -1,6 +1,5 @@
 % Example propagation in GRIN fiber, at a relatively low power.
 % You can use this as a starting point for more specific simulations
-%
 
 close all; clearvars;
 
@@ -22,8 +21,12 @@ wavelength_range = [0.7,2]*1e-6; % m
 Nt = 2^11;
 sim.lambda0 = 1030e-9; % central pulse wavelength (m
 time_window = 7; % ps
+dt = time_window/Nt;
+t = (-Nt/2:Nt/2-1)'*dt;
 
 [fiber,sim] = load_default_GMMNLSE_propagate(fiber,sim,'multimode');
+
+f = sim.f0 + (-Nt/2:Nt/2-1)'/time_window; % THz
 
 %% Setup initial conditions
 tfwhm = 0.05; % ps, FWHM of the initial pulse.
@@ -38,29 +41,11 @@ initial_condition = build_MMgaussian(tfwhm, time_window, total_energy, num_modes
 %% Run the propagation
 prop_output = GMMNLSE_propagate(fiber, initial_condition, sim); % This actually does the propagation
 
-% The output of the propagation is a struct with:
-% prop_output.fields = MM fields at each save point and the initial condition. The save points will be determined by sim.save_period, but the initial condition will always be saved as the first page.
-% prop_output.dt = dt
-% prop_output.seconds = total execution time in the main loop
-% prop_output.full_iterations_hist (if using MPA) = a histogram of the
-% number of iterations required for convergence
+%% Plot the results
 
-save('OM4_lowpower_single_gpu_mpa', 'prop_output', 'fiber', 'sim'); % Also save the information about the propagation
-disp(prop_output.seconds);
-
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Plot the results
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-
-Nt = size(prop_output.fields, 1); % Just in case we're loaded from a save
-
-
-%% Plot the time domain
+% Plot the time domain
 figure();
 I_time = abs(prop_output.fields(:, :, end).^2);
-t = (-Nt/2:Nt/2-1)*(prop_output.dt);
 tlim = 1;
 
 subplot(1, 2, 1);
@@ -69,9 +54,8 @@ ylabel('Power (W)')
 xlabel('Time (ps)')
 xlim([-tlim, tlim])
 
-%% Plot the frequency domain
+% Plot the frequency domain
 I_freq = abs(ifftshift(ifft(prop_output.fields(:, :, end)))).^2;
-f = sim.f0+(-Nt/2:Nt/2-1)/(prop_output.dt*Nt); % ps
 flim = 60;
 
 subplot(1, 2, 2);
@@ -94,10 +78,10 @@ for ii = 1:num_modes
    mode_profiles(:, :, ii) = phi; % Save the modes
    disp(['Loaded mode ', int2str(ii)])
 end
-mode_profiles = mode_profiles./sqrt(sum(sum(abs(mode_profiles).^2,1),2));
 load(name, 'x');
 x = (x-mean(x))*1e-6; % The spatial coordinates along one dimension
 dx = x(2)-x(1);
+mode_profiles = mode_profiles./sqrt(sum(sum(abs(mode_profiles).^2,1),2))/dx;
 
 % Downsample in space to reduce memory usage
 factor = 8;
