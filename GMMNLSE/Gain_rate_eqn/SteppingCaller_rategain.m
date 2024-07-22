@@ -351,10 +351,6 @@ if gain_rate_eqn.reuse_data
     saved_data.Power_ASE_backward     = Power_ASE_backward;
 end
 
-%if ~gain_rate_eqn.linear_oscillator
-%    signal_fields_out = signal_fields_out.forward;
-%end
-
 %%
 function [T_delay_out,N] = gain_propagate(direction,...
                                           sim,gain_rate_eqn,...

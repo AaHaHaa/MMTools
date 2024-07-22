@@ -429,28 +429,6 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
             else
                 dz_resolve_beat_length = min_beat_length/4;
             end
-            % Because I use the approximation, sqrt(1+x)=1+x/2 if x is small, in
-            % calculating signal fields with MPA, the code will give error here if
-            % this approximation is bad.
-            if isequal(sim.step_method,'MPA')
-                relative_N1 = max(gain_rate_eqn.N_total-last_N(:,:,:,:,:,:,:,1));
-                switch gain_rate_eqn.gain_medium
-                    case {'Yb','Er','Nd'}
-                        emi10 = gain_rate_eqn.cross_sections(:,:,:,:,:,:,:,2);
-                        GSA01 = gain_rate_eqn.cross_sections(:,:,:,:,:,:,:,1);
-                    case 'Tm'
-                        emi10 = gain_rate_eqn.cross_sections(:,:,:,:,:,:,:,end-1);
-                        GSA01 = gain_rate_eqn.cross_sections(:,:,:,:,:,:,:,1);
-                end
-                relative_gain = relative_N1.*emi10 - (max(gain_rate_eqn.N_total(:))-relative_N1).*GSA01;
-                relative_gain(relative_gain<0) = 0; % I think (?) it only neds to resolve the "gain" correctly
-
-                tol_approximation = 1e-4; % I've found that 1e-3 is not enough
-                approx_error = @(x)abs((sqrt(1+x)-(1+x/2))./sqrt(1+x));
-                while approx_error( 2*(opt_dz/sim.MPA.M*1e6)*max(relative_gain(:)) ) > tol_approximation
-                    opt_dz = opt_dz/2;
-                end
-            end
             sim.dz = min([opt_dz,save_z(end)-z,sim.adaptive_dz.max_dz,dz_resolve_beat_length]);
 
             % If it's time to save, get the result from the GPU if necessary,
