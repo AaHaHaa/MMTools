@@ -182,7 +182,7 @@ end
 x = x0 + dx;
 x(x<0) = 0; % population can't be smaller than zero
 
-% Total population of the m's population should be larger than x_total.
+% Total population of the m's population shouldn't be larger than x_total.
 % If this happens, I normalize them back to x_total.
 sum_x = sum(x,1);
 idx = (sum_x > x_total);
