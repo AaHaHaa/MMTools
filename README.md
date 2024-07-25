@@ -8,13 +8,11 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
    - RK4IP (Runge-Kutta under the interaction picture) if single-mode (http://www.sciencedirect.com/science/article/pii/S0010465512004262).
 
 > [!NOTE]
-> I know that split-step algorithm is common, but I'd like to advocate people to abandon it and switch to RK4IP since RK4IP has a higher-order truncation error, which allows higher precision or larger step size (and faster simulation).
+> I know that split-step algorithm is common, but I'd like to advocate people to switch to RK4IP since RK4IP has a higher-order truncation error, which allows higher precision or larger step size (and faster simulation).
 
-   - MPA (massively parallel algorithm) if multimode
+   - MPA (massively parallel algorithm) if multimode (https://ieeexplore.ieee.org/document/8141863)
 
-For the details of two algorithms, see `readme.pdf` and their reference papers.
-
-2. Adaptive step-size control are implemented for both RK4IP and MPA. Only under limited scenarios is adaptive-step method turned off, such as considering ASE and using `saved_data` for fast oscillator convergence. User doesn't choose whether to use the adaptive-step method, which is controlled by this package.
+2. Adaptive step-size control are implemented for both RK4IP and MPA, which improves the performance and allows users to be free from worrying the reliability of a simulation. Only under limited scenarios is adaptive-step method turned off, such as considering ASE and using `saved_data` for fast oscillator convergence. User doesn't choose whether to use the adaptive-step method, which is controlled by this package.
 
 > [!NOTE]
 > Although adaptive-step-size control for RK4IP isn't new with published papers, adaptive-step-size control for MPA is new. I didn't publish a separate paper discussing this numerical scheme, which is perhaps the fastest and the most convenient numerical scheme for general multimode situations (as in step-index, graded-index, or hollow-core fibers, etc.) by far (written on 2/14/2024). The implementation detail is described in the supplement of https://doi.org/10.1364/JOSAB.500586.
@@ -24,7 +22,7 @@ For the details of two algorithms, see `readme.pdf` and their reference papers.
 > [!NOTE]
 > This package is always solved in the frequency domain such that the nonlinear term has a $\omega$ prefactor, rather than $\omega_0(1+\frac{i}{\omega_0}\partial_t)$ with the shock-wave term. Shock-wave term is a first-order Taylor-series term of the frequency-dependent nonlinearity. There is no point using it; just use the general $\omega$, which cannot be simpler. Please see the supplement of https://doi.org/10.1063/5.0189749 for the derivation of MM-UPPE and understand how the shock-wave term appears and why it's unnecessary if MM-UPPE is solved in the frequency domain.
 
-4. Support both scalar and polarized scenarios. Controlled with `sim.scalar=true/false`.
+4. Support both scalar and polarized scenarios, controlled with `sim.scalar=true/false`.
 5. Support random mode coupling.
 6. Support both passive and gain fibers
    - Gain model includes Gaussian gain and rate-equation gain, for both single-mode and multimode scenarios.
@@ -39,7 +37,7 @@ For the details of two algorithms, see `readme.pdf` and their reference papers.
 For details, please read the supplement of our paper: https://doi.org/10.1364/JOSAB.500586.  
 Please don't forget to cite our paper if you find this code useful in your work. I, the young and early-career researcher, need your support. Similarly, if you need help or have questions about the code, please feel free to send me an email.
 
-There is a `readme.pdf` in the `Documentations/` folder. Please find details of how to use this code in it. However, the fastest way to learn how to use this package is to learn from the examples in the Examples/ folder.
+There is a `readme.pdf` in the `Documentations/` folder. Please find details of how to use this code in it. However, the fastest way to learn how to use this package is to learn from the examples in the `Examples/` folder.
 
 I'm Yi-Hao Chen, the author of the code and from Frank Wise's group at Cornell Applied Physics. This code is basically an upgraded and highly-optimized version of our "WiseLabAEP/GMMNLSE-Solver-FINAL" from "https://github.com/WiseLabAEP/GMMNLSE-Solver-FINAL," with much more functionalities, which however might overwhelm users and thus require more fiber-optic background. It can run order-of-magnitude faster than our old code due to optimizing with CUDA+shared memory, as well as reducing the usage of for-loops. Although our old one claims to be fast with GPU, its CUDA implementation is not optimized, let alone its CPU implementation with a lot of slow for-loops. Besides, this package includes adaptive step-size control, which improves the performance significantly and allows users to be free from worrying the reliability of a simulation. For optimization details, please see the supplement of our paper mentioned previously. 
 
