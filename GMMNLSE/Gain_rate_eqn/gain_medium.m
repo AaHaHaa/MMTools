@@ -28,7 +28,7 @@ switch gain_rate_eqn.gain_medium
         gain_rate_eqn.energy_levels = {'2F7/2','2F5/2'}; % from low to high energy
     case 'Er'
         gain_rate_eqn.cross_section_filename = 'Er.txt';
-        %gain_rate_eqn.tau = 9e-3; % lifetime of Er in I_(13/2) state
+        %gain_rate_eqn.tau = 9e-3; % lifetime of Er in (^4)I_(13/2) state; (Z. Y. Zhang et al., "Fluorescence decay-time characteristics of erbium-doped optical fiber at elevated temperatures")
         
         [gain_rate_eqn.Arad,gain_rate_eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
         
