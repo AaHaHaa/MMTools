@@ -48,11 +48,9 @@ function gain_rate_eqn = gain_info( fiber,sim,gain_rate_eqn,lambda,mode_profiles
 %
 %       doped ion info -->
 %
+%           gain_medium - doped ion name
 %           absorption_wavelength_to_get_N_total - nm
 %           absorption_to_get_N_total - dB/m
-%           cross_section_filename - the filename for the doped ion cross section data
-%                                    Currently I have 'Liekki Yb_AV_20160530.txt' for Yb and 'optiwave Er' for Er
-%                                    Er data is from optiwave website: https://optiwave.com/resources/applications-resources/optical-system-edfa-basic-concepts/
 %
 %       pump info -->
 %
@@ -69,14 +67,10 @@ function gain_rate_eqn = gain_info( fiber,sim,gain_rate_eqn,lambda,mode_profiles
 %
 %       computational info -->
 %
-%           tau - the lifetime of the upper states, which is used in spontaneous emission; in "s".
-%                 (1) lifetime of Yb in F_(5/2) state = 840 us (Paschotta et al., "Lifetme quenching in Yb-doped fibers")
-%                 (2) lifetime of Er in (^4)I_(13/2) state = 8-10 ms (Z. Y. Zhang et al., "Fluorescence decay-time characteristics of erbium-doped optical fiber at elevated temperatures")
 %           t_rep - the roundtrip time (1/repetition rate) of the pulse, which is used to calculate the power of the "signal" pulse; in "s"
 %
 %       rate equation model algorithm info -->
 %
-%           export_N - 1(true) or 0(false); Whether to export N, the ion density of each energy level, or not
 %           ignore_ASE - 1(true) or 0(false)
 %           max_iterations - the maximum number of iterations
 %           tol - the tolerance of this iteration loop. If the difference between the last two results is smaller than this tolerance, we're done. 
