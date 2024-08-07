@@ -61,7 +61,7 @@ if calc_TL_duration
     for i = 1:prod(sE(2:end))
         % Current duration
         threshold = max(abs(input_field(:,i)).^2)/1.01;
-        [~,~,tmp_pulse_width,~] = findpeaks(abs(input_field(:,i)).^2,t_insert*1e3,'MinPeakHeight',threshold,'WidthReference','halfheight');
+        [~,~,tmp_pulse_width,~] = findpeaks(abs(input_field(:,i)).^2,t_insert*1e3,'MinPeakHeight',threshold,'WidthReference','halfheight','MinPeakProminence',threshold/2);
         pulse_FWHM(i) = tmp_pulse_width(1);
         
         % Transform-limited duration
