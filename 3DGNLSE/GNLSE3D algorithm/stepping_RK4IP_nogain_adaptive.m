@@ -5,49 +5,6 @@ function [E1,a5,...
                                                                fr, haw, hbw, sponRS_prefactor, dt,...
                                                                a5_1)
 %STEPPING_RK4IP_NOGAIN_ADAPTIVE Take one step with RK4IP without gain
-%
-% Input:
-%    A0 - initial field in the frequency domain (N, num_modes); sqrt(W)
-%    dummy_dt - time grid point spacing; ps; but this isn't used in this function
-%
-%    sim.scalar - scalar or polarized fields
-%    sim.gpu_yes - true = GPU, false = CPU
-%
-%    sim.cuda_SRSK - the cuda for computing SR and SK values
-%
-%    sim.Raman_model - which Raman model is used
-%    sim.Raman_sponRS - consider spontaneous Raman or not
-%
-%    sim.adaptive_deltaZ.threshold - the accuracy used to determined whether to increase or decrease the step size
-%
-%    prefactor - 1i*n2*omega/c; m/W
-%
-%    SRa_info.SRa - SRa tensor; m^-2
-%    SRa_info.nonzero_midx1234s - required SRa indices in total
-%    SRa_info.nonzero_midx34s - required (SRa) indices for partial Raman term (only for CPU computation)
-%    SRb_info.SRb - SRb tensor; m^-2
-%    SRb_info.nonzero_midx1234s - required SRb indices in total
-%    SRb_info.nonzero_midx34s - required (SRb) indices for partial Raman term (only for CPU computation)
-%    SK_info.SK - SK tensor; m^2 (unempty if considering polarizaton modes)
-%    SK_info.nonzero_midx1234s - required SK indices in total (unempty if considering polarizaton modes)
-%
-%    D_op - dispersion term Dz/2 (N, num_modes)
-%    haw - isotropic Raman response in the frequency domain
-%    hbw - anisotropic Raman response in the frequency domain
-%
-%    sponRS_prefactor - prefactor for the spontaneous Raman scattering
-%
-%    a5_1 - the previous RK4 term that can be reused
-%
-%    dummy_G - gain term (N, 1); but this isn't used in this function
-%    dummy_saturation_intensity - saturation intensity; J/m^2; but this isn't used in this function
-%    dummy_fr - Raman fraction; but this isn't used in this function
-%
-% Output:
-%    A1 - the field (in the frequency domain) after one step size (N, num_modes)
-%    a5 - the RK4 term that can be reused in the next step
-%    opt_deltaZ - recommended step size
-%    success - whether the current step size is sufficiently small for the required tolerance
 
 anisotropic_Raman_included = ~sim.scalar & sim.Raman_model==2;
 

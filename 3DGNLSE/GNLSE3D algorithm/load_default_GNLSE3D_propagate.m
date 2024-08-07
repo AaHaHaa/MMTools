@@ -48,8 +48,6 @@ function [fiber,sim] = load_default_GNLSE3D_propagate( input_fiber,input_sim )
 %       sim.cuda_dir_path = [folder_of_this_function 'GNLSE3D/cuda'];
 %
 %
-% For both single-mode and multimode -->
-%
 %   fiber.L0 = (1) input L0
 %              (2) 2 (m)
 %
@@ -63,14 +61,14 @@ function [fiber,sim] = load_default_GNLSE3D_propagate( input_fiber,input_sim )
 %    fiber.L0 = 3;
 %    
 %    % Incorporate default settings
-%    [fiber,sim] = load_default_GNLSE3D_propagate(fiber,[]); % single_mode
+%    [fiber,sim] = load_default_GNLSE3D_propagate(fiber,[]);
 %
 %    % If there are "sim" settings
 %    sim.adaptive_deltaZ.model = 0;
-%    [fiber,sim] =  load_default_GNLSE3D_propagate(fiber,sim); % single_mode
+%    [fiber,sim] =  load_default_GNLSE3D_propagate(fiber,sim);
 %
 %    % Use only user-defined "sim", not "fiber"
-%    [fiber,sim] = load_default_GNLSE3D_propagate([],sim); % single_mode
+%    [fiber,sim] = load_default_GNLSE3D_propagate([],sim);
 %
 % -------------------------------------------------------------------------
 %
@@ -227,7 +225,6 @@ default_sim.adaptive_deltaZ.threshold = 1e-6; % the threshold of the RK4IP part 
 % Algorithms to use
 default_sim.gpu_yes = true;
 default_sim.Raman_model = 1; % isotropic Raman model
-default_sim.gain_model = 0;
 
 % Others
 default_sim.pulse_centering = true; % center the pulse according to the time window

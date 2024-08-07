@@ -82,14 +82,6 @@ sim.deltaZ = 1e-6; % m; start with a small value to avoid initial blowup
 save_deltaZ(1) = sim.deltaZ;
 sim.last_deltaZ = 1; % randomly put a number, 1, for initialization
 
-switch sim.gain_model
-    case 0
-        gain_str = 'nogain';
-    case 1
-        gain_str = 'MMGaussianGain'; % with MPA
-end
-GMMNLSE_func = str2func(['stepping_RK4IP_', gain_str, '_adaptive']);
-
 % Then start the propagation
 while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical error
     % Check for Cancel button press
@@ -110,11 +102,11 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
         end
 
         [last_E,a5,...
-         opt_deltaZ, success] = GMMNLSE_func(last_E,...
-                                             sim, prefactor,...
-                                             D_op, W_op,...
-                                             fr, haw, hbw, sponRS_prefactor, dt,...
-                                             a5);
+         opt_deltaZ, success] = stepping_RK4IP_nogain_adaptive(last_E,...
+                                                               sim, prefactor,...
+                                                               D_op, W_op,...
+                                                               fr, haw, hbw, sponRS_prefactor, dt,...
+                                                               a5);
 
         if ~success
             ever_fail = true;

@@ -36,10 +36,12 @@ end
 [Nt, Nx, Ny, ~, ~] = size(initial_condition.field);
 
 %% Set up the GPU details
-try
-    sim.gpuDevice.Device = gpuDevice(sim.gpuDevice.Index); % use the specified GPU device
-catch
-    error('Please set the GPU you''re going to use by setting "sim.gpuDevice.Index".');
+if sim.gpu_yes
+    try
+        sim.gpuDevice.Device = gpuDevice(sim.gpuDevice.Index); % use the specified GPU device
+    catch
+        error('Please set the GPU you''re going to use by setting "sim.gpuDevice.Index".');
+    end
 end
 
 %% Pre-calculate the dispersion term
@@ -125,19 +127,14 @@ save_z = double(0:save_points-1)'*sim.save_period;
 %% Run the step function over each step
 run_start = tic;
 % -------------------------------------------------------------------------
-if sim.gain_model == 2 % rate-equation-gain model
-    error('It hasn''t been implemented yet.')
-% -------------------------------------------------------------------------
-else % No gain, Gaussian gain
-    [E_out,...
-     save_z,save_deltaZ,...
-     T_delay_out] = SteppingCaller_adaptive(sim,...
-                                            save_z,save_points,...
-                                            initial_condition,...
-                                            prefactor,...
-                                            D_op, W_op,...
-                                            fr, haw, hbw, sponRS_prefactor);
-end
+[E_out,...
+ save_z,save_deltaZ,...
+ T_delay_out] = SteppingCaller_adaptive(sim,...
+                                        save_z,save_points,...
+                                        initial_condition,...
+                                        prefactor,...
+                                        D_op, W_op,...
+                                        fr, haw, hbw, sponRS_prefactor);
 
 % -------------------------------------------------------------------------
 % Just to get an accurate timing, wait before recording the time
@@ -159,11 +156,5 @@ foutput = struct('z', save_z,...
                  'betas', sim.betas,...
                  'seconds', fulltime,...
                  't_delay', T_delay_out);
-if sim.gain_model == 2
-    foutput.Power = Power;
-    if gain_rate_eqn.export_N2
-        foutput.N2 = N2;
-    end
-end
 
 end
