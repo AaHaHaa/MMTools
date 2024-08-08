@@ -7,9 +7,8 @@ filename = 'SM_YDFA_compare_co_and_counterpumping.mat';
 load(filename);
 
 % nonlinear phase
-distance = 0:sim.save_period:fiber.L0;
-nonlinear_phase_copumping = accumulated_nonlinear_phase(fiber.L0,1/fiber.SR,sim.f0,output_field{1}.fields,distance,output_field{1}.dt);
-nonlinear_phase_counterpumping = accumulated_nonlinear_phase(fiber.L0,1/fiber.SR,sim.f0,output_field{2}.fields,distance,output_field{2}.dt);
+nonlinear_phase_copumping = accumulated_nonlinear_phase(fiber.L0,1/fiber.SR,sim.f0,output_field{1}.fields,output_field{1}.z);
+nonlinear_phase_counterpumping = accumulated_nonlinear_phase(fiber.L0,1/fiber.SR,sim.f0,output_field{2}.fields,output_field{2}.z);
 fprintf('nonlinear phase (copumping): %6.4f\n',nonlinear_phase_copumping);
 fprintf('nonlinear phase (counterpumping): %6.4f\n',nonlinear_phase_counterpumping);
 
@@ -17,6 +16,7 @@ energy_copumping   = permute(sum(trapz(abs(output_field{1}.fields).^2),2)*dt/1e3
 energy_counterpumping = permute(sum(trapz(abs(output_field{2}.fields).^2),2)*dt/1e3,[3 2 1]);
 
 % Energy
+distance = (0:save_num)*sim.save_period;
 figure;
 h = plot(distance,[energy_copumping energy_counterpumping]);
 legend('copumping','counterpumping');

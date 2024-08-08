@@ -126,7 +126,7 @@ xlabel('Propagation distance (m)');
 ylabel('Pulse energy (nJ)');
 set(gca,'fontsize',20);
 
-nonlinear_phase = accumulated_nonlinear_phase( fiber_Gain.L0,1/fiber_Gain.SR,sim_Gain.f0,prop_output.fields,prop_output.z,dt );
+nonlinear_phase = accumulated_nonlinear_phase( fiber_Gain.L0,1/fiber_Gain.SR,sim_Gain.f0,prop_output.fields,prop_output.z );
 fprintf('N_NL = %6.4f*pi\n',nonlinear_phase/pi);
 
 figure;

@@ -1,4 +1,4 @@
-function nonlinear_phase = accumulated_nonlinear_phase( L0,Aeff,f0,field,z,dt )
+function nonlinear_phase = accumulated_nonlinear_phase( L0,Aeff,f0,field,z )
 %ACCUMULATED_NONLINEAR_PHASE Calculates the total accumulated nonlinear
 %phase from the propagation.
 %   For oscillators, there are usually more than one type of fibers, mostly
@@ -21,7 +21,6 @@ function nonlinear_phase = accumulated_nonlinear_phase( L0,Aeff,f0,field,z,dt )
 %                        Also, save_num = save_num1 + save_num2 + save_num3
 %
 %   z: (1,save_num); the z position of each saved field (m)
-%   dt: a scalar; the difference between each time point (ps)
 
 if isstruct(field)
     fibername = fieldnames(field); % the fiber type
@@ -82,18 +81,6 @@ w0 = 2*pi*f0; % angular frequency (THz)
 n2 = 2.3e-20; % m^2 W^-1
 nonlin_const = n2*w0/c; % W^-1 m
 
-%% Raman response function for silica
-fr = 0.18; % for silica
-t1 = 12.2e-3; % raman parameter t1 [ps]
-t2 = 32e-3; % raman parameter t2 [ps]
-t_shifted = dt*(0:N-1)'; % time starting at 0
- 
-hr = ((t1^2+t2^2)/(t1*t2^2)).*exp(-t_shifted/t2).*sin(t_shifted/t1);
-
-hrw = ifft(hr)*N; % The factor of N is needed and used later in the convolution theorem because of how ifft is defined.
-                  % The convolution theorem is PQ=F[(p*q)]/N, where (p*q) is the discrete-form convolution, for discrete Fourier transforms.
-                  % Normal (integral-form) convolution is p*q=(p*q)*dt.
-
 %% Calculate accumulated nonlinear phase
 I = abs(field).^2./Aeff; % intensity: |E|^2/Aeff (|E|^2 is normalized to P, as in Agrawal)
 
@@ -101,10 +88,14 @@ if num_spatial_modes == num_modes/2
     I = I(:,1:2:num_modes-1,:) + I(:,2:2:num_modes,:);
 end
 
-nonlinear_phase_Kerr  = (1-fr)*nonlin_const*trapz(z,I,3);
-nonlinear_phase_Raman =    fr *nonlin_const*trapz(z, real(fft(ifft(I).*hrw)) ,3)*dt; % This calculation gives a real result, so "real()" is just to simplify the notation and for "max()" below.
-
-nonlinear_phase = max(nonlinear_phase_Kerr + nonlinear_phase_Raman);
+% In the model of Raman fraction, the Raman-induced Kerr effect is taken
+% into account in the "total" nonlinearity already, so just compute
+% "nonlin_const*trapz(z,I,3)".
+%nonlinear_phase_Kerr  = (1-fr)*nonlin_const*trapz(z,I,3);
+%nonlinear_phase_Raman =    fr *nonlin_const*trapz(z, real(fft(ifft(I).*hrw)) ,3)*dt; % This calculation gives a real result, so "real()" is just to simplify the notation and for "max()" below.
+%nonlinear_phase = max(nonlinear_phase_Kerr + nonlinear_phase_Raman);
+nonlinear_phase  = nonlin_const*trapz(z,I,3);
+nonlinear_phase = max(nonlinear_phase);
 
 end
 

@@ -38,8 +38,6 @@ function [Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power,fig] = a
 %           ASE.t_rep: the repetition rate of the pulse in gain-rate-eqn model (s).
 %                      This is used to compute the correct unit for the ASE spectrum.
 %           ASE.spectrum: the ASE spectrum; a column vector
-%   assumed_dechirped_duration: assumed pulse duration of the dechirped pulse.
-%                               This is used to help interpolate the field such that the temporal sampling is high enough to resolute the duration after dechirped.
 
 %% Move the required input arguments out of the optional input arguments, varargin
 switch compressor_type

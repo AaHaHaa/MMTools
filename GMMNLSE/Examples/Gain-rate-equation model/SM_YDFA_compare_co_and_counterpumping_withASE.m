@@ -100,8 +100,8 @@ end
 
 %% Plot results
 % nonlinear phase
-nonlinear_phase_copumping = accumulated_nonlinear_phase(fiber.L0,1/fiber.SR,sim.f0,output_field{1}.fields,output_field{1}.z,output_field{1}.dt);
-nonlinear_phase_counterpumping = accumulated_nonlinear_phase(fiber.L0,1/fiber.SR,sim.f0,output_field{2}.fields,output_field{2}.z,output_field{2}.dt);
+nonlinear_phase_copumping = accumulated_nonlinear_phase(fiber.L0,1/fiber.SR,sim.f0,output_field{1}.fields,output_field{1}.z);
+nonlinear_phase_counterpumping = accumulated_nonlinear_phase(fiber.L0,1/fiber.SR,sim.f0,output_field{2}.fields,output_field{2}.z);
 fprintf('nonlinear phase (copumping): %6.4f\n',nonlinear_phase_copumping);
 fprintf('nonlinear phase (counterpumping): %6.4f\n',nonlinear_phase_counterpumping);
 
