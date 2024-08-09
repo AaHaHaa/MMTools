@@ -1,4 +1,4 @@
-function func = FJ_Ho
+function func = FJ_Ho()
 %FJ_HO container for the coupled equations of Ho population evolutions and
 %their Jacobian matrix
 %

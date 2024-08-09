@@ -32,7 +32,7 @@ switch gain_rate_eqn.gain_medium
         
         [gain_rate_eqn.Arad,gain_rate_eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
         
-        gain_rate_eqn.N_eqn = FJ_Er;
+        gain_rate_eqn.N_eqn = FJ_Er();
     case 'Nd'
         gain_rate_eqn.cross_section_filename = 'Nd.txt';
         if ~isfield(gain_rate_eqn,'base_medium')
@@ -41,23 +41,20 @@ switch gain_rate_eqn.gain_medium
         
         [gain_rate_eqn.Arad,gain_rate_eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
         
-        gain_rate_eqn.N_eqn = FJ_Nd;
+        gain_rate_eqn.N_eqn = FJ_Nd();
     case 'Tm'
         gain_rate_eqn.cross_section_filename = 'Tm.txt';
         
         [gain_rate_eqn.Arad,gain_rate_eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
          
-        gain_rate_eqn.N_eqn = FJ_Tm;
+        gain_rate_eqn.N_eqn = FJ_Tm();
     case 'Ho'
         gain_rate_eqn.cross_section_filename = 'Ho.txt';
-        if ~isfield(gain_rate_eqn,'base_medium')
-            gain_rate_eqn.base_medium = 'silica'; % Nd fibers are basically made of silica
-        end
         %gain_rate_eqn.tau = 1.9e-3; % lifetime of Ho in 5I_7 state (Gouet et al., "Realization and simulation of high-power holmium doped fiber lasers for long-range transmission"); in "s"
         
         [gain_rate_eqn.Arad,gain_rate_eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
         
-        gain_rate_eqn.N_eqn = FJ_Ho;
+        gain_rate_eqn.N_eqn = FJ_Ho();
 end
 
 end
@@ -72,6 +69,8 @@ N_silica = silica_density/silica_atomic_mass*Avogadro_number; % 1/um^3; silica n
 ratio_Silica2DopedIon = N_silica./N_total; % ratio of number density of doped rare ions to silica (in a silica-based fiber)
 
 switch gain_rate_eqn.gain_medium
+    case 'Yb'
+        gain_rate_eqn.kijkl = [];
     case 'Er'
         gain_rate_eqn.kijkl = population_nonlinear_terms(gain_rate_eqn.gain_medium,[]);
     case 'Nd'

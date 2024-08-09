@@ -1,4 +1,4 @@
-function func = FJ_Er
+function func = FJ_Er()
 %FJ_ER container for the coupled equations of Er population evolutions and
 %their Jacobian matrix
 %

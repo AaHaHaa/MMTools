@@ -1,4 +1,4 @@
-function func = FJ_Nd
+function func = FJ_Nd()
 %FJ_ND container for the coupled equations of Nd population evolutions and
 %their Jacobian matrix
 %
@@ -51,7 +51,7 @@ N11 = N_total - sum(N,1); % (2D5/2 +) 2P1/2
 
 % Nonlinear coupling coefficients
 k4438   = kijkl(1);
-k4429  = kijkl(2);
+k4429   = kijkl(2);
 k440110 = kijkl(3);
 k440011 = kijkl(4);
 k4033   = kijkl(5);

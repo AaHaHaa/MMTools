@@ -1,4 +1,4 @@
-function func = FJ_Tm
+function func = FJ_Tm()
 %FJ_TM container for the coupled equations of Tm population evolutions and
 %their Jacobian matrix
 %

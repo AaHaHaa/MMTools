@@ -1,5 +1,7 @@
 clearvars; close all;
 
+addpath('../../user_helpers/');
+
 filename = 'Nd.txt';
 
 %% Reading data from the specified file
