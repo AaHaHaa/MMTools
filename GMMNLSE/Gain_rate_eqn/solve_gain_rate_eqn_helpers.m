@@ -127,7 +127,7 @@ total_absorption = R_over_photon.pump(:,:,:,:,:,:,:,1) + R_over_photon.ASE_signa
 total_emission   = R_over_photon.pump(:,:,:,:,:,:,:,2) + R_over_photon.ASE_signal(:,:,:,:,:,:,:,2);
 N1 = N_total.*total_absorption./... % size: (Nx,Nx,1,1,1,M)
      (total_absorption + total_emission + ... % absorption and emission terms
-      1/gain_rate_eqn.tau);                   % upper-state-lifetime term
+      1/gain_rate_eqn.N.eqn.tau);                   % upper-state-lifetime term
 
 N0 = N_total - N1; % ground-state population
 
@@ -202,8 +202,8 @@ R_over_photon.ASE_signal = real(sum(integral_mn.*overlap_factor.signal,[3,4])); 
 R_over_photon = shiftdim(R_over_photon.pump + R_over_photon.ASE_signal,-2); % shift the dimension to prepare for the solver
 N_total = shiftdim(N_total,-2);
 N = permute(N,[8,9,1,2,3,4,5,6,7]); % It's important to have N, in principle from the previous propagation step, as an initial guess so that the trust-region solver for the coupled equation of the population can find a solution fast.
-F = @(N) gain_rate_eqn.N_eqn.F(N,N_total,gain_rate_eqn.Arad,gain_rate_eqn.Gammai,gain_rate_eqn.kijkl,R_over_photon);
-J = @(N) gain_rate_eqn.N_eqn.J(N,        gain_rate_eqn.Arad,gain_rate_eqn.Gammai,gain_rate_eqn.kijkl,R_over_photon);
+F = @(N) gain_rate_eqn.N.eqn.ss.F(N,N_total,gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.N.eqn.kijkl,R_over_photon);
+J = @(N) gain_rate_eqn.N.eqn.ss.J(N,        gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.N.eqn.kijkl,R_over_photon);
 N = myTrustRegion(F,J,N,10,1e-4,size(R_over_photon,8),N_total);
 N = permute(N,[3,4,5,6,7,8,9,1,2]); % change it to the original dimension, with the 8th dimension storing various N, population of each level
 

@@ -23,38 +23,38 @@ switch gain_rate_eqn.gain_medium
         else
             gain_rate_eqn.cross_section_filename = 'Liekki Yb_AV_20160530.txt';
         end
-        gain_rate_eqn.tau = 840e-6; % lifetime of Yb in F_(5/2) state (Paschotta et al., "Lifetime quenching in Yb-doped fibers"); in "s"
+        gain_rate_eqn.N.eqn.tau = 840e-6; % lifetime of Yb in F_(5/2) state (Paschotta et al., "Lifetime quenching in Yb-doped fibers"); in "s"
         gain_rate_eqn.base_medium = 'silica'; % Yb fibers are basically made of silica
         gain_rate_eqn.energy_levels = {'2F7/2','2F5/2'}; % from low to high energy
     case 'Er'
         gain_rate_eqn.cross_section_filename = 'Er.txt';
         %gain_rate_eqn.tau = 9e-3; % lifetime of Er in (^4)I_(13/2) state; (Z. Y. Zhang et al., "Fluorescence decay-time characteristics of erbium-doped optical fiber at elevated temperatures")
         
-        [gain_rate_eqn.Arad,gain_rate_eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
+        [gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
         
-        gain_rate_eqn.N_eqn = FJ_Er();
+        gain_rate_eqn.N.eqn.ss = FJ_Er();
     case 'Nd'
         gain_rate_eqn.cross_section_filename = 'Nd.txt';
         if ~isfield(gain_rate_eqn,'base_medium')
             gain_rate_eqn.base_medium = 'silica'; % Nd fibers are basically made of silica
         end
         
-        [gain_rate_eqn.Arad,gain_rate_eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
+        [gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
         
-        gain_rate_eqn.N_eqn = FJ_Nd();
+        gain_rate_eqn.N.eqn.ss = FJ_Nd();
     case 'Tm'
         gain_rate_eqn.cross_section_filename = 'Tm.txt';
         
-        [gain_rate_eqn.Arad,gain_rate_eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
+        [gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
          
-        gain_rate_eqn.N_eqn = FJ_Tm();
+        gain_rate_eqn.N.eqn.ss = FJ_Tm();
     case 'Ho'
         gain_rate_eqn.cross_section_filename = 'Ho.txt';
         %gain_rate_eqn.tau = 1.9e-3; % lifetime of Ho in 5I_7 state (Gouet et al., "Realization and simulation of high-power holmium doped fiber lasers for long-range transmission"); in "s"
         
-        [gain_rate_eqn.Arad,gain_rate_eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
+        [gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.energy_levels] = calc_Judd_Ofelt(gain_rate_eqn);
         
-        gain_rate_eqn.N_eqn = FJ_Ho();
+        gain_rate_eqn.N.eqn.ss = FJ_Ho();
 end
 
 end
@@ -70,11 +70,11 @@ ratio_Silica2DopedIon = N_silica./N_total; % ratio of number density of doped ra
 
 switch gain_rate_eqn.gain_medium
     case 'Yb'
-        gain_rate_eqn.kijkl = [];
+        gain_rate_eqn.N.eqn.kijkl = [];
     case 'Er'
-        gain_rate_eqn.kijkl = population_nonlinear_terms(gain_rate_eqn.gain_medium,[]);
+        gain_rate_eqn.N.eqn.kijkl = population_nonlinear_terms(gain_rate_eqn.gain_medium,[]);
     case 'Nd'
-        gain_rate_eqn.kijkl = population_nonlinear_terms(gain_rate_eqn.gain_medium,[]);
+        gain_rate_eqn.N.eqn.kijkl = population_nonlinear_terms(gain_rate_eqn.gain_medium,[]);
     case 'Tm'
         % For Coherent/Nufern's LMA-TDF-25P/400, LMA-TDF-25P-250, and
         % SM-TDF-10P-130, the Tm is doped to be ~5 wt.%.
@@ -98,9 +98,9 @@ switch gain_rate_eqn.gain_medium
         calibration_ratio = 1.523;
         doped_ion_wt = doped_atomic_mass/(doped_atomic_mass + silica_atomic_mass*ratio_Silica2DopedIon)*100*calibration_ratio; % weight percent; wt.%
         
-        gain_rate_eqn.kijkl = population_nonlinear_terms(gain_rate_eqn.gain_medium,doped_ion_wt);
+        gain_rate_eqn.N.eqn.kijkl = population_nonlinear_terms(gain_rate_eqn.gain_medium,doped_ion_wt);
     case 'Ho'
-        gain_rate_eqn.kijkl = population_nonlinear_terms(gain_rate_eqn.gain_medium,[]);
+        gain_rate_eqn.N.eqn.kijkl = population_nonlinear_terms(gain_rate_eqn.gain_medium,[]);
 end
 
 end
