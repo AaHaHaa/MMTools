@@ -29,9 +29,9 @@ function N = solve_N(sim,gain_rate_eqn,...
 % However, for multi-level systems, a numerical solver is required. I
 % implemented the trust-region method with a dogleg sub-problem solver. In
 % addition, to solve it fast, the population from the previous propagation
-% step is sent as an initial guess. Due to these two processes, it's
-% helpful to split the population solver into two functions based on
-% whether it's a two-level system or not.
+% step is sent as an initial guess.
+% Due to these two processes, it's helpful to split the population solver 
+% into two functions based on whether it's a two-level system or not.
 
 if length(gain_rate_eqn.energy_levels) == 2 % two-level system
     N = solve_N_2levels(sim,gain_rate_eqn,...
@@ -80,19 +80,19 @@ sP = size(Power_pump_forward,1:7); % the 1st-6th dimensions are the same as defi
                                    % the 8th dimension is to store various cross-section data
 num_cross_sections = length(cross_sections_pump);
 if sim.gpu_yes
-    R_over_photon_forward  = zeros([sN,sP(3:end),num_cross_sections],'gpuArray');
-    R_over_photon_backward = zeros([sN,sP(3:end),num_cross_sections],'gpuArray');
+    R_forward  = zeros([sN,sP(3:end),num_cross_sections],'gpuArray');
+    R_backward = zeros([sN,sP(3:end),num_cross_sections],'gpuArray');
 else
-    R_over_photon_forward  = zeros([sN,sP(3:end),num_cross_sections]);
-    R_over_photon_backward = zeros([sN,sP(3:end),num_cross_sections]);
+    R_forward  = zeros([sN,sP(3:end),num_cross_sections]);
+    R_backward = zeros([sN,sP(3:end),num_cross_sections]);
 end
 if ismember(gain_rate_eqn.pump_direction,{'co','bi'})
-    R_over_photon_forward  = overlap_factor.pump.*cross_sections_pump.*Power_pump_forward /h*(gain_rate_eqn.pump_wavelength*1e-9)/c; % 1/s
+    R_forward  = overlap_factor.pump.*cross_sections_pump.*Power_pump_forward /h*(gain_rate_eqn.pump_wavelength*1e-9)/c; % 1/s
 end
 if ismember(gain_rate_eqn.pump_direction,{'counter','bi'})
-    R_over_photon_backward = overlap_factor.pump.*cross_sections_pump.*Power_pump_backward/h*(gain_rate_eqn.pump_wavelength*1e-9)/c; % 1/s
+    R_backward = overlap_factor.pump.*cross_sections_pump.*Power_pump_backward/h*(gain_rate_eqn.pump_wavelength*1e-9)/c; % 1/s
 end
-R_over_photon.pump = R_over_photon_forward + R_over_photon_backward; % 1/s
+R.pump = R_forward + R_backward; % 1/s
 
 % ASE and signal
 if gain_rate_eqn.include_ASE
@@ -118,13 +118,13 @@ if sim.gpu_yes && length(sim.midx) == 1 % single mode
 end
 
 % It's real! Use "real" to save the memory.
-R_over_photon.ASE_signal = real(sum(integral_mn.*overlap_factor.signal,[3,4])); % 1/s; size: (Nx,Nx,1,1,1,M,1,[GSA01,emi10])
+R.ASE_signal = real(sum(integral_mn.*overlap_factor.signal,[3,4])); % 1/s; size: (Nx,Nx,1,1,1,M,1,[GSA01,emi10])
 
 % ion density in the upper state
 % N2 = N_total*sum(all the absorption terms)/
 %      ( sum(all the absorption and emission terms) + upper-state-lifetime term )
-total_absorption = R_over_photon.pump(:,:,:,:,:,:,:,1) + R_over_photon.ASE_signal(:,:,:,:,:,:,:,1);
-total_emission   = R_over_photon.pump(:,:,:,:,:,:,:,2) + R_over_photon.ASE_signal(:,:,:,:,:,:,:,2);
+total_absorption = R.pump(:,:,:,:,:,:,:,1) + R.ASE_signal(:,:,:,:,:,:,:,1);
+total_emission   = R.pump(:,:,:,:,:,:,:,2) + R.ASE_signal(:,:,:,:,:,:,:,2);
 N1 = N_total.*total_absorption./... % size: (Nx,Nx,1,1,1,M)
      (total_absorption + total_emission + ... % absorption and emission terms
       1/gain_rate_eqn.N.eqn.tau);                   % upper-state-lifetime term
@@ -158,19 +158,19 @@ sP = size(Power_pump_forward,1:7); % the 1st-6th dimensions are the same as defi
                                    % the 8th dimension is to store various cross-section data
 num_cross_sections = length(cross_sections_pump);
 if sim.gpu_yes
-    R_over_photon_forward  = zeros([sN,sP(3:end),num_cross_sections],'gpuArray');
-    R_over_photon_backward = zeros([sN,sP(3:end),num_cross_sections],'gpuArray');
+    R_forward  = zeros([sN,sP(3:end),num_cross_sections],'gpuArray');
+    R_backward = zeros([sN,sP(3:end),num_cross_sections],'gpuArray');
 else
-    R_over_photon_forward  = zeros([sN,sP(3:end),num_cross_sections]);
-    R_over_photon_backward = zeros([sN,sP(3:end),num_cross_sections]);
+    R_forward  = zeros([sN,sP(3:end),num_cross_sections]);
+    R_backward = zeros([sN,sP(3:end),num_cross_sections]);
 end
 if ismember(gain_rate_eqn.pump_direction,{'co','bi'})
-    R_over_photon_forward  = overlap_factor.pump.*cross_sections_pump.*Power_pump_forward /h*(gain_rate_eqn.pump_wavelength*1e-9)/c; % 1/s
+    R_forward  = overlap_factor.pump.*cross_sections_pump.*Power_pump_forward /h*(gain_rate_eqn.pump_wavelength*1e-9)/c; % 1/s
 end
 if ismember(gain_rate_eqn.pump_direction,{'counter','bi'})
-    R_over_photon_backward = overlap_factor.pump.*cross_sections_pump.*Power_pump_backward/h*(gain_rate_eqn.pump_wavelength*1e-9)/c; % 1/s
+    R_backward = overlap_factor.pump.*cross_sections_pump.*Power_pump_backward/h*(gain_rate_eqn.pump_wavelength*1e-9)/c; % 1/s
 end
-R_over_photon.pump = R_over_photon_forward + R_over_photon_backward;
+R.pump = R_forward + R_backward;
 
 % ASE and signal
 if gain_rate_eqn.include_ASE
@@ -196,15 +196,15 @@ if sim.gpu_yes && length(sim.midx) == 1 % single mode
 end
 
 % It's real! Use "real" to save the memory.
-R_over_photon.ASE_signal = real(sum(integral_mn.*overlap_factor.signal,[3,4])); % 1/s; size: (Nx,Nx,1,1,1,M,1,num_cross_sections)
+R.ASE_signal = real(sum(integral_mn.*overlap_factor.signal,[3,4])); % 1/s; size: (Nx,Nx,1,1,1,M,1,num_cross_sections)
 
 % Compute the steady-state populations
-R_over_photon = shiftdim(R_over_photon.pump + R_over_photon.ASE_signal,-2); % shift the dimension to prepare for the solver
+R = shiftdim(R.pump + R.ASE_signal,-2); % shift the dimension to prepare for the solver
 N_total = shiftdim(N_total,-2);
 N = permute(N,[8,9,1,2,3,4,5,6,7]); % It's important to have N, in principle from the previous propagation step, as an initial guess so that the trust-region solver for the coupled equation of the population can find a solution fast.
-F = @(N) gain_rate_eqn.N.eqn.ss.F(N,N_total,gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.N.eqn.kijkl,R_over_photon);
-J = @(N) gain_rate_eqn.N.eqn.ss.J(N,        gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.N.eqn.kijkl,R_over_photon);
-N = myTrustRegion(F,J,N,10,1e-4,size(R_over_photon,8),N_total);
+F = @(N) gain_rate_eqn.N.eqn.ss.F(N,N_total,gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.N.eqn.kijkl,R);
+J = @(N) gain_rate_eqn.N.eqn.ss.J(N,        gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.N.eqn.kijkl,R);
+N = myTrustRegion(F,J,N,10,1e-4,size(R,8),N_total);
 N = permute(N,[3,4,5,6,7,8,9,1,2]); % change it to the original dimension, with the 8th dimension storing various N, population of each level
 
 end
