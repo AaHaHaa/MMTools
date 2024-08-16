@@ -1,11 +1,4 @@
-% This code computes the 6-um bidirectionally pumped GMNA with a seed
-% entering at each end.
-% I assume they are the same seed, so the output will be two GMN pulses.
-% My code can run bidirectional pumping with only one seed pulse, so I use
-% the linear-oscillator scheme for this type of simulation.
-% For a linear oscillator, a gain fiber is affected by pulses from both
-% directions due to slow response of Yb ions and sees only the average 
-% effect.
+% This code computes the double-pass amplifier.
 
 close all; clearvars;
 
@@ -32,7 +25,7 @@ gain_rate_eqn.reuse_data = true; % For a ring or linear cavity, the pulse will e
                                  % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.
 gain_rate_eqn.linear_oscillator = true; % For a linear oscillator, there are pulses from both directions simultaneously, which will deplete the gain;
                                         % therefore, the backward-propagating pulses need to be taken into account.
-gain_rate_eqn.t_rep = 1/100e3; % Assume 100 kHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
+gain_rate_eqn.t_rep = 1/1e6; % Assume 1 MHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
                                % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.
 gain_rate_eqn.ignore_ASE = false;
 gain_rate_eqn.sponASE_spatial_modes = 5; % In LMA fibers, the number of ASE modes can be larger than one as the signal field, so this factor is used to correctly considered ASE. If empty like [], it's length(sim.midx).
@@ -48,7 +41,7 @@ sim.lambda0 = 1030e-9; % m
 sim.f0 = 2.99792458e-4/sim.lambda0; % THz
 sim.dz = 1000e-6; % um
 sim.save_period = 0.05; % m
-sim.gpuDevice.Index = 2;
+sim.gpuDevice.Index = 1; % choose which GPU to use if you have multiple GPUs: 1,2,3...
 %sim.gpu_yes = false;
 % -------------------------------------------------------------------------
 % -------------------------------- Arm (6um) ------------------------------
@@ -70,7 +63,7 @@ fiber.MFD = 64; % um; mode-field diameter
 [fiber,sim] = load_default_GMMNLSE_propagate(fiber,sim,'single_mode');
 
 %% Setup general cavity parameters
-max_iterations = 5000; % maximum number of iterations
+max_iterations = 100; % maximum number of iterations
 Nt = 2^17; % the number of points
 time_window = 6e3; % ps
 dt = time_window/Nt;
@@ -99,8 +92,8 @@ f_pulse = c/pulse_lambda0*1e-12;
 freq_shift = f_pulse - f_now;
 seed_pulse = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt, {'ifft',freq_shift});
 
-stretched_duration = 600; % ps
-[~,stretched_field] = pulse_stretcher_addNormalDispersion( 'double-Offner',stretched_duration,30*pi/180,sim.lambda0*1e9,t,seed_pulse.fields,1e-3/1000,3,true );
+stretched_duration = 500; % ps
+[~,stretched_field] = pulse_stretcher_addNormalDispersion( 'double-Offner',stretched_duration,30*pi/180,sim.lambda0*1e9,t,seed_pulse.fields,1e-3/1000,5,true );
 input_pulse = seed_pulse;
 input_pulse.fields = stretched_field;
 input_pulse.Power.ASE.forward = zeros(Nt,1);
