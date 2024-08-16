@@ -8,11 +8,10 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 ## Capabilities:<br>
 1. It solves the pulse propagation with
    - RK4IP (Runge-Kutta under the interaction picture) if single-mode (http://www.sciencedirect.com/science/article/pii/S0010465512004262).
+   - MPA (massively parallel algorithm) if multimode (https://ieeexplore.ieee.org/document/8141863)
 
 > [!NOTE]
 > I know that split-step algorithm is common, but I'd like to advocate people to switch to RK4IP since RK4IP has a higher-order truncation error, which allows higher precision or larger step size (and faster simulation).
-
-   - MPA (massively parallel algorithm) if multimode (https://ieeexplore.ieee.org/document/8141863)
 
 2. Adaptive step-size control are implemented for both RK4IP and MPA, which improves the performance and allows users to be free from worrying the reliability of a simulation. Only under limited scenarios is adaptive-step method turned off, such as considering ASE and using `saved_data` for fast oscillator convergence. User doesn't choose whether to use the adaptive-step method, which is controlled by this package.
 
@@ -28,7 +27,7 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 5. Support random mode coupling.
 6. Support both passive and gain fibers
    - Gain model includes Gaussian gain and rate-equation gain, for both single-mode and multimode scenarios.
-   - For rate-equation-gain modeling, all pumping schemes are implemented: copumping, counterpumping, co+counter-pumping, as well as with and without ASE.
+   - For rate-equation-gain modeling, all pumping schemes are implemented: co-pumping, counter-pumping, co+counter-pumping, as well as with and without ASE.
    - If ASE is included, the effect of ASE to the coherent signal field is simulated, rather than only a separate "power" variable $P_{\text{ASE}}(\omega)$ from the coherent signal "field" $A(t)$.
    - Rate-equation model supports `Nd`, `Yb`, `Er`, `Tm`, `Ho`. For more details, see `readme.pdf`.
    - Support ring- and linear-oscillator configurations with fast convergence (with the use of `saved_data`). For linear oscillators, inclusion of influence from pulses of both directions to the gain medium is considered. As an example, please see the numerical section of http://josab.osa.org/abstract.cfm?URI=josab-38-3-743 to understand the necessity of this two-pulse saturation effect in a linear oscillator.
@@ -37,20 +36,15 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 
 ## Notes:<br>
 For details, please read the supplement of our paper: https://doi.org/10.1364/JOSAB.500586.  
-Please don't forget to cite our paper if you find this code useful in your work. I, the young and early-career researcher, need your support. Similarly, if you need help or have questions about the code, please feel free to send me an email.
+Please don't forget to cite our paper if you find this code useful in your work. I, the young and early-career researcher, need your support. Similarly, if you need help or have questions about the code, please feel free to ask them here or send me an email (email address is in my paper).
 
 There is a `readme.pdf` in the `Documentations/` folder. Please find details of how to use this code in it. However, the fastest way to learn how to use this package is to learn from the examples in the `Examples/` folder.
 
 I'm Yi-Hao Chen, the author of the code and from Frank Wise's group at Cornell Applied Physics. This code is basically an upgraded and highly-optimized version of our "WiseLabAEP/GMMNLSE-Solver-FINAL" from "https://github.com/WiseLabAEP/GMMNLSE-Solver-FINAL," with much more functionalities, which however might overwhelm users and thus require more fiber-optic background. It can run order-of-magnitude faster than our old code due to optimizing with CUDA+shared memory, as well as reducing the usage of for-loops. Although our old one claims to be fast with GPU, its CUDA implementation is not optimized, let alone its CPU implementation with a lot of slow for-loops. Besides, this package includes adaptive step-size control, which improves the performance significantly and allows users to be free from worrying the reliability of a simulation. For optimization details, please see the supplement of our paper mentioned previously. 
 
-If you have questions, feel free to ask them here or send me an email (email address is in my paper).
-
 ## History:<br>
 * 11/1/2023:<br>
 If you downloaded the code earlier, please re-download it. There was a huge bug in polarization modes. I fixed it only recently. Now it works correctly.
-* 12/22/2023:<br>
-I've been constantly modifying it, especially the ASE part, these days.<br>
-If you find a bug, download the latest one since I've been changing it often. If it still exists, let me know.
 * 1/3/2024:<br>
 I've fixed the bugs regarding spontaneous Raman scattering. My previous implementation was wrong and created almost negligible spontaneous Raman. It didn't affect any of the results that didn't care about spontaneous Raman scattering.
 About the implementation details, please find them in https://doi.org/10.1063/5.0189749.
@@ -58,12 +52,8 @@ About the implementation details, please find them in https://doi.org/10.1063/5.
 Since I've received questions about the Fourier Transform, I've added explanation about it in the readme.pdf. Because of the laser-field definition, Fourier Transform should be `ifft` in MATLAB; be careful about this! It's different from the mathematical convention. This affects phase results and even critical (and can make the result wrong) Fourier-Transform-constant issues, such as different constants of convolution theorem for different conventions.
 * 2/14/2024:<br>
 There is a significant bug in CUDA related to spontaneous Raman scattering that will simply fail MATLAB. I fixed it. Please download the new one if you downloaded the code between 1/3/2024, when I claimed to add and fix the spontaneous Raman scattering, and today.
-* 5/20/2024:<br>
-Finish the initial implementation of Er and Nd rate-equation gain modeling. More tests will be done for verification.
 * 7/17/2024:<br>
 I've fixed bugs related to multimode mode-locking. Thanks Yi Zhou, from Univeristy of Hong Kong, for asking me to add examples for a few multimode functions. Please check the "MM ANDi" example in "ANDi oscillator/" folder in "Examples/". In addition, I've finished implementing all types of gain media. Please take a look. More tests need to be done.  
 Addition of ASE to the coherent signal field is corrected, which was wrong previously. See the comments in the `stepping_RK4IP/MPA_rategain.m` for details.
-* 7/21/2024:<br>
-I've re-run all the examples, so I think there shouldn't be any forgotten bugs after the multi-level-rate-gain implementation.
 * 8/15/2024:<br>
 I modified the populations used in rate-eqn-gain modeling from the 2nd level to the highest level ($N_1$ to $N_m$), which was the ground level to the second highest level ($N_0$ to $N_m-1$) before. This is to conform with another model I'm currently developing and will hopefully be released soon. Additionally, I updated the 3D-UPPE code for free-space modeling.
