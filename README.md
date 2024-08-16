@@ -1,5 +1,7 @@
 # MMTools
-This is the shared package to simulate pulse propagation in a solid-core fiber with GMMNLSE/MM-UPPE with MATLAB.
+This is the shared package to simulate, with MATLAB, pulse propagation in <br>
+1. non-waveguide: free space with 3D-UPPE
+2. waveguide: a solid-core fiber with GMMNLSE/MM-UPPE
 
 It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA).
 
@@ -63,3 +65,5 @@ I've fixed bugs related to multimode mode-locking. Thanks Yi Zhou, from Univeris
 Addition of ASE to the coherent signal field is corrected, which was wrong previously. See the comments in the `stepping_RK4IP/MPA_rategain.m` for details.
 * 7/21/2024:<br>
 I've re-run all the examples, so I think there shouldn't be any forgotten bugs after the multi-level-rate-gain implementation.
+* 8/15/2024:<br>
+I modified the populations used in rate-eqn-gain modeling from the 2nd level to the highest level ($N_1$ to $N_m$), which was the ground level to the second highest level ($N_0$ to $N_m-1$) before. This is to conform with another model I'm currently developing and will hopefully be released soon. Additionally, I updated the 3D-UPPE code for free-space modeling.
