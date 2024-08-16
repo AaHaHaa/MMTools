@@ -23,10 +23,10 @@ MFD0 = 85e-6*sqrt(2); % m; mode-field diameter
 %% Initial condition
 spatial_window = 1e-3; % m
 tfwhm = 0.31; % ps
-time_window = 3; % ps
+time_window = 1; % ps
 energy = ((20)*0.85)*1e3; % nJ
-Nt = 2^7; % the number of time points
-Nx = 2^8; % the number of spatial points
+Nt = 2^8; % the number of time points
+Nx = 2^7; % the number of spatial points
 initial_condition = build_3Dgaussian(MFD0, spatial_window, tfwhm, time_window, energy, Nt, Nx);
 
 %% Setup general parameters
