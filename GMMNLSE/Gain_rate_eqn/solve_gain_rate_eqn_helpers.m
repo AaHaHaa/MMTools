@@ -202,7 +202,7 @@ N_total = shiftdim(N_total,-2);
 N = permute(N,[8,9,1,2,3,4,5,6,7]); % It's important to have N, in principle from the previous propagation step, as an initial guess so that the trust-region solver for the coupled equation of the population can find a solution fast.
 F = @(N) gain_rate_eqn.N.eqn.ss.F(N,N_total,gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.N.eqn.kijkl,R);
 J = @(N) gain_rate_eqn.N.eqn.ss.J(N,N_total,gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.N.eqn.kijkl,R);
-N = myTrustRegion(F,J,N,10,1e-4,size(R,8),N_total);
+N = myTrustRegion(F,J,N,10,1e-4,size(R,8),N_total,sim.gpu_yes);
 N = permute(N,[3,4,5,6,7,8,9,1,2]); % change it to the original dimension, with the 8th dimension storing various N, population of each level
 
 end
