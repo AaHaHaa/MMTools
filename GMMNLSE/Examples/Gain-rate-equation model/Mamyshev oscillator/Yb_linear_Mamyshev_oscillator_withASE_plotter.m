@@ -18,7 +18,7 @@ func.analyze_fields(t,f,field{end},saved_z,splice_z);
 
 pump_plot.forward = cat(3,zeros(1,1,length(saved_z)/2),pump{end}(1,1,length(saved_z)/2+1:end));
 pump_plot.backward = cat(3,pump{end}(1,1,1:length(saved_z)/2),zeros(1,1,length(saved_z)/2));
-func.analyze_gain(saved_z,splice_z,pump_plot,N0{end});
+func.analyze_gain(saved_z,splice_z,pump_plot,N1{end});
 
 ASE_plot.forward = ASE.forward{end}; ASE_plot.backward = ASE.backward{end};
 func.analyze_ASE(f,ASE_plot,saved_z,splice_z);

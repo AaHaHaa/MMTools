@@ -325,8 +325,7 @@ z = 0;
 save_i = 2; % the 1st one is the initial field
 a5 = []; % the temporary variable in the forward propagation
 p5 = []; % the temporary variable in the backward propagation
-last_N = cat(8, ones([size(gain_rate_eqn.N_total),1,1,1,1,1,1]).*gain_rate_eqn.N_total,...
-               zeros([size(gain_rate_eqn.N_total),1,1,1,1,1,length(gain_rate_eqn.energy_levels)-2])); % initial guess for solving the population during propagation
+last_N = zeros([size(gain_rate_eqn.N_total),1,1,1,1,1,length(gain_rate_eqn.energy_levels)-1]); % initial guess for solving the population during propagation
 sim.last_dz = 1; % randomly put a number, 1, for initialization
 GMMNLSE_rategain_func = str2func(['stepping_',sim.step_method,'_rategain_adaptive']);
 while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical error

@@ -109,7 +109,7 @@ energy = squeeze(sum(trapz(abs(prop_output.fields).^2,1),2)*prop_output.dt/10^3)
 
 [Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power] = analyze_field( t,f,prop_output.fields(:,:,end),'Treacy-t',pi/6,1e-6,true,false );
 
-Ntmp = permute(cat(4,prop_output.population,1-prop_output.population),[1,2,3,5,6,7,8,4])*gain_rate_eqn.N_total;
+Ntmp = permute(cat(4,1-prop_output.population,prop_output.population),[1,2,3,5,6,7,8,4])*gain_rate_eqn.N_total;
 gain = pi*(gain_rate_eqn.core_diameter/2)^2*fftshift(permute(gain_rate_eqn.overlap_factor.signal.*sum(gain_rate_eqn.plusminus.*gain_rate_eqn.cross_sections.*Ntmp(:,:,:,:,:,:,:,gain_rate_eqn.N_idx),8),[5,3,1,2,4]),1)*1e6;
 g2 = gain; %g2(g2<0) = 0;
 figure;

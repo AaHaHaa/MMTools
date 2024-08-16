@@ -21,6 +21,7 @@ save_num = 50;
 sim.save_period = fiber.L0/save_num;
 sim.lambda0 = 1030e-9; % central wavelength; in "m"
 %sim.progress_bar = false;
+sim.gpuDevice.Index = 1; % choose which GPU to use if you have multiple GPUs: 1,2,3...
 [fiber,sim] = load_default_GMMNLSE_propagate(fiber,sim,'multimode');
 
 %% Random mode coupling

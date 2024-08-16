@@ -63,6 +63,7 @@ fiber.t_rep = gain_rate_eqn.t_rep; % for calculating the saturation intensity
 save_num = 200;
 sim.save_period = fiber.L0/save_num;
 %sim.progress_bar = false;
+sim.gpuDevice.Index = 1; % choose which GPU to use if you have multiple GPUs: 1,2,3...
 
 sim.lambda0 = 1030e-9; % center wavelength; in "m"
 

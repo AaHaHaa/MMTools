@@ -6,7 +6,7 @@ addpath('helpers/');
 modes_used = 1:6; % an array; in general the modes do not have to be consecutive
 Nx = 400; % number of spatial grid points for each mode
 gpu_yes = false; % true = run on GPU, false = run on CPU
-folder_name = 'step-10_125DC_wavelength1030nm'; % folder containing the calculated modes
+folder_name = 'GRIN-10_125DC_wavelength1030nm'; % folder containing the calculated modes
 
 % File name parameters:
 Nf = 10;

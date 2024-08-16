@@ -340,6 +340,10 @@ end
 % Set some default parameters early here because these parameters will be
 % used for loading files if multimode.
 % If single-mode, only "fiber.lambda0" or "fiber.f0" is important.
+%
+% Set lambda0 below:
+% Priority: user_f0 > user_lambda0 > default_lambda0
+% This lambda0 will then be set to f0 later for the UPPE functions to use.
 % -------------------------------------------------------------------------
 c = 2.99792458e-4; % speed of ligth, m/ps
 

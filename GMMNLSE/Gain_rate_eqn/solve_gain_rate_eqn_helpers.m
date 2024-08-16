@@ -55,7 +55,7 @@ end
 
 end
 
-function N0 = solve_N_2levels(sim,gain_rate_eqn,...
+function N1 = solve_N_2levels(sim,gain_rate_eqn,...
                               N_total,...
                               E_photon,diag_idx,...
                               overlap_factor,cross_sections_pump,cross_sections,...
@@ -129,8 +129,6 @@ N1 = N_total.*total_absorption./... % size: (Nx,Nx,1,1,1,M)
      (total_absorption + total_emission + ... % absorption and emission terms
       1/gain_rate_eqn.N.eqn.tau);                   % upper-state-lifetime term
 
-N0 = N_total - N1; % ground-state population
-
 end
 
 function N = solve_N_levels(sim,gain_rate_eqn,...
@@ -203,7 +201,7 @@ R = shiftdim(R.pump + R.ASE_signal,-2); % shift the dimension to prepare for the
 N_total = shiftdim(N_total,-2);
 N = permute(N,[8,9,1,2,3,4,5,6,7]); % It's important to have N, in principle from the previous propagation step, as an initial guess so that the trust-region solver for the coupled equation of the population can find a solution fast.
 F = @(N) gain_rate_eqn.N.eqn.ss.F(N,N_total,gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.N.eqn.kijkl,R);
-J = @(N) gain_rate_eqn.N.eqn.ss.J(N,        gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.N.eqn.kijkl,R);
+J = @(N) gain_rate_eqn.N.eqn.ss.J(N,N_total,gain_rate_eqn.N.eqn.Arad,gain_rate_eqn.N.eqn.Gammai,gain_rate_eqn.N.eqn.kijkl,R);
 N = myTrustRegion(F,J,N,10,1e-4,size(R,8),N_total);
 N = permute(N,[3,4,5,6,7,8,9,1,2]); % change it to the original dimension, with the 8th dimension storing various N, population of each level
 
@@ -250,7 +248,7 @@ function [Pnext,P_spon,signal_out] = solve_Power_2levels(field_type,...
                                                          dz,dx,A_core,...
                                                          num_spatial_modes,sponASE_spatial_modes,...
                                                          overlap_factor,cross_sections,...
-                                                         N0,N_total,...
+                                                         N1,N_total,...
                                                          P0,E_photon,Am,...
                                                          GammaN,FmFnN)
 %SOLVE_POWER_2LEVELS solves Power(z+dz) for pump, ASE, and signal.
@@ -260,8 +258,6 @@ function [Pnext,P_spon,signal_out] = solve_Power_2levels(field_type,...
 
 signal_out = [];
 P_spon = [];
-
-N1 = N_total - N0; % upper-state population
 
 % Photon energy in the spontaneous emission
 if isequal(field_type,'ASE') % ASE
@@ -343,7 +339,7 @@ function [Pnext,P_spon,signal_out] = solve_Power_levels(field_type,...
 signal_out = [];
 P_spon = [];
 
-N = cat(8,N,N_total-sum(N,8)); % include the population in the highest level
+N = cat(8,N_total-sum(N,8),N); % include the ground-state population
 
 % Photon energy in the spontaneous emission
 if isequal(field_type,'ASE') % ASE

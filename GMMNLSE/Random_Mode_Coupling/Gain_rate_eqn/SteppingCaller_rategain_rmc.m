@@ -469,8 +469,7 @@ if sim.progress_bar
 end
 
 % Then start the propagation
-last_N = cat(8, ones([size(gain_rate_eqn.N_total),1,1,1,1,1,1]).*gain_rate_eqn.N_total,...
-               zeros([size(gain_rate_eqn.N_total),1,1,1,1,1,length(gain_rate_eqn.energy_levels)-2])); % initial guess for solving the population during propagation
+last_N = zeros([size(gain_rate_eqn.N_total),1,1,1,1,1,length(gain_rate_eqn.energy_levels)-1]); % initial guess for solving the population during propagation
 GMMNLSE_rategain_func = str2func(['stepping_',sim.step_method,'_rategain_rmc']);
 for ii = 2:num_zPoints
     % Check for Cancel button press

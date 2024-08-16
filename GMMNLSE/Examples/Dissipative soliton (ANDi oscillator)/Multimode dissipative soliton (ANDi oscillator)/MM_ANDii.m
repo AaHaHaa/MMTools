@@ -82,6 +82,7 @@ sim.lambda0 = 1030e-9; % m; center wavelength
 sim.f0 = 2.99792458e-4/sim.lambda0; % THz; center frequency
 %sim.progress_bar = false;
 sim.adaptive_dz.threshold = 1e-4; % reduce the adaptive-step threshold (default: 1e-3)
+sim.gpuDevice.Index = 1; % choose which GPU to use if you have multiple GPUs: 1,2,3...
 
 % -------------------------------------------------------------------------
 % Passive fiber (10-um fiber)

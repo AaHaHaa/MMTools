@@ -124,7 +124,7 @@ while rt_num < max_rt
     saved_z(zn:zn+length(prop_output.z)-1) = current_z + prop_output.z;
 
     % Save the gain info
-    N0(:,:,zn:zn+length(prop_output.z)-1) = prop_output.population;
+    N1(:,:,zn:zn+length(prop_output.z)-1) = prop_output.population;
     pump(:,:,zn:zn+length(prop_output.z)-1) = prop_output.Power.pump.forward;
 
     current_z = prop_output.z(end);
@@ -156,7 +156,7 @@ while rt_num < max_rt
     saved_z(zn:zn+length(prop_output.z)-1) = current_z + prop_output.z;
 
     % Save the gain info
-    N0(:,:,zn:zn+length(prop_output.z)-1) = prop_output.population;
+    N1(:,:,zn:zn+length(prop_output.z)-1) = prop_output.population;
     pump(:,:,zn:zn+length(prop_output.z)-1) = prop_output.Power.pump.forward;
 
     current_z = prop_output.z(end);
@@ -212,7 +212,7 @@ while rt_num < max_rt
     end
     pump_plot.forward = pump;
     pump_plot.backward = zeros(1,1,length(saved_z));
-    fig_gain = func.analyze_gain(saved_z,splice_z,pump_plot,N0);
+    fig_gain = func.analyze_gain(saved_z,splice_z,pump_plot,N1);
     
     % ---------------------------------------------------------------------
     % Break if converged
@@ -238,7 +238,7 @@ energy = output_energy(arrayfun(@any,output_energy)); % clear zero
 % Save the final output field
 save('Yb_ring_Mamyshev_oscillator.mat', 't','f','output_field','output_field2','time_delay','energy',...
                                         'saved_z','splice_z','field',...
-                                        'N0','pump','gain_rate_eqn_SPM','gain_rate_eqn_GMNA',...
+                                        'N1','pump','gain_rate_eqn_SPM','gain_rate_eqn_GMNA',...
                                         'fiber','sim',... % cavity parameters
                                         '-v7.3'); % saved mat file version
 % -------------------------------------------------------------------------

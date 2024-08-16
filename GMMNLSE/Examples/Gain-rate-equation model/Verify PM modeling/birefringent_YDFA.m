@@ -16,6 +16,7 @@ addpath('../../../GMMNLSE algorithm/','../../../user_helpers/'); % add where man
 sim.lambda0 = 1030e-9; % m; the center wavelength of the simulation window
 sim.scalar = false; % polarized fields
 sim.gain_model = 2; % use gain rate-equation model
+sim.gpuDevice.Index = 1; % choose which GPU to use if you have multiple GPUs: 1,2,3...
 
 fiber.MFD = 6; % um; mode-field diameter of the fiber. This determines the nonlinear coefficient, SR=1/Aeff
 fiber.L0 = 4; % m; fiber length

@@ -47,6 +47,7 @@ sim.lambda0 = 1030e-9; % central wavelength; in "m"
 sim.gpuDevice.Index = 1;
 % Rate-equation gain
 sim.gain_model = 2;
+sim.gpuDevice.Index = 1; % choose which GPU to use if you have multiple GPUs: 1,2,3...
 [fiber,sim] = load_default_GMMNLSE_propagate(fiber,sim,'multimode');
 
 fiber.betas(:,[2,3]) = (fiber.betas(:,[2,3])+fiber.betas(:,[3,2]))/2;

@@ -361,7 +361,7 @@ hold off;
 legend('Forward pump','Backward pump');
 
 if nargin > 3
-    population = cat(4,population,1-sum(population,4));
+    population = cat(4,1-sum(population,4),population);
     population = population*100; % in "%"
     subplot(2,1,2);
     h = plot(saved_z,squeeze(population));

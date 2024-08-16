@@ -44,6 +44,7 @@ save_num = 50;
 sim.save_period = fiber.L0/save_num;
 sim.lambda0 = 1030e-9; % central wavelength; in "m"
 %sim.progress_bar = false;
+sim.gpuDevice.Index = 1; % choose which GPU to use if you have multiple GPUs: 1,2,3...
 
 % ----------------------------- Gaussian gain -----------------------------
 % dB_gain and saturation_intensity are adjusted to have a good bit with the rate-equation-gain model

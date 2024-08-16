@@ -66,7 +66,7 @@ silica_density = 2.2e-12; % g/um^3; silica density
 silica_atomic_mass = 60.0835; % a.u.; SiO2 = Si 28.0855 a.u. + (O 15.999 a.u.)*2
 Avogadro_number = 6.02214076e23;
 N_silica = silica_density/silica_atomic_mass*Avogadro_number; % 1/um^3; silica number density
-ratio_Silica2DopedIon = N_silica./N_total; % ratio of number density of doped rare ions to silica (in a silica-based fiber)
+ratio_Silica2DopedIon = N_silica/max(N_total(:)); % ratio of number density of doped rare ions to silica (in a silica-based fiber)
 
 switch gain_rate_eqn.gain_medium
     case 'Yb'

@@ -114,7 +114,7 @@ prop_output.Power.ASE.backward = zeros(Nt,1);
 %% Saved field information
 field = cell(1,max_rt);
 ASE.forward = cell(1,max_rt); ASE.backward = cell(1,max_rt);
-N0 = cell(1,max_rt);
+N1 = cell(1,max_rt);
 pump = cell(1,max_rt);
 splice_z = cumsum([fiber_cavity.L0]);
 filter_displacement = sim.save_period/25;
@@ -170,8 +170,8 @@ while rt_num < max_rt
     field{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_field;
     saved_z(zn:zn+size(saved_field,3)-1) = saved_z_this_fiber;
     % Save the gain info
-    saved_N0 = func.extract_saved_field( prop_output.population,max_save_per_fiber,current_z,sim.save_period );
-    N0{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_N0;
+    saved_N1 = func.extract_saved_field( prop_output.population,max_save_per_fiber,current_z,sim.save_period );
+    N1{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_N1;
     saved_ASE_forward = func.extract_saved_field( prop_output.Power.ASE.forward,max_save_per_fiber,current_z,sim.save_period );
     ASE.forward{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_ASE_forward;
     saved_ASE_backward = func.extract_saved_field( prop_output.Power.ASE.backward,max_save_per_fiber,current_z,sim.save_period );
@@ -220,8 +220,8 @@ while rt_num < max_rt
     field{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_field;
     saved_z(zn:zn+size(saved_field,3)-1) = saved_z_this_fiber;
     % Save the gain info
-    saved_N0 = func.extract_saved_field( prop_output.population,max_save_per_fiber,current_z,sim.save_period );
-    N0{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_N0;
+    saved_N1 = func.extract_saved_field( prop_output.population,max_save_per_fiber,current_z,sim.save_period );
+    N1{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_N1;
     saved_ASE_forward = func.extract_saved_field( prop_output.Power.ASE.forward,max_save_per_fiber,current_z,sim.save_period );
     ASE.forward{rt_num}(:,:,zn:zn+size(saved_field,3)-1) = saved_ASE_forward;
     saved_ASE_backward = func.extract_saved_field( prop_output.Power.ASE.backward,max_save_per_fiber,current_z,sim.save_period );
@@ -293,7 +293,7 @@ while rt_num < max_rt
     end
     pump_plot.forward = cat(3,zeros(1,1,length(saved_z)/2),pump{rt_num}(1,1,length(saved_z)/2+1:end));
     pump_plot.backward = cat(3,pump{rt_num}(1,1,1:length(saved_z)/2),zeros(1,1,length(saved_z)/2));
-    fig_gain = func.analyze_gain(saved_z,splice_z,pump_plot,N0{rt_num});
+    fig_gain = func.analyze_gain(saved_z,splice_z,pump_plot,N1{rt_num});
     
     if rt_num ~= 1
         close(fig_ASE);
@@ -319,7 +319,7 @@ end
 % Clear reducdant parts of the data
 field = field(1:rt_num);
 ASE.forward = ASE.forward(1:rt_num); ASE.backward = ASE.backward(1:rt_num);
-N0 = N0(1:rt_num);
+N1 = N1(1:rt_num);
 pump = pump(1:rt_num);
 output_field = output_field(:,:,1:rt_num);
 energy = output_energy(arrayfun(@any,output_energy)); % clear zero
@@ -329,7 +329,7 @@ energy = output_energy(arrayfun(@any,output_energy)); % clear zero
 if pulse_survives
     save('linear_Mamyshev_oscillator_withASE.mat', 't','f','output_field','time_delay','energy',...
                                                    'saved_z','splice_z','field',...
-                                                   'pump','N0','ASE','gain_rate_eqn_copumping','gain_rate_eqn_counterpumping',...
+                                                   'pump','N1','ASE','gain_rate_eqn_copumping','gain_rate_eqn_counterpumping',...
                                                    '-v7.3'); % saved mat file version
 end
 % -------------------------------------------------------------------------

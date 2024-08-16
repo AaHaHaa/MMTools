@@ -1,5 +1,7 @@
 clearvars; %close all;
 
+addpath('../../user_helpers/');
+
 %filename = 'Liekki Yb_AV_20160530.txt';
 filename = 'Yb_Gen_VIII_Cross_Section (Nufern).txt';
 

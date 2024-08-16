@@ -52,10 +52,10 @@ set(gca,'fontsize',14);
 
 % N2
 figure;
-h = plot(distance,1-[output_field{1}.population(:) output_field{2}.population(:)]);
+h = plot(distance,[output_field{1}.population(:) output_field{2}.population(:)]*100);
 legend('copumping','counterpumping');
 xlabel('Propagation length (m)');
-ylabel('N_1');
+ylabel('N_1 (%)');
 title('N_1 for both pumping directions');
 set(h,'linewidth',2);
 set(gca,'fontsize',14);

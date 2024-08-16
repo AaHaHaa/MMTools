@@ -19,7 +19,7 @@ syms wa01 wa02 wa03 wa04 wa05; % stimulated absorption terms
 syms wa14 wa35 wa13 wa23;
 syms k3101 k1310 k2101 k1012 k5203 k5631 k5751 k5313; % cross-interacting terms, such as cross relaxation and upconversion
 
-N7 = N_total - N0-N1-N2-N3-N4-N5-N6; % make N7 a dependent variable since N_total is given and fixed
+N0 = N_total - N1-N2-N3-N4-N5-N6-N7; % make N0 a dependent variable since N_total is given and fixed
 
 %% Coupled equations, dNi/dt (i=0,1,...,7), for each population
 dN0dt = A10*N1+A20*N2+A30*N3+A40*N4+A50*N5+A60*N6+A70*N7 ...
@@ -68,8 +68,8 @@ disp(simplify(dN0dt+dN1dt+dN2dt+dN3dt+dN4dt+dN5dt+dN6dt+dN7dt)); % This should b
 
 % Vary the variables below for calculating the derivatives to find the
 % Jacobian matrix
-for i = 0:6
-    for j = 0:6
+for i = 1:7
+    for j = 1:7
         fprintf('dN%udt_N%u = %s\n',i,j,simplify(eval(sprintf('diff(dN%udt,N%u)',i,j)))); % vary it to diff(dN0,dN2), etc. for example
     end
 end

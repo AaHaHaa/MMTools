@@ -123,7 +123,12 @@ mk = zeros(1,         1,num_x,num_y,1,1,1,M); % model function value at x=x+dx
 %   path(tau) = tau*pU,             0<=tau<=1
 %               pU+(tau-1)*(pB-pU), 1<=tau<=2
 if num_x == 1 && num_y == 1 % no page-wise computation; I added this check because MATLAB adds pagemldivide only after R2022a
+    % Suppress warning of "Warning: Matrix is close to singular or badly scaled."
+    % when the gain medium is weakly pumped such that populations in all upper levels are almost zero.
+    % I haven't figured out how to solve this.
+    warning('off');
     pB = -mldivide(H,g);
+    warning('on');
 else
     MATLAB_version = version('-release'); MATLAB_version = str2double(MATLAB_version(1:4));
     if MATLAB_version >= 2022
