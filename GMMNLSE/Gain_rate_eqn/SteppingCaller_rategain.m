@@ -77,6 +77,7 @@ else % use GPU
         segments = num_zPoints; % the number of z points of all segments; [num_segment1,num_segment2...]
     else
         zPoints_each_segment = ceil(num_zPoints/num_segments);
+        num_segments = ceil(num_zPoints/zPoints_each_segment); % this operation is super important because a small increase of zPoints_each_segment (due to the ceiling function) can reduce num_segments by a few
         segments = [zPoints_each_segment*ones(1,num_segments-1) num_zPoints-zPoints_each_segment*(num_segments-1)]; % the number of z points of all segments; [num_segment1,num_segment2...]
         if segments(end) == 0
             segments = segments(1:end-1);
