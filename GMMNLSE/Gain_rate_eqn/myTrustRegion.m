@@ -94,8 +94,8 @@ for k = 1:max_iterations
     % 2. The step size "dk" of the trust-region method becomes too small (< max_x_total/1e4)
     %
     %    In general, there might be no solution to the coupled equation, so
-    %    having this step-size check is important to avoid this solver to
-    %    run forever.
+    %    having this step-size check is important to avoid this solver from
+    %    running forever.
     if any(normF_all(k,:,:,:,:,:,:,:) >= e, 'all') && any(dk > max_x_total/1e4, 'all')
         ratio_k = zeros(1,1,num_x,num_y,1,1,1,M);
         while any(ratio_k(:) < mu) && any(sqrt(normF2(xk1)) >= e, 'all') && any(dk > max_x_total/1e4, 'all')
