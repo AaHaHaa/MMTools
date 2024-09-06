@@ -19,7 +19,7 @@ sim.save_period = 0.05;
 sim_Gain = sim;
 sim_Gain.gain_model = 2;
 sim_Gain.progress_bar_name = 'Gain';
-fiber_Gain.L0 = 2;
+fiber_Gain.L0 = 0.4;
 fiber_Gain.betas = [0;0;0.13055];
 
 % Load default parameters like 
