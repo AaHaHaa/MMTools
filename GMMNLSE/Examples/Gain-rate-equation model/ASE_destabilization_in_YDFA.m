@@ -29,7 +29,7 @@ gain_rate_eqn.core_NA = 0.12;
 gain_rate_eqn.absorption_wavelength_to_get_N_total = 920; % nm
 gain_rate_eqn.absorption_to_get_N_total = 0.55; % dB/m
 gain_rate_eqn.pump_wavelength = 976; % nm
-gain_rate_eqn.copump_power = 2; % W
+gain_rate_eqn.copump_power = 1.5; % W
 gain_rate_eqn.counterpump_power = 0; % W
 gain_rate_eqn.t_rep = 1/10e6; % assume 10 MHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
                               % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.

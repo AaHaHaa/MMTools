@@ -81,20 +81,18 @@ function foutput = GMMNLSE_propagate_without_adaptive(fiber, initial_condition, 
 %
 %                     Whether or not to use the GPU. Using the GPU is HIGHLY recommended, as a speedup of 50-100x should be possible.
 %
-%           Raman_model - 0 = ignore Raman effect
-%                         1 = Raman model approximated analytically by a single vibrational frequency of silica molecules
-%                                 (Ch. 2.3, p.42, Nonlinear Fiber Optics (5th), Agrawal)
-%                         2 = Raman model including the anisotropic contribution
-%                                 ("Ch. 2.3, p.43" and "Ch. 8.5, p.340", Nonlinear Fiber Optics (5th), Agrawal)
-%                                 For more details, please read "Raman response function for silica fibers", by Q. Lin and Govind P. Agrawal (2006)
-%
-%               include_sponRS - true or false; whether to include spontaneous Raman term or not
+%           include_Raman - 0(false) = ignore Raman effect
+%                           1(true) = Either (a) Raman model approximated analytically by a single vibrational frequency of silica molecules
+%                                                (Ch. 2.3, p.42, Nonlinear Fiber Optics (5th), Agrawal)
+%                                                Extensions to other materials are also included. Please check Raman_model().
+%                                     or     (b) Raman model including the anisotropic contribution
+%                                                ("Ch. 2.3, p.43" and "Ch. 8.5, p.340", Nonlinear Fiber Optics (5th), Agrawal)
+%                                                For more details, please read "Raman response function for silica fibers", by Q. Lin and Govind P. Agrawal (2006)
 %
 %       Others -->
 %
 %           pulse_centering - 1(true) = center the pulse according to the time window, 0(false) = do not
 %                             The time delay will be stored in time_delay after running GMMNLSE_propagate().
-%           num_photon_noise_per_bin - a scalar; include photon noise (typically one photon per spectral discretization bin)
 %           gpuDevice.Index - a scalar; the GPU to use
 %           gpuDevice.Device - the output of MATLAB "gpuDevice(gpu_index)"
 %           cuda_dir_path - path to the cuda directory into which ptx files will be compiled and stored
@@ -146,7 +144,7 @@ function foutput = GMMNLSE_propagate_without_adaptive(fiber, initial_condition, 
 initial_condition.fields = initial_condition.fields(:,:,end);
 
 %% Pick the stepping algorithm to use depending on the number of modes
-if length(sim.midx) == 1 % single mode
+if isscalar(sim.midx) % single mode
     sim.step_method = 'RK4IP';
 else % multimode
     sim.step_method = 'MPA';
@@ -204,7 +202,6 @@ fiber = betas_expansion_including_polarization_modes(sim,fiber,num_modes);
 if sim.gpu_yes
     [sim.gpuDevice.Device,...
      sim.cuda_SRSK,sim.cuda_num_operations_SRSK,...
-     sim.cuda_sponRS,sim.cuda_num_operations_sponRS,...
      sim.cuda_MPA_psi_update] = setup_stepping_kernel(sim,Nt,num_modes);
 end
 
@@ -226,7 +223,7 @@ c = 2.99792458e-4; % speed of ligth m/ps
 if ~isfield(fiber,'n2') || isempty(fiber.n2)
     fiber.n2 = 2.3e-20; % m^2/W
 end
-prefactor = 1i*fiber.n2*(omegas+2*pi*sim.f0)/c; % m/W
+n2_prefactor = 1i*fiber.n2*(omegas+2*pi*sim.f0)/c; % m/W
 
 %% Deal with dz
 % After this line, the code starts to use dz in variables important in simulations.
@@ -256,23 +253,11 @@ if ~isfield(fiber,'material')
 end
 [fiber,haw,hbw] = Raman_model(fiber,sim,Nt,dt);
 
-%% Include spontaneous Raman scattering
-sim.include_sponRS = (sim.Raman_model ~= 0 && sim.include_sponRS);
-if sim.include_sponRS
-    sponRS_prefactor = spontaneous_Raman(Nt,dt,sim);
-    haw_sponRS = haw;
-    hbw_sponRS = haw;
-else
-    sponRS_prefactor = 0; % dummy variable
-    haw_sponRS = [];
-    hbw_sponRS = [];
-end
+% spontaneous Raman scattering
+sponRS_prefactor = spontaneous_Raman(Nt,dt,sim);
 
 %% Work out the overlap tensor details
 [SK_info, SRa_info, SRb_info] = calc_SRSK(fiber,sim,num_spatial_modes);
-
-%% Include the shot noise: one photon per mode
-initial_condition.fields = include_shot_noise(sim,omegas,Nt,dt,initial_condition.fields);
 
 %% Create a damped frequency window to prevent aliasing
 sim.damped_freq_window = create_damped_freq_window(Nt);
@@ -332,11 +317,11 @@ GMMNLSE_rategain_func = str2func(function_name);
  saved_data] = GMMNLSE_rategain_func(sim,gain_rate_eqn,...
                                      num_zPoints,save_points,num_zPoints_persave,...
                                      initial_condition,...
-                                     prefactor,...
+                                     n2_prefactor,...
                                      SK_info, SRa_info, SRb_info,...
                                      omegas, D,...
                                      haw, hbw,...
-                                     haw_sponRS, hbw_sponRS, sponRS_prefactor,...
+                                     sponRS_prefactor,...
                                      gain_rate_eqn.saved_data);
 
 % -------------------------------------------------------------------------

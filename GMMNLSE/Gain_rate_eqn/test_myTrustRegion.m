@@ -24,9 +24,10 @@ x_total = 1e5; % the total population
                % Because this trust-region method is tuned to work for population evolutions,
                % which has a fixed number of total population,
                % we need it to be a huge number to make the current test work.
+use_gpu = false;
 % Run the trust-region optimization
-xk = myTrustRegion(r,J,x0,N,e,1,1e5);
+xk = myTrustRegion(r,J,x0,N,e,M,x_total,use_gpu);
 
 % Show results
 disp(xk); % the point that reaches optimum
-disp(r(xk)); % the objective function at the optimum
+disp(r(xk)); % the objective function at the optimum; this should be close to zero

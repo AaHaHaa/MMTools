@@ -82,7 +82,7 @@ OC = 0.8; % output coupling
 loss = 0.5; % the total loss of the cavity
 saturation_power = 2500; % the saturation power of the saturable absorber; W
 moddepth = 0.9; % the modulation depth of the saturable absorber
-tol_convergence = 1e-5; % the tolerance of the convergence of the output ANDi pulse energy
+tol_convergence = 1e-3; % the tolerance of the convergence of the output ANDi pulse energy
 
 %% Spectral filter parameters
 gaussexpo = 1;

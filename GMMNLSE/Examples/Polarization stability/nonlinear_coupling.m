@@ -20,7 +20,7 @@ sim.save_period = fiber.L0/100;
 % Load default parameters like 
 %
 % loading fiber.betas and fiber.SR based on your multimode folder above
-% sim.Raman_model = 1; Use isotropic Raman model
+% sim.include_Raman = true; Consider Raman
 % sim.gain_model = 0; Don't use gain model = passive propagation
 % sim.gpu_yes = true; Use GPU (default to true)
 % ......
@@ -47,7 +47,6 @@ gain_rate_eqn.linear_oscillator = false; % For a linear oscillator, there are pu
                                          % therefore, the backward-propagating pulses need to be taken into account.
 gain_rate_eqn.t_rep = 24e-9; % Assume 24 MHz here; s; the time required to finish a roundtrip (the inverse repetition rate of the pulse)
                              % This gain model solves the gain of the fiber under the steady-state condition; therefore, the repetition rate must be high compared to the lifetime of the doped ions.
-gain_rate_eqn.tau = 840e-6; % lifetime of Yb in F_(5/2) state (Paschotta et al., "Lifetme quenching in Yb-doped fibers"); in "s"
 gain_rate_eqn.ignore_ASE = true;
 gain_rate_eqn.sponASE_spatial_modes = []; % In LMA fibers, the number of ASE modes can be larger than one as the signal field, so this factor is used to correctly considered ASE. If empty like [], it's length(sim.midx).
 gain_rate_eqn.max_iterations = 50; % If there is ASE, iterations are required.

@@ -45,7 +45,7 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %       sim.include_sponRS = true; % include spontaneous Raman scattering
 %
 %       sim.gpu_yes = true;
-%       sim.Raman_model = 1;
+%       sim.include_Raman = true;
 %       sim.gain_model = 0;
 %
 %       sim.pulse_centering = true;
@@ -275,14 +275,13 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %
 %                     Whether or not to use the GPU. Using the GPU is HIGHLY recommended, as a speedup of 50-100x should be possible.
 %
-%           Raman_model - 0 = ignore Raman effect
-%                         1 = Raman model approximated analytically by a single vibrational frequency of silica molecules
-%                                 (Ch. 2.3, p.42, Nonlinear Fiber Optics (5th), Agrawal)
-%                         2 = Raman model including the anisotropic contribution
-%                                 ("Ch. 2.3, p.43" and "Ch. 8.5, p.340", Nonlinear Fiber Optics (5th), Agrawal)
-%                                 For more details, please read "Raman response function for silica fibers", by Q. Lin and Govind P. Agrawal (2006)
-%
-%               include_sponRS - true or false; whether to include spontaneous Raman term or not
+%           include_Raman - 0(false) = ignore Raman effect
+%                           1(true) = Either (a) Raman model approximated analytically by a single vibrational frequency of silica molecules
+%                                                (Ch. 2.3, p.42, Nonlinear Fiber Optics (5th), Agrawal)
+%                                                Extensions to other materials are also included. Please check Raman_model().
+%                                     or     (b) Raman model including the anisotropic contribution
+%                                                ("Ch. 2.3, p.43" and "Ch. 8.5, p.340", Nonlinear Fiber Optics (5th), Agrawal)
+%                                                For more details, please read "Raman response function for silica fibers", by Q. Lin and Govind P. Agrawal (2006)
 %
 %           gain_model - 0 = no gain
 %                        1 = Gaussian-gain model
@@ -558,7 +557,7 @@ end
 
 % Algorithms to use
 default_sim.gpu_yes = true;
-default_sim.Raman_model = 1; % isotropic Raman model
+default_sim.include_Raman = true; % consider the Raman effect
 default_sim.gain_model = 0;
 
 % Random mode coupling
@@ -570,8 +569,6 @@ default_sim.rmc.downsampling_factor = 1; % downsamplig factor of the eigenmode f
 
 % Others
 default_sim.pulse_centering = true; % center the pulse according to the time window
-default_sim.include_sponRS = true; % include spontaneous Raman scattering
-default_sim.num_photon_noise_per_bin = 0; % don't include photon noise
 default_sim.gpuDevice.Index = 1; % the gpuDevice to use
 default_sim.progress_bar = true;
 default_sim.progress_bar_name = '';

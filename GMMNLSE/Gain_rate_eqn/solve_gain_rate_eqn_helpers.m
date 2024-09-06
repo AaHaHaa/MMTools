@@ -113,7 +113,7 @@ integral_mn = sum(AmAn.*(cross_sections./E_photon),5); % size: (1,1,num_modes,nu
 
 % For SMF (single mode only), the computations below all have the length 1 
 % or M, and thus can be faster with CPU, instead of GPU.
-if sim.gpu_yes && length(sim.midx) == 1 % single mode
+if sim.gpu_yes && isscalar(sim.midx) % single mode
     integral_mn = gather(integral_mn);
 end
 
@@ -189,7 +189,7 @@ integral_mn = sum(AmAn.*(cross_sections./E_photon),5); % size: (1,1,num_modes,nu
 
 % For SMF (single mode only), the computations below all have the length 1 
 % or M, and thus can be faster with CPU, instead of GPU.
-if sim.gpu_yes && length(sim.midx) == 1 % single mode
+if sim.gpu_yes && isscalar(sim.midx) % single mode
     integral_mn = gather(integral_mn);
 end
 

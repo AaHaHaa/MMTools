@@ -36,10 +36,16 @@ if ispc
     if MATLAB_version < 2023
         system(['nvcc -ptx "', fullfile(cuda_dir_path,cudaFilename), '" --output-file "', fullfile(cuda_dir_path,ptxFilename) '"']);
     else
-        current_path = pwd;
-        cd(cuda_dir_path);
-        mexcuda('-ptx',cudaFilename);
-        cd(current_path);
+        try
+            current_path = pwd;
+            cd(cuda_dir_path);
+            mexcuda('-ptx',cudaFilename);
+            cd(current_path);
+        catch ME
+            %disp(ME.message);
+            system(['nvcc -ptx "', fullfile(cuda_dir_path,cudaFilename), '" --output-file "', fullfile(cuda_dir_path,ptxFilename) '"']);
+            cd(current_path);
+        end
     end
 else % unix
     % tested: Debian 10 (Buster)

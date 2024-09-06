@@ -196,7 +196,7 @@ for fidx = 1:nfun
                 end
             end
 
-            if length(n) == 1
+            if isscalar(n)
                 varargout{fidx} = single_matrix{1};
             else
                 varargout{fidx} = matrix_initialization(sum(n),1,use_gpu,@zeros);

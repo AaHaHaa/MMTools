@@ -36,7 +36,7 @@ fiber.betas = [betas(1), betas(1) + 980e-9/beat_length *2*pi/sim.lambda0;...
 % Load default parameters like 
 %
 % load fiber.betas and fiber.SR based on your multimode folder above
-% sim.Raman_model = 1; Use isotropic Raman model
+% sim.include_Raman = true; Consider Raman
 % sim.gain_model = 0; Don't use gain model = passive propagation
 % sim.gpu_yes = true; Use GPU (default to true)
 % ......

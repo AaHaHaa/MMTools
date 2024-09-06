@@ -42,12 +42,12 @@ if sim.scalar
                      'ending_nonzero',SRa_info.ending_nonzero);
     SRb_info = []; % dummy output argument
 else
-    [SK_info, SRa_info, SRb_info] = calc_polarized_SRSK(SRa_info,sim.ellipticity,num_spatial_modes*2,sim.Raman_model==2,sim.gpu_yes);
+    [SK_info, SRa_info, SRb_info] = calc_polarized_SRSK(SRa_info,sim.ellipticity,num_spatial_modes*2,sim.gpu_yes);
 end
 
 % Incoporate (1-fiber.fr) into SK to save the computational time
 % fiber.fr has been incorporated into haw and hbw already.
-if sim.Raman_model ~= 0
+if sim.include_Raman
     SK_info.SK = (1-fiber.fr)*SK_info.SK;
 end
 
@@ -78,7 +78,7 @@ end
 end
 
 %% Helper function
-function [SK_info, SRa_info, SRb_info] = calc_polarized_SRSK(mode_info,ellipticity,num_modes,include_anisotropic_Raman,use_gpu)
+function [SK_info, SRa_info, SRb_info] = calc_polarized_SRSK(mode_info,ellipticity,num_modes,use_gpu)
 %CALC_POLARIZED_SRSK It computes the SR and SK, when considering polarization
 %modes, from "scalar SR values under orthogonal polarizations".
 %
@@ -229,70 +229,66 @@ if single_mode % it needs to be a column vector
 end
 
 %% SRb: anisotropic Raman term
-if include_anisotropic_Raman
-    switch ellipticity
-        case 0 % linear polarizations
+switch ellipticity
+    case 0 % linear polarizations
 
-            % Srb_midx = cat(2, [ odd1;  odd2;  odd3;  odd4],...
-            %                   [ odd1; even2;  odd3; even4],...
-            %                   [even1;  odd2; even3;  odd4],...
-            %                   [even1; even2; even3; even4]);
-            %
-            % Sk_midx = cat(2, [odd1;   odd23;  odd4],...
-            %                  [odd1;  even23;  odd4],...
-            %                  [even1;  odd23; even4],...
-            %                  [even1; even23; even4]);
-            %
-            % SRb = 1/2*(Srb + Sk)
-            %
-            SRb_midx = cat(2, [ odd12;  odd34],...              % SR
-                              [even12; even34],...              % SR
-                              [ odd1; even2;  odd3; even4],...  % 1/2*SR
-                              [even1;  odd2;  odd3; even4],...  % 1/2*SR
-                              [ odd1; even2; even3;  odd4],...  % 1/2*SR
-                              [even1;  odd2; even3;  odd4]);    % 1/2*SR
-            SRb = mode_info.SRa.*[1 1 1/2 1/2 1/2 1/2];
-        case 1 % circular polarization
-            SRb_midx = cat(2, [ odd1;  odd2;  odd3;  odd4],...  % 1/2
-                              [ odd1;  odd2; even3; even4],...  % 1/2
-                              [ odd1; even2;  odd3; even4],...  % 1
-                              [even1;  odd2; even3;  odd4],...  % 1
-                              [even1; even2;  odd3;  odd4],...  % 1/2
-                              [even1; even2; even3; even4]);    % 1/2
-            % SRb = 1/2*(Srb + Sk)
-            SRb = mode_info.SRa.*[1/2 1/2 1 1 1/2 1/2];
-        otherwise % elliptical polarization
-            % basis_o = (x+iry)/sqrt(1+r^2)
-            % basis_e = (rx-iy)/sqrt(1+r^2)
-            %
-            % Notice that r=0 corresponds to basis_e = -iy. Since I separate the
-            % linear polarization above, which has (basis_o = x, basis_e = y), it doesnt' matter here.
-            %
+        % Srb_midx = cat(2, [ odd1;  odd2;  odd3;  odd4],...
+        %                   [ odd1; even2;  odd3; even4],...
+        %                   [even1;  odd2; even3;  odd4],...
+        %                   [even1; even2; even3; even4]);
+        %
+        % Sk_midx = cat(2, [odd1;   odd23;  odd4],...
+        %                  [odd1;  even23;  odd4],...
+        %                  [even1;  odd23; even4],...
+        %                  [even1; even23; even4]);
+        %
+        % SRb = 1/2*(Srb + Sk)
+        %
+        SRb_midx = cat(2, [ odd12;  odd34],...              % SR
+                          [even12; even34],...              % SR
+                          [ odd1; even2;  odd3; even4],...  % 1/2*SR
+                          [even1;  odd2;  odd3; even4],...  % 1/2*SR
+                          [ odd1; even2; even3;  odd4],...  % 1/2*SR
+                          [even1;  odd2; even3;  odd4]);    % 1/2*SR
+        SRb = mode_info.SRa.*[1 1 1/2 1/2 1/2 1/2];
+    case 1 % circular polarization
+        SRb_midx = cat(2, [ odd1;  odd2;  odd3;  odd4],...  % 1/2
+                          [ odd1;  odd2; even3; even4],...  % 1/2
+                          [ odd1; even2;  odd3; even4],...  % 1
+                          [even1;  odd2; even3;  odd4],...  % 1
+                          [even1; even2;  odd3;  odd4],...  % 1/2
+                          [even1; even2; even3; even4]);    % 1/2
+        % SRb = 1/2*(Srb + Sk)
+        SRb = mode_info.SRa.*[1/2 1/2 1 1 1/2 1/2];
+    otherwise % elliptical polarization
+        % basis_o = (x+iry)/sqrt(1+r^2)
+        % basis_e = (rx-iy)/sqrt(1+r^2)
+        %
+        % Notice that r=0 corresponds to basis_e = -iy. Since I separate the
+        % linear polarization above, which has (basis_o = x, basis_e = y), it doesnt' matter here.
+        %
 
-            SRb_midx = SK_midx;
-            
-            % SRb = 1/2*(Srb + Sk)
-            Srb_term = [1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 1];
-            SRb = mode_info.SRa.*(1/2*(Srb_term+Sk_term));
-    end
+        SRb_midx = SK_midx;
+        
+        % SRb = 1/2*(Srb + Sk)
+        Srb_term = [1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 1];
+        SRb = mode_info.SRa.*(1/2*(Srb_term+Sk_term));
+end
 
-    % Sort SRb indices
-    [sort_SRb_midx,sort_idx] = sortrows(SRb_midx.');
-    SRb_info.nonzero_midx1234s = sort_SRb_midx.';
-    SRb_info.SRb = SRb(sort_idx); 
-    [SRb_info.nonzero_midx1234s,SRb_info.SRb,...
-     SRb_info.beginning_nonzero,SRb_info.ending_nonzero] = refine_polarized_S(SRb_info.nonzero_midx1234s,SRb_info.SRb,...
-                                                                              num_modes,...
-                                                                              use_gpu);
-    
-    if single_mode % it needs to be a column vector
-                    % If it's a scalar field, SRa is a scalar such that SRb,
-                    % calculated from SRa, is a row vector. Hence, SRb needs a
-                    % transpose.
-        SRb_info.SRb = SRb_info.SRb.';
-    end
-else
-    SRb_info = []; % dummy output argument
+% Sort SRb indices
+[sort_SRb_midx,sort_idx] = sortrows(SRb_midx.');
+SRb_info.nonzero_midx1234s = sort_SRb_midx.';
+SRb_info.SRb = SRb(sort_idx); 
+[SRb_info.nonzero_midx1234s,SRb_info.SRb,...
+ SRb_info.beginning_nonzero,SRb_info.ending_nonzero] = refine_polarized_S(SRb_info.nonzero_midx1234s,SRb_info.SRb,...
+                                                                          num_modes,...
+                                                                          use_gpu);
+
+if single_mode % it needs to be a column vector
+                % If it's a scalar field, SRa is a scalar such that SRb,
+                % calculated from SRa, is a row vector. Hence, SRb needs a
+                % transpose.
+    SRb_info.SRb = SRb_info.SRb.';
 end
 
 
@@ -300,13 +296,12 @@ end
 if isfield(mode_info,'nonzero_midx34s')
     SRa_midx34s = [odd34 even34];
     SRa_info.nonzero_midx34s = sortrows(SRa_midx34s.').';
-    if include_anisotropic_Raman
-        SRb_midx34s = cat(2, odd34,         ...
-                            even34,         ...
-                            [ odd3; even4], ...
-                            [even3;  odd4]);
-        SRb_info.nonzero_midx34s = sortrows(SRb_midx34s.').';
-    end
+
+    SRb_midx34s = cat(2, odd34,         ...
+                        even34,         ...
+                        [ odd3; even4], ...
+                        [even3;  odd4]);
+    SRb_info.nonzero_midx34s = sortrows(SRb_midx34s.').';
 end
 
 end

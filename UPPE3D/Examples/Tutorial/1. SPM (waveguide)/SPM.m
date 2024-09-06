@@ -4,13 +4,13 @@
 
 close all; clearvars;
 
-addpath('../../UPPE3D algorithm/','../../user_helpers/');
+addpath('../../../UPPE3D algorithm/','../../../user_helpers/');
 
 lambda0 = 1030e-9; % m
 
 %% Setup fiber parameters
 sim.lambda0 = lambda0; % the center wavelength
-s%im.gpu_yes = false;
+%im.gpu_yes = false;
 
 % Load default parameters like
 %
@@ -21,9 +21,8 @@ s%im.gpu_yes = false;
 % sim.scalar = true; Use scalar propagation
 % sim.adaptive_dz.threshold = 1e-5; the threshold of the adaptive-step method
 % sim.gpu_yes = true; Use GPU
-% sim.Raman_model = 1; Use the isotropic Raman model
+% sim.include_Raman = 1; Consider the Raman
 % sim.pulse_centering = true; Always shift the pulse to the center of the time window
-% sim.num_photon_noise_per_band = 0; Don't include photon shot noise
 % sim.gpuDevice.Index = 1; Use the GPU device 1
 % sim.progress_bar = true; Show the progress bar
 % sim.progress_bar_name = ''; Empty name for the progress bar

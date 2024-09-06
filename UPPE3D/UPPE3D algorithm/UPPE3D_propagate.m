@@ -88,33 +88,23 @@ prefactor = (1i/2./kc).*(k0.^2*2.*fiber.n*fiber.n2/3);
 
 %% Pre-compute the Raman response in frequency space
 if Nt == 1 % ignore Raman scattering under CW cases
-    sim.Raman_model = 0;
+    sim.include_Raman = false;
 end
 
 if ~isfield(fiber,'material')
     fiber.material = 'silica';
 end
-if sim.Raman_model == 0 % no Raman
-    haw = []; hbw = [];
+[fiber,haw,hbw] = Raman_model(fiber,sim,Nt,dt);
+if ~sim.include_Raman % no Raman
     fr = 0;
 else
-    [fiber,haw,hbw] = Raman_model(fiber,sim,Nt,dt);
     fr = fiber.fr;
 end
 
-%% Include the shot noise: one photon per mode
-if Nt ~= 1 % CW case
-    initial_condition.field = include_shot_noise(sim,omegas,Nt,dt,dx,dy,initial_condition.field);
-end
-
-%% Include spontaneous Raman scattering
-if sim.Raman_model ~= 0 && sim.Raman_sponRS
-    sponRS_prefactor = spontaneous_Raman(sim,fr,...
-                                         Nt,dt,...
-                                            dx,dy);
-else
-    sponRS_prefactor = 0; % dummy variable
-end
+% spontaneous Raman scattering
+sponRS_prefactor = spontaneous_Raman(sim,...
+                                     Nt,dt,...
+                                        dx,dy);
 
 %% Create a damped frequency window to prevent aliasing
 sim.damped_window = create_damped_window(Nt,Nx,Ny);

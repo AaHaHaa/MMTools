@@ -34,7 +34,7 @@ gain_rate_eqn.verbose = true; % show the information(final pulse energy) during 
 %
 % loading fiber.betas and fiber.SR based on your multimode folder above
 % fiber.MFD = 6.2; % um
-% sim.Raman_model = 1; Use isotropic Raman model
+% sim.include_Raman = true; Consider Raman
 % sim.gain_model = 0; Don't use gain model = passive propagation
 % sim.gpu_yes = true; Use GPU (default to true)
 % ......
@@ -60,7 +60,7 @@ c = 299792458; % m/s
 lambda = c./(f*1e12)*1e9; % nm
 OC = 0.9; % output coupler
 loss = 0.1; % coupling loss
-tol_convergence = 1e-5;
+tol_convergence = 1e-3;
 
 %% Filter parameters
 gaussexpo = 3;

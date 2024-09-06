@@ -38,10 +38,9 @@ function [fiber,sim] = load_default_UPPE3D_propagate( input_fiber,input_sim )
 %       sim.adaptive_dz.threshold = 1e-6;
 %
 %       sim.gpu_yes = true;
-%       sim.Raman_model = 1;
+%       sim.include_Raman = true;
 %
 %       sim.pulse_centering = true;
-%       sim.num_photon_noise_per_bin = 0;
 %       sim.gpuDevice.Index = 1;
 %       sim.progress_bar = true;
 %       sim.progress_bar_name = '';
@@ -129,18 +128,18 @@ function [fiber,sim] = load_default_UPPE3D_propagate( input_fiber,input_sim )
 %
 %                     Whether or not to use the GPU. Using the GPU is HIGHLY recommended, as a speedup of 50-100x should be possible.
 %
-%           Raman_model - 0 = ignore Raman effect
-%                         1 = Raman model approximated analytically by a single vibrational frequency of silica molecules
-%                                 (Ch. 2.3, p.42, Nonlinear Fiber Optics (5th), Agrawal)
-%                         2 = Raman model including the anisotropic contribution
-%                                 ("Ch. 2.3, p.43" and "Ch. 8.5, p.340", Nonlinear Fiber Optics (5th), Agrawal)
-%                                 For more details, please read "Raman response function for silica fibers", by Q. Lin and Govind P. Agrawal (2006)
+%           include_Raman - 0(false) = ignore Raman effect
+%                           1(true) = Either (a) Raman model approximated analytically by a single vibrational frequency of silica molecules
+%                                                (Ch. 2.3, p.42, Nonlinear Fiber Optics (5th), Agrawal)
+%                                                Extensions to other materials are also included. Please check Raman_model().
+%                                     or     (b) Raman model including the anisotropic contribution
+%                                                ("Ch. 2.3, p.43" and "Ch. 8.5, p.340", Nonlinear Fiber Optics (5th), Agrawal)
+%                                                For more details, please read "Raman response function for silica fibers", by Q. Lin and Govind P. Agrawal (2006)
 %
 %       Others -->
 %
 %           pulse_centering - 1(true) = center the pulse according to the time window, 0(false) = do not
 %                             The time delay will be stored in time_delay after running GNLSE3D_propagate().
-%           num_photon_noise_per_bin - a scalar; include photon noise (typically one photon per spectral discretization bin)
 %           gpuDevice.Index - a scalar; the GPU to use
 %           gpuDevice.Device - the output of MATLAB "gpuDevice(gpu_index)"
 %           cuda_dir_path - path to the cuda directory into which ptx files will be compiled and stored
@@ -227,12 +226,11 @@ default_sim.adaptive_dz.threshold = 1e-6; % the threshold of the RK4IP part in t
 
 % Algorithms to use
 default_sim.gpu_yes = true;
-default_sim.Raman_model = 1; % isotropic Raman model
+default_sim.include_Raman = true; % consider the Raman
 
 % Others
 default_sim.pulse_centering = true; % center the pulse according to the time window
-default_sim.Raman_sponRS = true; % include spontaneous Raman scattering
-default_sim.num_photon_noise_per_bin = 0; % don't include photon noise
+default_sim.ellipticity = 0; % linear polarization
 default_sim.gpuDevice.Index = 1; % the gpuDevice to use
 default_sim.progress_bar = true;
 default_sim.progress_bar_name = '';

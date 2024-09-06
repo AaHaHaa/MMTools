@@ -29,10 +29,9 @@ sim.lambda0 = 1080e-9; % the center wavelength
 % sim.scalar = true; Use scalar propagation
 % sim.adaptive_dz.threshold = 1e-5; the threshold of the adaptive-step method
 % sim.gpu_yes = true; Use GPU
-% sim.Raman_model = 1; Use the isotropic Raman model
+% sim.include_Raman = true; Consider Raman
 % sim.gain_model = 0; Don't use gain model = passive propagation
 % sim.pulse_centering = true; Always shift the pulse to the center of the time window
-% sim.num_photon_noise_per_bin = 0; Don't include photon shot noise
 % sim.gpuDevice.Index = 1; Use the GPU device 1
 % sim.progress_bar = true; Show the progress bar
 % sim.progress_bar_name = ''; Empty name for the progress bar

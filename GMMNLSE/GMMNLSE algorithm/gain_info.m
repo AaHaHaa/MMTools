@@ -97,7 +97,7 @@ function gain_rate_eqn = gain_info( fiber,sim,gain_rate_eqn,lambda,mode_profiles
 %       GammaN - precalculate the integral2(overlap_factor*N_total) for the pump
 
 %% Pick the stepping algorithm to use depending on the number of modes
-if length(sim.midx) == 1 % single mode
+if isscalar(sim.midx) % single mode
     sim.step_method = 'RK4IP';
 else % multimode
     sim.step_method = 'MPA';

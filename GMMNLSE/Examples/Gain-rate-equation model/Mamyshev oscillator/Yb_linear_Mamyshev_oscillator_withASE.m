@@ -60,14 +60,13 @@ fiber_Gain.L0 = 3; % the length of the gain fiber
 % Load default parameters like 
 %
 % loading fiber.betas and fiber.SR based on your multimode folder above
-% sim.Raman_model = 1; Use isotropic Raman model
+% sim.include_Raman = true; Consider Raman
 % sim.gain_model = 0; Don't use gain model = passive propagation
 % sim.gpu_yes = true; Use GPU (default to true)
 % ......
 %
 % Please check this function for details.
 [fiber_Gain,sim_Gain] = load_default_GMMNLSE_propagate(fiber_Gain,sim_Gain,'single_mode');
-
 
 fiber_cavity = [fiber_Gain fiber_Gain];
 

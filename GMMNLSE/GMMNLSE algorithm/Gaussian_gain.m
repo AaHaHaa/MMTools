@@ -17,7 +17,7 @@ c = 2.99792458e-4; % speed of ligth m/ps
 G = [];
 saturation_parameter = [];
 if sim.gain_model == 1
-    if length(sim.midx) == 1 % single-mode
+    if isscalar(sim.midx) % single-mode
         saturation_parameter = fiber.saturation_energy;
     else
         saturation_parameter = fiber.saturation_intensity;

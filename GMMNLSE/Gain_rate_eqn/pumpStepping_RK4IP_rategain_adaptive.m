@@ -18,8 +18,7 @@ function [P1, p5,...
 %    sim.SK_factor - SK = SK_factor * fiber.SR
 %    sim.cuda_SRSK - the cuda for computing SR and SK values
 %
-%    sim.Raman_model - which Raman model is used
-%    sim.Raman_sponRS - consider spontaneous Raman or not
+%    sim.include_Raman - whether to consider Raman
 %
 %    gain_rate_eqn - container of rate-eqn-gain parameters
 %

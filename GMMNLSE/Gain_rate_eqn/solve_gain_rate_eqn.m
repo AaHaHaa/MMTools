@@ -61,7 +61,7 @@ if ~first_backward_before_iterations
         
         clear AmAn_forward_p1 AmAn_forward_p2 AmAn_backward_p1 AmAn_backward_p2;
     end
-    if numel(signal_fields_backward) == 1
+    if isscalar(signal_fields_backward)
         AmAn = AmAn_forward; % No backward fields
     else
         AmAn = AmAn_forward + AmAn_backward;

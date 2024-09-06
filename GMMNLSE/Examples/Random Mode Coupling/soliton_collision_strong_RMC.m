@@ -28,7 +28,7 @@ fiber.betas_filename = 'betas.mat';
 fiber.S_tensors_filename = 'S_tensors_6modes.mat';
 
 sim.progress_bar_name = 'soliton collision';
-sim.Raman_model = 0; % no Raman term
+sim.include_Raman = false; % no Raman term
 sim.scalar = 0; % consider polarized fields
 sim.lambda0 = 1550e-9; % the central wavelength
 sim.pulse_centering = false;

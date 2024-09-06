@@ -30,7 +30,7 @@ delta_beta0 = delta_beta1*(2*pi*c/lambda0);
 %% Setup fiber parameters
 sim.lambda0 = lambda0;
 sim.scalar = false; % polarized fields
-sim.Raman_model = 0; % no Raman
+sim.include_Raman = false; % no Raman
 fiber.betas = [0     delta_beta0;...
                0     delta_beta1;...
                beta2 beta2];
@@ -44,7 +44,7 @@ sim.gpu_yes = false;
 % Load default parameters like 
 %
 % loading fiber.betas and fiber.SR based on your multimode folder above
-% sim.Raman_model = 1; Use isotropic Raman model
+% sim.include_Raman = true; Consider Raman
 % sim.gain_model = 0; Don't use gain model = passive propagation
 % sim.gpu_yes = true; Use GPU (default to true)
 % ......

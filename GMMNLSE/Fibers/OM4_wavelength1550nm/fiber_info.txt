@@ -1,0 +1,14 @@
+Material: fused silica
+Fiber type: GRIN
+core NA: 0.20000
+clad NA: 0.22000
+core diameter:  50.00um
+clad diameter: 125.00um
+boundary: 0000
+field: EX
+
+Nx: 400
+spatial_window: 100um
+
+alpha: 2.08000
+save_midx: 1 2 3 4 5 6 

@@ -1,7 +1,9 @@
 function xk = myTrustRegion(F,J,x0,N,e,M,x_total,gpu_yes)
 %MYTRUSTREGION Trust-region method for solving the (num_x*num_y*M)'s 
 %optimization problems in parallel. This parallelization is crucial in
-%multimode rate-equation gain computations.
+%multimode rate-equation gain computations. MATLAB's fsolve() can solve
+%only one problem, so I need to develop this code myself to solve multiple
+%optimization problems in parallel.
 %
 %   F: coupled equation; it outupts a (n,1,num_x,num_y,1,1,1,M) array
 %   J: Jacobian matrix; it outupts a (n,m,num_x,num_y,1,1,1,M) array
@@ -32,7 +34,7 @@ MATLAB_version = version('-release'); MATLAB_version = str2double(MATLAB_version
 if ~gpu_yes
     if MATLAB_version < 2021
         error('myTrustRegion:pageXXXXXXError',...
-              ['pagetranspose() and pagemtimes exist only after R2020b.\n',...
+              ['pagetranspose() and pagemtimes() exist only after R2020b.\n',...
                'For multimode cases, you must use GPU if your MATLAB version is before 2021.']);
     elseif MATLAB_version == 2021
         error('myTrustRegion:pagemldivideError',...
@@ -41,13 +43,35 @@ if ~gpu_yes
     end
 end
 
+% Trust-region method can fail with a bad initial guess.
+% Because the solver includes parameters dependent on trust-region internal
+% iterations, it's useful to re-run the solver with an updated initial guess
+% obtained from the previous solver. This resets some parameters and can
+% lead to the solution.
+max_iterations = 5;
+for i = 1:max_iterations
+    [xk,success] = run_myTrustRegion(F,J,x0,N,e,M,x_total,gpu_yes);
+
+    if success
+        break;
+    else
+        x0 = xk; % prepare to run the next Trust-region method with the updated initial guess, from the previous solver
+    end
+end
+
+end
+
+%% Main function for the trust-region method
+function [xk,success] = run_myTrustRegion(F,J,x0,N,e,M,x_total,gpu_yes)
+
 x_total = repmat(x_total,1,1,1,1,1,1,1,M);
+max_x_total = max(x_total(:));
 
 normF2 = @(x) sum(abs( F(x) ).^2,1); % objective function
 
 eta0 = 0.2; % parameter for finding the trust-region radius
 mu = 0.2; % threshold of optimization
-max_iterations = 1000; % maximum iterations for the trust-region solver
+max_iterations = 10; % maximum iterations for the trust-region solver
 
 % Find the dimension of the computation
 num_x = size(x0,3); % the size of the "x" spatial dimension
@@ -63,16 +87,18 @@ Rk = Flk;
 dk = Rk;
 normF_all = zeros(max_iterations,1,num_x,num_y,1,1,1,M);
 normF_all(1,:,:,:,:,:,:,:) = sqrt(normF2(x0));
+success = false;
 for k = 1:max_iterations
     % Stopping criterions include
     % 1. All of the norms of the output vector (for each parallelization) is smaller than "e"
-    % 2. The step size "dk" of the trust-region method becomes too small
+    % 2. The step size "dk" of the trust-region method becomes too small (< max_x_total/1e4)
+    %
     %    In general, there might be no solution to the coupled equation, so
     %    having this step-size check is important to avoid this solver to
     %    run forever.
-    if any(normF_all(k,:,:,:,:,:,:,:) >= e, 'all') && any(dk > max(x0(:))/1e4, 'all')
-        ratio_k = zeros(1,1,num_x,num_y);
-        while any(ratio_k(:) < mu) && any(sqrt(normF2(xk1)) >= e, 'all') && any(dk > max(x0(:))/1e4, 'all')
+    if any(normF_all(k,:,:,:,:,:,:,:) >= e, 'all') && any(dk > max_x_total/1e4, 'all')
+        ratio_k = zeros(1,1,num_x,num_y,1,1,1,M);
+        while any(ratio_k(:) < mu) && any(sqrt(normF2(xk1)) >= e, 'all') && any(dk > max_x_total/1e4, 'all')
             [xk1,mk] = dogleg(F,J,xk,dk,num_x,num_y,M,x_total,gpu_yes);
             ratio_k = (normF_all(k,:,:,:,:,:,:,:).^2-normF2(xk1))./(normF_all(k,:,:,:,:,:,:,:).^2-mk);
             if any(ratio_k(:) < mu)
@@ -97,13 +123,14 @@ for k = 1:max_iterations
         Rk = etak(3)*Flk + (1-etak(3))*normF_all(k+1,:,:,:,:,:,:,:);
         dk = max(cat(1,Rk,dk),[],1);
     else % stopping criterion is satisfied; time to stop
+        success = true;
         break;
     end
 end
 
 end
 
-%% Helper function
+%% Helper function for the trust-region method
 function [x,mk] = dogleg(F,J,x0,R,num_x,num_y,M,x_total,gpu_yes)
 %DOGLEG It's a numerical method for solving the sub-problem of a
 %trust-region optimization.
@@ -141,7 +168,7 @@ mk = zeros(1,         1,num_x,num_y,1,1,1,M); % model function value at x=x+dx
 %   path(tau) = tau*pU,             0<=tau<=1
 %               pU+(tau-1)*(pB-pU), 1<=tau<=2
 %
-% When computing pB, under situations of a weakly pumped system, stimulated
+% When computing pB, under situations of a weakly-pumped system, stimulated
 % terms are all close to zero, leading to a Hessian matrix that is close to
 % singular. This will trigger MATLAB's warning:
 %   Warning: Matrix is close to singular or badly scaled. Results may be inaccurate.
@@ -167,12 +194,15 @@ else
         pB = -pagemldivide(H./scaling_H,g)./transpose_scaling_H;
     end
     
-    % Code for MATLAB without GPU and MATLAB's version before 2022.
+    % Multimode computation code for MATLAB without GPU and MATLAB's version before 2022.
+    % I disabled this for maximum performance. User can enable it if
+    % necessary and under old MATLAB. Just remember to disable to previous
+    % computation lines.
     %pB = zeros(size(x0,1),1,num_x,num_y,1,1,1,M);
     %for i_x = 1:num_x
     %    for i_y = 1:num_y
     %        for i_M = 1:M
-    %            pB(:,:,i_x,i_y,1,1,1,i_M) = -mldivide(H(:,:,i_x,i_y,1,1,1,i_M),g(:,:,i_x,i_y,1,1,1,i_M));
+    %            pB(:,:,i_x,i_y,1,1,1,i_M) = -mldivide(H(:,:,i_x,i_y,1,1,1,i_M)./scaling_H(:,:,i_x,i_y,1,1,1,i_M),g(:,:,i_x,i_y,1,1,1,i_M))./scaling_H(:,:,i_x,i_y,1,1,1,i_M).';
     %        end
     %    end
     %end

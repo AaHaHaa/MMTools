@@ -6,11 +6,11 @@ addpath('helpers/');
 modes_used = 1:6; % an array; in general the modes do not have to be consecutive
 Nx = 400; % number of spatial grid points for each mode
 gpu_yes = false; % true = run on GPU, false = run on CPU
-folder_name = 'GRIN-10_125DC_wavelength1030nm'; % folder containing the calculated modes
+folder_name = 'OM4_wavelength1550nm'; % folder containing the calculated modes
 
 % File name parameters:
 Nf = 10;
-lambda0 = 1030e-9; % center wavelength in nm; an "integer"
+lambda0 = 1550e-9; % center wavelength in nm; an "integer"
 freq_range = 50; % THz; frequency range. Should be the same as the range used to calculate the modes. Usually 100 THz.
 bandwidth = 'narrowband'; % 'narrowband' or 'broadband'
 

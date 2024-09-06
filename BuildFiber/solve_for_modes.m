@@ -10,14 +10,14 @@ addpath('helpers/');
 %% Set parameters (users modify only this block)
 % Frequency window
 Nf = 10; % number of frequency points at which the modes will be calculated; usually 20
-wavelength0 = 1030e-9; % center wavelength, in m
+wavelength0 = 1550e-9; % center wavelength, in m
 freq_range = 50; % THz; frequency range, in m. If 0, only the center wavelength will be used. Usually 100 THz.
 num_modes = 6; % number of modes to compute; you can use a large number, since this code can find the maximum supported modes itself
 include_cladding_modes = false;
 
 % Spatial profile
 Nx = 400; % number of spatial grid points
-spatial_window = 50; % full spatial window size, in um, usually set to 100 um
+spatial_window = 100; % full spatial window size, in um, usually set to 100 um
 
 % Extra parameters:
 % (1) step fiber:
@@ -25,9 +25,9 @@ spatial_window = 50; % full spatial window size, in um, usually set to 100 um
 % (2) GRIN fiber:
 alpha = 2; % Shape parameter
 
-use_fiber_collection = false; % use fibers in "fiber_collections" function
+use_fiber_collection = true; % use fibers in "/helpers/fiber_collections.m"
 if use_fiber_collection
-    fiber = 'YB1200-25_250DC-PM';
+    fiber = 'ER80-8_125';
     
     [fiber_type,core_diameter,clad_diameter,core_NA,clad_NA,fname_user_defined,alpha] = fiber_collections(fiber,wavelength0);
 else

@@ -1,16 +1,16 @@
-function [A1, dummy_a5_1,...
-          opt_dz,success]= stepping_MPA_nogain_adaptive(A0, dummy_dt,...
-                                                        sim, prefactor,...
+function [A1w, dummy_a5_1,...
+          opt_dz,success]= stepping_MPA_nogain_adaptive(A0w, dummy_dt,...
+                                                        sim, n2_prefactor,...
                                                         SK_info, SRa_info, SRb_info,...
                                                         D_op,...
                                                         haw, hbw,...
-                                                        haw_sponRS, hbw_sponRS, sponRS_prefactor,...
+                                                        sponRS_prefactor,...
                                                         dummy_a5_1,...
                                                         dummy_G, dummy_saturation)
 %STEPPING_MPA_NOGAIN_ADAPTIVE Take one step with MPA without gain
 %
 % Input:
-%    A0 - initial field in the frequency domain (N, num_modes); sqrt(W)
+%    A0w - initial field in the frequency domain (Nt, num_modes); sqrt(W)
 %    dummy_dt - time grid point spacing; ps; but this isn't used in this function
 %
 %    sim.dz - step size; m
@@ -25,12 +25,11 @@ function [A1, dummy_a5_1,...
 %
 %    sim.cuda_SRSK - the cuda for computing SR and SK values
 %
-%    sim.Raman_model - which Raman model is used
-%    sim.Raman_sponRS - consider spontaneous Raman or not
+%    sim.include_Raman - whether Raman is included
 %
 %    sim.adaptive_dz.threshold - the accuracy used to determined whether to increase or decrease the step size
 %
-%    prefactor - 1i*n2*omega/c; m/W
+%    n2_prefactor - 1i*n2*omega/c; m/W
 %
 %    SRa_info.SRa - SRa tensor; m^-2
 %    SRa_info.nonzero_midx1234s - required SRa indices in total
@@ -41,8 +40,8 @@ function [A1, dummy_a5_1,...
 %    SK_info.SK - SK tensor; m^2 (unempty if considering polarizaton modes)
 %    SK_info.nonzero_midx1234s - required SK indices in total (unempty if considering polarizaton modes)
 %
-%    D.pos - dispersion term exp(Dz) (N, num_modes, M+1)
-%    D.neg - dispersion term exp(-Dz) (N, num_modes, M+1)
+%    D.pos - dispersion term exp(Dz) (Nt, num_modes, M+1)
+%    D.neg - dispersion term exp(-Dz) (Nt, num_modes, M+1)
 %    haw - isotropic Raman response in the frequency domain
 %    hbw - anisotropic Raman response in the frequency domain
 %
@@ -50,75 +49,63 @@ function [A1, dummy_a5_1,...
 %
 %    dummy_a5_1 - unused variable
 %
-%    dummy_G - gain term (N, 1); m^-1; but this isn't used in this function
+%    dummy_G - gain term (Nt, 1); m^-1; but this isn't used in this function
 %    dummy_saturation - for gain saturation; but this isn't used in this function
 %    dummy_fr - Raman fraction; but this isn't used in this function
 %
 % Output:
-%    A1 - the field (in the frequency domain) after one step size (N, num_modes)
+%    A1w - the field (in the frequency domain) after one step size (Nt, num_modes)
 %    dummy_a5 - unused variable
 %    opt_dz - recommended step size
 %    success - whether the current step size is sufficiently small for the required tolerance
 
 small_dz = sim.dz/sim.MPA.M; % the step size between each parallelization plane in MPA
 
-anisotropic_Raman_included = ~sim.scalar & sim.Raman_model==2;
-
-[N,num_modes] = size(A0);
+[Nt,num_modes] = size(A0w);
 
 % Spontaneous Raman scattering
-if sim.include_sponRS
-    if sim.gpu_yes
-        A_sponRS = fft(sponRS_prefactor{1}.*sqrt(abs(randn(N,sim.MPA.M+1,num_modes,'gpuArray'))).*exp(1i*2*pi*rand(N,sim.MPA.M+1,num_modes,'gpuArray')));
-    else
-        A_sponRS = fft(sponRS_prefactor{1}.*sqrt(abs(randn(N,sim.MPA.M+1,num_modes))).*exp(1i*2*pi*rand(N,sim.MPA.M+1,num_modes)));
-    end
+if sim.gpu_yes
+    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,sim.MPA.M+1,num_modes,'gpuArray'))).*exp(1i*2*pi*rand(Nt,sim.MPA.M+1,num_modes,'gpuArray')));
 else
-    A_sponRS = [];
+    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,sim.MPA.M+1,num_modes))).*exp(1i*2*pi*rand(Nt,sim.MPA.M+1,num_modes)));
 end
 
 % We can pre-compute exp(D_op*z) and exp(-D_op*z) for all z.
-z = permute((0:sim.MPA.M)',[2,3,1]);% to make "Dz" into (N,num_modes,M+1)
+z = permute((0:sim.MPA.M)',[2,3,1]);% to make "Dz" into (Nt,num_modes,M+1)
 Dz = D_op*small_dz.*z;
 D = struct('pos', exp(Dz), 'neg', exp(-Dz));
 
 % Set initial values for psi
-psi = repmat(A0, 1, 1, sim.MPA.M+1); % M copies of psi(w,z) = A(w,z), in the frequency domain
+psi = repmat(A0w, 1, 1, sim.MPA.M+1); % M copies of psi(w,z) = A(w,z), in the frequency domain
 current_psi_half_parallelization = psi(:,:,sim.MPA.M+1);
 
 % Iterate to solve for psi
 for n_it = 1:sim.MPA.n_tot_max
     % Calculate A(w,z) at all z:
     %    A_w = D.pos*psi
-    A_w = permute(D.pos.*psi, [1 3 2]); % (N, M+1, num_modes)
+    Aw = permute(D.pos.*psi, [1 3 2]); % (Nt, M+1, num_modes)
     % Calculate A(t,z) at all z
-    A_t = fft(A_w);
+    At = fft(Aw);
+    At_wNoise = At + At_noise;
 
     % Calculate Kerr, SRa, and SRb terms
     % If not using the GPU, we will precompute Ra_mn and Rb_mn before the num_modes^4 sum
 
     % Set up matrices for the following Kerr, Ra, and Rb computations
     if sim.gpu_yes
-        Kerr = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
-        Ra = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
-        Rb = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
+        Kerr = complex(zeros(Nt, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
+        Ra = complex(zeros(Nt, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
+        Rb = complex(zeros(Nt, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
+
+        Ra_sponRS = complex(zeros(Nt, sim.MPA.M+1, num_modes, num_modes, 'gpuArray')); % spontaneous isotropic Raman scattering
+        Rb_sponRS = complex(zeros(Nt, sim.MPA.M+1, num_modes, num_modes, 'gpuArray')); % spontaneous anisotropic Raman scattering
     else
-        Kerr = complex(zeros(N, sim.MPA.M+1, num_modes));
-        Ra = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
-        Rb = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
-    end
-    % Spontaneous Raman scattering
-    if sim.include_sponRS
-        if sim.gpu_yes
-            Ra_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
-            Rb_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes, 'gpuArray'));
-        else
-            Ra_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
-            Rb_sponRS = complex(zeros(N, sim.MPA.M+1, num_modes, num_modes));
-        end
-    else
-        Ra_sponRS = [];
-        Rb_sponRS = [];
+        Kerr = complex(zeros(Nt, sim.MPA.M+1, num_modes));
+        Ra = complex(zeros(Nt, sim.MPA.M+1, num_modes, num_modes));
+        Rb = complex(zeros(Nt, sim.MPA.M+1, num_modes, num_modes));
+
+        Ra_sponRS = complex(zeros(Nt, sim.MPA.M+1, num_modes, num_modes)); % spontaneous isotropic Raman scattering
+        Rb_sponRS = complex(zeros(Nt, sim.MPA.M+1, num_modes, num_modes)); % spontaneous anisotropic Raman scattering
     end
 
     % Calculate large num_modes^4 Kerr, Ra, and Rb terms.
@@ -127,54 +114,35 @@ for n_it = 1:sim.MPA.n_tot_max
         % If using the GPU, do the computation with fast CUDA code
         if sim.scalar % scalar fields
             [Kerr,...
-             Ra] = feval(sim.cuda_SRSK,...
-                         Kerr, Ra,...
-                         complex(A_t),...
-                         SK_info.SK, SRa_info.SRa,...
-                         SRa_info.nonzero_midx1234s,...
-                         SRa_info.beginning_nonzero, SRa_info.ending_nonzero,...
-                         sim.Raman_model~=0,...
-                         int32(N), sim.MPA.M+1,...
-                         num_modes,...
-                         sim.cuda_num_operations_SRSK);
-            if sim.include_sponRS % spontaneous Raman scattering
-                Ra_sponRS = feval(sim.cuda_sponRS,...
-                                  Ra_sponRS,...
-                                  complex(A_t), A_sponRS,...
-                                  SRa_info.SRa,...
-                                  SRa_info.nonzero_midx1234s,...
-                                  SRa_info.beginning_nonzero, SRa_info.ending_nonzero,...
-                                  int32(N), sim.MPA.M+1,...
-                                  num_modes);
-            end
+             Ra,...
+             Ra_sponRS] = feval(sim.cuda_SRSK,...
+                                Kerr, Ra, Ra_sponRS,...
+                                complex(At), At_noise,...
+                                SK_info.SK, SRa_info.SRa,...
+                                SRa_info.nonzero_midx1234s,...
+                                SRa_info.beginning_nonzero, SRa_info.ending_nonzero,...
+                                sim.include_Raman,...
+                                int32(Nt), sim.MPA.M+1,...
+                                num_modes,...
+                                sim.cuda_num_operations_SRSK);
         else % polarized fields
             [Kerr,...
-             Ra, Rb] = feval(sim.cuda_SRSK,...
-                             Kerr, Ra, Rb,...
-                             complex(A_t),...
-                             SK_info.SK,   SK_info.nonzero_midx1234s,  SK_info.beginning_nonzero,  SK_info.ending_nonzero,...
-                             SRa_info.SRa, SRa_info.nonzero_midx1234s, SRa_info.beginning_nonzero, SRa_info.ending_nonzero,...
-                             SRb_info.SRb, SRb_info.nonzero_midx1234s, SRb_info.beginning_nonzero, SRb_info.ending_nonzero,...
-                             sim.Raman_model~=0, sim.Raman_model==2,...
-                             N, sim.MPA.M+1,...
-                             num_modes,...
-                             sim.cuda_num_operations_SRSK);
-            if sim.include_sponRS % spontaneous Raman scattering
-                [Ra_sponRS, Rb_sponRS] = feval(sim.cuda_sponRS,...
-                                               Ra_sponRS, Rb_sponRS,...
-                                               complex(A_t), A_sponRS,...
-                                               SRa_info.SRa, SRa_info.nonzero_midx1234s, SRa_info.beginning_nonzero, SRa_info.ending_nonzero,...
-                                               SRb_info.SRb, SRb_info.nonzero_midx1234s, SRb_info.beginning_nonzero, SRb_info.ending_nonzero,...
-                                               sim.Raman_model == 2,...
-                                               int32(N), sim.MPA.M+1,...
-                                               num_modes,...
-                                               sim.cuda_num_operations_sponRS);
-            end
+             Ra, Rb,...
+             Ra_sponRS, Rb_sponRS] = feval(sim.cuda_SRSK,...
+                                           Kerr, Ra, Rb, Ra_sponRS, Rb_sponRS,...
+                                           complex(At), At_noise,...
+                                           SK_info.SK,   SK_info.nonzero_midx1234s,  SK_info.beginning_nonzero,  SK_info.ending_nonzero,...
+                                           SRa_info.SRa, SRa_info.nonzero_midx1234s, SRa_info.beginning_nonzero, SRa_info.ending_nonzero,...
+                                           SRb_info.SRb, SRb_info.nonzero_midx1234s, SRb_info.beginning_nonzero, SRb_info.ending_nonzero,...
+                                           sim.include_Raman, ~isempty(hbw),...
+                                           int32(Nt), sim.MPA.M+1,...
+                                           num_modes,...
+                                           sim.cuda_num_operations_SRSK);
         end
         Kerr = sum(Kerr,4);
     else
         % If using the CPU, first precompute Ra_mn and Rb_mn.
-        if sim.Raman_model ~= 0
+        if sim.include_Raman
             if n_it == 1
                 midx34s_sub2ind = @(x)...
                     cellfun(@(xx)...
@@ -204,23 +172,23 @@ for n_it = 1:sim.MPA.n_tot_max
                     %   Finally, midx34s_sub2ind = [25 21] (1x2 array)
 
                 SRa_nonzero_midx34s = midx34s_sub2ind(SRa_info.nonzero_midx34s); % the corresponding linear indices of the 3rd-dimensional "num_nonzero34" above
-                if anisotropic_Raman_included
+                if ~isempty(hbw)
                     SRb_nonzero_midx34s = midx34s_sub2ind(SRb_info.nonzero_midx34s); % the corresponding linear indices of the 3rd-dimensional "num_nonzero34" above
                 end
             end
-            Ra_mn = A_t(:, :, SRa_info.nonzero_midx34s(1,:)).*conj(A_t(:, :, SRa_info.nonzero_midx34s(2,:))); % (N,M+1,num_nonzero34)
-            if anisotropic_Raman_included
-                Rb_mn = A_t(:, :, SRb_info.nonzero_midx34s(1,:)).*conj(A_t(:, :, SRb_info.nonzero_midx34s(2,:))); % (N,M+1,num_nonzero34)
+            Ra_mn = At(:, :, SRa_info.nonzero_midx34s(1,:)).*conj(At(:, :, SRa_info.nonzero_midx34s(2,:))); % (Nt,M+1,num_nonzero34)
+            if ~isempty(hbw)
+                Rb_mn = At(:, :, SRb_info.nonzero_midx34s(1,:)).*conj(At(:, :, SRb_info.nonzero_midx34s(2,:))); % (Nt,M+1,num_nonzero34)
             end
-            if sim.include_sponRS % spontaneous Raman scattering
-                Ra_mn_sponRS =      A_t(:, :, SRa_info.nonzero_midx34s(1,:)).*conj(A_sponRS(:, :, SRa_info.nonzero_midx34s(2,:))) +... % (N,M+1,num_nonzero34)
-                               A_sponRS(:, :, SRa_info.nonzero_midx34s(1,:)).*conj(     A_t(:, :, SRa_info.nonzero_midx34s(2,:))) +...
-                               A_sponRS(:, :, SRa_info.nonzero_midx34s(1,:)).*conj(A_sponRS(:, :, SRa_info.nonzero_midx34s(2,:)));
-                if anisotropic_Raman_included
-                    Rb_mn_sponRS =      A_t(:, :, SRb_info.nonzero_midx34s(1,:)).*conj(A_sponRS(:, :, SRb_info.nonzero_midx34s(2,:))) +... % (N,M+1,num_nonzero34)
-                                   A_sponRS(:, :, SRb_info.nonzero_midx34s(1,:)).*conj(     A_t(:, :, SRb_info.nonzero_midx34s(2,:))) +...
-                                   A_sponRS(:, :, SRb_info.nonzero_midx34s(1,:)).*conj(A_sponRS(:, :, SRb_info.nonzero_midx34s(2,:)));
-                end
+            
+            % spontaneous Raman scattering
+            Ra_mn_sponRS =      At(:, :, SRa_info.nonzero_midx34s(1,:)).*conj(At_noise(:, :, SRa_info.nonzero_midx34s(2,:))) +... % (Nt,M+1,num_nonzero34)
+                           At_noise(:, :, SRa_info.nonzero_midx34s(1,:)).*conj(     At(:, :, SRa_info.nonzero_midx34s(2,:))) +...
+                           At_noise(:, :, SRa_info.nonzero_midx34s(1,:)).*conj(At_noise(:, :, SRa_info.nonzero_midx34s(2,:)));
+            if ~isempty(hbw)
+                Rb_mn_sponRS =      At(:, :, SRb_info.nonzero_midx34s(1,:)).*conj(At_noise(:, :, SRb_info.nonzero_midx34s(2,:))) +... % (Nt,M+1,num_nonzero34)
+                               At_noise(:, :, SRb_info.nonzero_midx34s(1,:)).*conj(     At(:, :, SRb_info.nonzero_midx34s(2,:))) +...
+                               At_noise(:, :, SRb_info.nonzero_midx34s(1,:)).*conj(At_noise(:, :, SRb_info.nonzero_midx34s(2,:)));
             end
         end
 
@@ -231,8 +199,8 @@ for n_it = 1:sim.MPA.n_tot_max
             midx2 = SK_info.nonzero_midx1234s(2,nz_midx1);
             midx3 = SK_info.nonzero_midx1234s(3,nz_midx1);
             midx4 = SK_info.nonzero_midx1234s(4,nz_midx1);
-            Kerr(:,:,midx1) = sum(permute(SK_info.SK(nz_midx1),[3 2 1]).*A_t(:, :, midx2).*A_t(:, :, midx3).*conj(A_t(:, :, midx4)),3);
-            if sim.Raman_model ~= 0
+            Kerr(:,:,midx1) = sum(permute(SK_info.SK(nz_midx1),[3 2 1]).*At_wNoise(:, :, midx2).*At_wNoise(:, :, midx3).*conj(At_wNoise(:, :, midx4)),3);
+            if sim.include_Raman
                 % Ra
                 for midx2 = 1:num_modes
                     nz_midx1 = find( SRa_info.nonzero_midx1234s(1,:)==midx1 );
@@ -242,12 +210,10 @@ for n_it = 1:sim.MPA.n_tot_max
                     idx = midx34s_sub2ind([midx3;midx4]); % the linear indices
                     idx = arrayfun(@(i) find(SRa_nonzero_midx34s==i,1), idx); % the indices connecting to the 3rd-dimensional "num_nonzero34" of Ra_mn
                     Ra(:, :, midx1, midx2) = sum(permute(SRa_info.SRa(nz_midx),[3 2 1]).*Ra_mn(:, :, idx),3);
-                    if sim.include_sponRS % spontaneous Raman scattering
-                        Ra_sponRS(:, :, midx1, midx2) = sum(permute(SRa_info.SRa(nz_midx),[3 2 1]).*Ra_mn_sponRS(:, :, idx),3);
-                    end
+                    Ra_sponRS(:, :, midx1, midx2) = sum(permute(SRa_info.SRa(nz_midx),[3 2 1]).*Ra_mn_sponRS(:, :, idx),3);
                 end
                 % Rb
-                if anisotropic_Raman_included
+                if ~isempty(hbw)
                     for midx2 = 1:num_modes
                         nz_midx1 = find( SRb_info.nonzero_midx1234s(1,:)==midx1 );
                         nz_midx = nz_midx1( SRb_info.nonzero_midx1234s(2,nz_midx1)==midx2 ); % all the [midx1;midx2;?;?]
@@ -256,22 +222,15 @@ for n_it = 1:sim.MPA.n_tot_max
                         idx = midx34s_sub2ind([midx3;midx4]); % the linear indices
                         idx = arrayfun(@(i) find(SRb_nonzero_midx34s==i,1), idx); % the indices connecting to the 3rd-dimensional "num_nonzero34" of Rb_mn
                         Rb(:, :, midx1, midx2) = sum(permute(SRb_info.SRb(nz_midx),[3 2 1]).*Rb_mn(:, :, idx),3);
-                        if sim.include_sponRS % spontaneous Raman scattering
-                            Rb_sponRS(:, :, midx1, midx2) = sum(permute(SRb_info.SRb(nz_midx),[3 2 1]).*Rb_mn_sponRS(:, :, idx),3);
-                        end
+                        Rb_sponRS(:, :, midx1, midx2) = sum(permute(SRb_info.SRb(nz_midx),[3 2 1]).*Rb_mn_sponRS(:, :, idx),3);
                     end
                 end
             end
         end
-        if anisotropic_Raman_included
-            clear Ra_mn Rb_mn;
-            if sim.include_sponRS % spontaneous Raman scattering
-                clear Ra_mn_sponRS Rb_mn_sponRS;
-            end
-        elseif sim.Raman_model~=0
-            clear Ra_mn;
-            if sim.include_sponRS % spontaneous Raman scattering
-                clear Ra_mn_sponRS;
+        if sim.include_Raman
+            clearvars Ra_mn Ra_mn_sponRS
+            if ~isempty(hbw)
+                clearvars Rb_mn Rb_mn_sponRS;
             end
         end
     end
@@ -282,44 +241,30 @@ for n_it = 1:sim.MPA.n_tot_max
     % Please refer to
     % "https://blogs.mathworks.com/steve/2009/11/03/the-conv-function-and-implementation-tradeoffs/"
     % for more information.
-    if sim.Raman_model ~= 0
+    if sim.include_Raman
         Ra = fft(haw.*ifft(Ra));
+        Ra_sponRS = fft(haw.*ifft(Ra_sponRS).*sponRS_prefactor{2});
         
-        if sim.include_sponRS % spontaneous Raman scattering
-            Ra_sponRS = fft(haw_sponRS.*ifft(Ra_sponRS).*sponRS_prefactor{2});
-        end
-        
-        if anisotropic_Raman_included % polarized fields with an anisotropic Raman
+        if ~isempty(hbw) % polarized fields with an anisotropic Raman
             Rb = fft(hbw.*ifft(Rb));
-            
-            if sim.include_sponRS % spontaneous Raman scattering
-                Rb_sponRS = fft(hbw_sponRS.*ifft(Rb_sponRS).*sponRS_prefactor{2});
-            end
+            Rb_sponRS = fft(hbw.*ifft(Rb_sponRS).*sponRS_prefactor{2});
         end
         
-        if ~anisotropic_Raman_included
-            if sim.include_sponRS % spontaneous Raman scattering
-                nonlinear = Kerr + sum((Ra+Ra_sponRS).*permute(A_t,[1 2 4 3]),4);
-            else
-                nonlinear = Kerr + sum(Ra.*permute(A_t,[1 2 4 3]),4);
-            end
+        if isempty(hbw)
+            nonlinear = Kerr + sum((Ra+Ra_sponRS).*permute(At,[1 2 4 3]),4);
         else % polarized fields with an anisotropic Raman
-            if sim.include_sponRS % spontaneous Raman scattering
-                nonlinear = Kerr + sum((Ra+Rb+Ra_sponRS+Rb_sponRS).*permute(A_t,[1 2 4 3]),4);
-            else
-                nonlinear = Kerr + sum((Ra+Rb).*permute(A_t,[1 2 4 3]),4);
-            end
+            nonlinear = Kerr + sum((Ra+Rb+Ra_sponRS+Rb_sponRS).*permute(At,[1 2 4 3]),4);
         end
     else
         nonlinear = Kerr;
     end
 
     % Multiply the nonlinear factor
-    nonlinear = prefactor.*ifft(nonlinear);
+    nonlinear = n2_prefactor.*ifft(nonlinear);
 
     % Incorporate dz and D.neg term for the integration.
-    nonlinear = permute(nonlinear,[1,3,2]); % (N,num_modes,M+1)
-    nonlinear = small_dz*D.neg.*nonlinear; % (N, num_modes, M+1)
+    nonlinear = permute(nonlinear,[1,3,2]); % (Nt,num_modes,M+1)
+    nonlinear = small_dz*D.neg.*nonlinear; % (Nt, num_modes, M+1)
 
     % Save the previous psi at the right end, then compute the new psi's
     last_psi_half_parallelization = current_psi_half_parallelization;
@@ -341,7 +286,7 @@ for n_it = 1:sim.MPA.n_tot_max
         psi = feval(sim.cuda_MPA_psi_update,psi,...
                                             nonlinear,...
                                             sim.MPA.coeff,...
-                                            N,sim.MPA.M+1,num_modes);
+                                            Nt,sim.MPA.M+1,num_modes);
     else
         for Midx = 1:sim.MPA.M
             psi(:,:,Midx+1) = psi(:,:,1) + sum(nonlinear(:,:,1:Midx+1).*sim.MPA.coeff(Midx,:,1:Midx+1),3);
@@ -370,7 +315,7 @@ end
 
 % Get back to A from psi
 psi_full_parallelization = psi(:,:,sim.MPA.M+1);
-A1 = D.pos(:,:,sim.MPA.M+1).*psi_full_parallelization;
+A1w = D.pos(:,:,sim.MPA.M+1).*psi_full_parallelization;
 
 % Stepsize control
 err = sqrt(sum(abs(current_psi_half_parallelization-psi_full_parallelization).^2)./energy_current_psi_half_parallelization).*weight;

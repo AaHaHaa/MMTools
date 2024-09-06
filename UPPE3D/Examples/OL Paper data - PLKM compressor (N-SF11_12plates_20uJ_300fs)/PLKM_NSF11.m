@@ -2,12 +2,12 @@
 
 clearvars; close all;
 
-addpath('../../UPPE3D algorithm/','../../user_helpers/'); % add package paths
+addpath('../../../UPPE3D algorithm/','../../../user_helpers/'); % add package paths
 sim.gpuDevice.Index = 1; % choose which GPU to use if you have multiple GPUs: 1,2,3...
 
 %% Setup simulation parameters
 sim.lambda0 = 1030e-9; % m; the center wavelength
-sim.Raman_model = 0; % no Raman
+sim.include_Raman = false; % no Raman
 
 fiber.material = 'N-SF11'; % for finding the refractive index in GNLSE3D_propagate()
 

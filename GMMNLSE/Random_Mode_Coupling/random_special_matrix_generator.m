@@ -148,7 +148,7 @@ switch func2str(func)
             end
         end
 
-        if length(n) == 1
+        if isscalar(n)
             output = single_matrix{1};
         else
             output = matrix_initialization(sum(n),1,use_gpu,@zeros);

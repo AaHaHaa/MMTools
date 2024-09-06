@@ -1,6 +1,5 @@
 function [gpuDevice_Device,...
           cuda_SRSK,num_operations_SRSK,...
-          cuda_sponRS,num_operations_sponRS,...
           cuda_MPA_psi_update,...
           cuda_mypagemtimes] = setup_stepping_kernel(sim,Nt,num_modes,...
                                                      rmc_yes)
@@ -37,11 +36,13 @@ SRSK_filename = ['GMMNLSE_nonlinear_sum' gain_str polar_str];
 
 switch SRSK_filename
     case 'GMMNLSE_nonlinear_sum'
-        num_operations_SRSK = 2;
-    case {'GMMNLSE_nonlinear_sum_with_polarization','GMMNLSE_nonlinear_sum_MMGaussianGain'}
         num_operations_SRSK = 3;
-    case 'GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization'
+    case 'GMMNLSE_nonlinear_sum_MMGaussianGain'
         num_operations_SRSK = 4;
+    case 'GMMNLSE_nonlinear_sum_with_polarization'
+        num_operations_SRSK = 5;
+    case 'GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization'
+        num_operations_SRSK = 6;
 end
 
 % The number of blocks is set based on the total number of threads
@@ -72,19 +73,5 @@ if rmc_yes
 else
     cuda_mypagemtimes = []; % dummy output argument
 end
-
-%% Spontaneous Raman scattering
-% Nonlinear term
-sponRS_filename = ['GMMNLSE_sponRS_sum' polar_str];
-
-switch sponRS_filename
-    case 'GMMNLSE_sponRS_sum'
-        num_operations_sponRS = 1;
-    case 'GMMNLSE_sponRS_sum_with_polarization'
-        num_operations_sponRS = 2;
-end
-
-% Kernal for computing the spontaneous Raman term of UPPE
-cuda_sponRS = setup_kernel_SRSK(sponRS_filename,sim.cuda_dir_path,Nt,M,num_operations_sponRS,num_modes^2);
 
 end

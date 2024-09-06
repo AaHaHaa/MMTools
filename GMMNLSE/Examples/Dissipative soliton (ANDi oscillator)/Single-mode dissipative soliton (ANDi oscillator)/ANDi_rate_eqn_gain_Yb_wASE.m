@@ -6,7 +6,7 @@
 %
 % This file uses the rate-equation gain model for the gain fiber.
 %
-% Initial ASE for each roundtip computation always starts with zero because
+% Initial ASE for each roundtip always starts with zero because
 % we assume that ASE cannot survive the saturable absorber because its
 % intensity is too weak. It's also not possible to consider correctly the
 % saturable absorption for ASE since we use a simplified model here. To
@@ -94,7 +94,7 @@ OC = 0.8; % output coupling
 loss = 0.5; % the total loss of the cavity
 saturation_power = 2500; % the saturation power of the saturable absorber; W
 moddepth = 0.9; % the modulation depth of the saturable absorber
-tol_convergence = 1e-5; % the tolerance of the convergence of the output ANDi pulse energy
+tol_convergence = 1e-3; % the tolerance of the convergence of the output ANDi pulse energy
 
 %% Spectral filter parameters
 gaussexpo = 1;
@@ -139,7 +139,6 @@ rt_num = 0;
 pulse_survives = true;
 while rt_num < max_rt
     time_delay = 0;
-    current_z = 0;
     zn = 1;
     rt_num = rt_num + 1;
     
