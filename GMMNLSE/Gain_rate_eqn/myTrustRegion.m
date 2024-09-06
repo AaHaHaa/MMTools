@@ -196,8 +196,8 @@ else
     
     % Multimode computation code for MATLAB without GPU and MATLAB's version before 2022.
     % I disabled this for maximum performance. User can enable it if
-    % necessary and under old MATLAB. Just remember to disable to previous
-    % computation lines.
+    % necessary and under old MATLAB. Just remember to disable the previous
+    % few computation lines.
     %pB = zeros(size(x0,1),1,num_x,num_y,1,1,1,M);
     %for i_x = 1:num_x
     %    for i_y = 1:num_y
