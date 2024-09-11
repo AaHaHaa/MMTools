@@ -117,7 +117,7 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
     sim.last_dz = sim.dz; % previous dz
     
     % Apply the damped frequency window
-    %last_E = last_E.*sim.damped_window;
+    last_E = last_E.*sim.damped_window;
     
     % Check for any NaN elements
     if any(any(isnan(last_E))) %any(isnan(last_A),'all')

@@ -46,7 +46,7 @@ end
 W_op = W_op(idx0,:,:,:,:);
 %}
 
-if Nt == 1 % CW case
+if Nt == 1 || ~any(fields(:)) % CW case
     sim.betas = [0,0];
 else
     if ~isfield(sim,'betas')

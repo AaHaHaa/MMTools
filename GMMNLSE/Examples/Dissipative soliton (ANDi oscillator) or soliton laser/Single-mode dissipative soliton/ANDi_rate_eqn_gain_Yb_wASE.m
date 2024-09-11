@@ -200,7 +200,7 @@ while rt_num < max_rt
     saved_z = saved_z(1:zn);
     
     % -----------------------------------------------------------------
-    % Output couplier
+    % Output coupler
     output_field(:,:,rt_num) = sqrt(OC)*prop_output3.fields(:,:,end);
     prop_output3.fields = sqrt(1-OC)*prop_output3.fields(:,:,end);
     

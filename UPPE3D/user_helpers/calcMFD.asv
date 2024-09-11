@@ -10,8 +10,7 @@ function [D4SigmaX, D4SigmaY] = calcMFD(field,spatial_window,varargin)
 %   remove_noise_model:
 %       0 (default): don't remove the noise
 %       1: remove the noise that is too weak based on thresholding
-%       2: remove the noise by calculating I.^C and then multiply the found MFD by sqrt(C) times
-%          This calculation assumes a Gaussian spatial profile.
+%       2: remove the noise by calculating I.^3 and then multiply the found MFD by three times
 %
 % =========================================================================
 % Reference: https://www.rp-photonics.com/beam_radius.html
@@ -56,10 +55,10 @@ I = abs(field).^2;
 switch remove_noise_model
     case 1
         for j = 1:num_fields
-            idx = I(:,:,j) < max(max(I(:,:,j),[],1),[],2)/30;
+            idx = I(:,:,j) < max(max(I(:,:,j)))/30;
             Itmp = I(:,:,j);
-            max_noise = max(max(Itmp(idx),[],1),[],2);
-            min_noise = min(min(Itmp(idx),[],1),[],2);
+            max_noise = max(max(Itmp(idx)));
+            min_noise = min(min(Itmp(idx)));
             Itmp(idx) = Itmp(idx).*((Itmp(idx)-min_noise)./(max_noise-min_noise)).^2; % remove noise by incrementally reducing their strength (weaker one becomes weaker)
             I(:,:,j) = Itmp;
         end
@@ -76,8 +75,7 @@ D4SigmaX = 4*sqrt( sum((x-xCenter).^2.*I,[1,2])./denominator );
 D4SigmaY = 4*sqrt( sum((y-yCenter).^2.*I,[1,2])./denominator );
 
 if remove_noise_model == 2
-    D4SigmaX = D4SigmaX*sqrt(multiplication_ratio);
-    D4SigmaY = D4SigmaY*sqrt(multiplication_ratio);
-end
+    D4SigmaX = D4SigmaX*multiplication_ratio;
+    D4SigmaX = D4SigmaX*multiplication_ratio;
 
 end

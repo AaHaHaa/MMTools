@@ -2,7 +2,7 @@
 
 clearvars; close all;
 
-addpath('../../../UPPE3D algorithm/','../../../user_helpers/'); % add package paths
+addpath('../../UPPE3D algorithm/','../../user_helpers/'); % add package paths
 sim.gpuDevice.Index = 1; % choose which GPU to use if you have multiple GPUs: 1,2,3...
 
 %% Setup simulation parameters
@@ -26,7 +26,7 @@ tfwhm = 0.31; % ps
 time_window = 1; % ps
 energy = ((20)*0.85)*1e3; % nJ
 Nt = 2^8; % the number of time points
-Nx = 2^7; % the number of spatial points
+Nx = 2^6; % the number of spatial points
 initial_condition = build_3Dgaussian(MFD0, spatial_window, tfwhm, time_window, energy, Nt, Nx);
 
 %% Setup general parameters
@@ -70,7 +70,8 @@ prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
 
 % Calculate MFD during propagation
 z_all(:,1) = prop_output.z(2:end); % the first one is the input z=0, so ignore it
-MFD = squeeze(calcMFD(squeeze(prop_output.field(Nt/2,:,:,:)),spatial_window))*1e3; % mm
+remove_noise_model = 2; % see calcMFD for details
+MFD = squeeze(calcMFD(squeeze(prop_output.field(Nt/2,:,:,:)),spatial_window,remove_noise_model))*1e3; % mm
 MFD_all(:,1) = MFD(2:end); % the first one is the input, so ignore it
 fprintf('air %u\n',0);
 num_to_plot = num_save;
@@ -100,7 +101,7 @@ for i = 1+(1:num_plates*2)
     
     % Calculate MFD during propagation
     z_all(:,i) = prop_output.z(2:end) + z_all(end,i-1); % the first one is the input z=0, so ignore it
-    MFD = squeeze(calcMFD(squeeze(prop_output.field(Nt/2,:,:,:)),spatial_window))*1e3; % mm
+    MFD = squeeze(calcMFD(squeeze(prop_output.field(Nt/2,:,:,:)),spatial_window,remove_noise_model))*1e3; % mm
     MFD_all(:,i) = MFD(2:end); % the first one is the input, so ignore it
     if mod(i,2) == 0 % plate
         fprintf('plate %u\n',i/2);

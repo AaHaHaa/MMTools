@@ -10,7 +10,7 @@
 % scattering.
 %
 % This demonstration follows the following paper. I didn't intend to
-% perfect duplication the one in the paper, and only focused on the main
+% perfectly duplicate the one in the paper, and only focused on the main
 % physical phenomenon, so I didn't make all the parameters the same as in
 % the paper. By the way, the paper doesn't show what happens with extended
 % propagation. Here, I show that all the energy will be transferred to the

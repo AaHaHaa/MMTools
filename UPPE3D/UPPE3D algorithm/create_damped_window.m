@@ -4,7 +4,7 @@ function damped_window = create_damped_window(Nt,Nx,Ny)
 % window.
 % I use a super-Gaussian function here.
 
-gexpo = 2*20; % 10 is to make it a sharp window
+gexpo = 2*20; % 20 is to make it a sharp window
 
 x = ifftshift(1:Nx);
 xc = floor(Nx/2)+1;
@@ -21,7 +21,7 @@ fc = floor(Nt/2)+1;
 ffwhm = Nt*0.9;
 f0 = ffwhm/(2*sqrt(log(2))); % 2*sqrt(log(2))=1.665
 
-% A much sharper damped window is used to for the low-frequency side;
+% A much sharper damped window is used only for the low-frequency side;
 % otherwise, it'll easily remove the long-wavelength signal we want to see.
 damped_x_window = exp(-(x-xc).^gexpo/(2*x0^gexpo)).^20; % 20 is to make it a sharp window
 damped_x_window(damped_x_window>0.99) = 1;
@@ -31,6 +31,7 @@ damped_y_window(damped_y_window>0.99) = 1;
 
 damped_freq_window = exp(-(f-fc).^gexpo/(2*f0^gexpo)).^20; % 20 is to make it a sharp window
 damped_freq_window(damped_freq_window>0.99) = 1;
+damped_freq_window(fc:end) = 1;
 
 % Multiply them together
 damped_window = damped_freq_window.*damped_x_window.*damped_y_window;
