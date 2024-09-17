@@ -12,6 +12,7 @@ function xk = myTrustRegion(F,J,x0,N,e,M,x_total,gpu_yes)
 %   e: threshold value of stopping optimization processes; a scalar
 %   M: the number of parallelizations in MPA
 %   x_total: the total population; (1,1,num_x,num_y)
+%   gpu_yes: use GPU or not
 %
 % Dimension explanation:
 %   n: the number of coupled equations
@@ -30,16 +31,23 @@ function xk = myTrustRegion(F,J,x0,N,e,M,x_total,gpu_yes)
 %
 % Developed by Yi-Hao Chen from Frank Wise's group at Cornell University @6/5/2024
 
-MATLAB_version = version('-release'); MATLAB_version = str2double(MATLAB_version(1:4));
-if ~gpu_yes
-    if MATLAB_version < 2021
-        error('myTrustRegion:pageXXXXXXError',...
-              ['pagetranspose() and pagemtimes() exist only after R2020b.\n',...
-               'For multimode cases, you must use GPU if your MATLAB version is before 2021.']);
-    elseif MATLAB_version == 2021
-        error('myTrustRegion:pagemldivideError',...
-              ['pagemldivide() exists only after R2022a.\n',...
-               'For multimode cases, you must use GPU if your MATLAB version is before 2022.']);
+% Find the dimension of the computation
+num_x = size(x0,3); % the size of the "x" spatial dimension
+num_y = size(x0,4); % the size of the "y" spatial dimension
+single_mode_yes = (num_x == 1 & num_y == 1); % whether the simulation is single-mode or not
+
+if ~single_mode_yes
+    MATLAB_version = version('-release'); MATLAB_version = str2double(MATLAB_version(1:4));
+    if ~gpu_yes
+        if MATLAB_version < 2021
+            error('myTrustRegion:pageXXXXXXError',...
+                  ['pagetranspose() and pagemtimes() exist only after R2020b.\n',...
+                   'For multimode cases, you must use GPU if your MATLAB version is before 2021.']);
+        elseif MATLAB_version == 2021
+            error('myTrustRegion:pagemldivideError',...
+                  ['pagemldivide() exists only after R2022a.\n',...
+                   'For multimode cases, you must use GPU if your MATLAB version is before 2022.']);
+        end
     end
 end
 
@@ -50,7 +58,7 @@ end
 % lead to the solution.
 max_iterations = 5;
 for i = 1:max_iterations
-    [xk,success] = run_myTrustRegion(F,J,x0,N,e,M,x_total,gpu_yes);
+    [xk,success] = run_myTrustRegion(F,J,x0,N,e,M,x_total,gpu_yes,single_mode_yes);
 
     if success
         break;
@@ -62,7 +70,7 @@ end
 end
 
 %% Main function for the trust-region method
-function [xk,success] = run_myTrustRegion(F,J,x0,N,e,M,x_total,gpu_yes)
+function [xk,success] = run_myTrustRegion(F,J,x0,N,e,M,x_total,gpu_yes,single_mode_yes)
 
 x_total = repmat(x_total,1,1,1,1,1,1,1,M);
 max_x_total = max(x_total(:));
@@ -99,7 +107,7 @@ for k = 1:max_iterations
     if any(normF_all(k,:,:,:,:,:,:,:) >= e, 'all') && any(dk > max_x_total/1e4, 'all')
         ratio_k = zeros(1,1,num_x,num_y,1,1,1,M);
         while any(ratio_k(:) < mu) && any(sqrt(normF2(xk1)) >= e, 'all') && any(dk > max_x_total/1e4, 'all')
-            [xk1,mk] = dogleg(F,J,xk,dk,num_x,num_y,M,x_total,gpu_yes);
+            [xk1,mk] = dogleg(F,J,xk,dk,num_x,num_y,M,x_total,gpu_yes,single_mode_yes);
             ratio_k = (normF_all(k,:,:,:,:,:,:,:).^2-normF2(xk1))./(normF_all(k,:,:,:,:,:,:,:).^2-mk);
             if any(ratio_k(:) < mu)
                 dk = 0.5*dk;
@@ -131,7 +139,7 @@ end
 end
 
 %% Helper function for the trust-region method
-function [x,mk] = dogleg(F,J,x0,R,num_x,num_y,M,x_total,gpu_yes)
+function [x,mk] = dogleg(F,J,x0,R,num_x,num_y,M,x_total,gpu_yes,single_mode_yes)
 %DOGLEG It's a numerical method for solving the sub-problem of a
 %trust-region optimization.
 %
@@ -153,8 +161,13 @@ if gpu_yes
     g = pagefun(@mtimes,pagefun(@transpose,Jx0),F(x0)); % gradient array for the model function in the sub-problem of the trust-region method
     H = pagefun(@mtimes,pagefun(@transpose,Jx0),Jx0); % Hessian matrix for the model function in the sub-problem of the trust-region method
 else
-    g = pagemtimes(pagetranspose(Jx0),F(x0)); % gradient array for the model function in the sub-problem of the trust-region method
-    H = pagemtimes(pagetranspose(Jx0),Jx0); % Hessian matrix for the model function in the sub-problem of the trust-region method
+    if single_mode_yes
+        g = (Jx0.')*F(x0);
+        H = (Jx0.')*Jx0;
+    else
+        g = pagemtimes(pagetranspose(Jx0),F(x0)); % gradient array for the model function in the sub-problem of the trust-region method
+        H = pagemtimes(pagetranspose(Jx0),Jx0); % Hessian matrix for the model function in the sub-problem of the trust-region method
+    end
 end
 
 dx = zeros(size(x0,1),1,num_x,num_y,1,1,1,M);
@@ -183,7 +196,7 @@ mk = zeros(1,         1,num_x,num_y,1,1,1,M); % model function value at x=x+dx
 %             .  .  .  . ...] is the identity matrix with each of its
 % entries replaced with the corresponding scaling factor for each column.
 scaling_H = max(H,[],1);
-if num_x == 1 && num_y == 1 % no page-wise computation; I added this check because MATLAB adds pagemldivide only after R2022a
+if single_mode_yes % no page-wise computation; I added this check because MATLAB adds pagemldivide only after R2022a
     pB = -mldivide(H./scaling_H,g)./scaling_H.';
 else
     if gpu_yes
@@ -211,7 +224,11 @@ norm_pB = sqrt(sum(abs(pB).^2,1));
 if gpu_yes
     pU = -sum(g.^2,1)./sum(g.*pagefun(@mtimes,H,g),1).*g;
 else
-    pU = -sum(g.^2,1)./sum(g.*pagemtimes(H,g),1).*g;
+    if single_mode_yes
+        pU = -sum(g.^2,1)./sum(g.*(H*g),1).*g;
+    else
+        pU = -sum(g.^2,1)./sum(g.*pagemtimes(H,g),1).*g;
+    end
 end
 norm_pU = sqrt(sum(abs(pU).^2,1));
 % if norm_pB <= R; in principle, this corresponds to tau>2 if it extends to R. It's stopped at tau=2, which is dx=pB.
@@ -227,7 +244,11 @@ if any(idx2,'all')
     if gpu_yes
         tmp = sum(abs(F(x0)+pagefun(@mtimes,Jx0,dx)).^2,1);
     else
-        tmp = sum(abs(F(x0)+pagemtimes(Jx0,dx)).^2,1);
+        if single_mode_yes
+            tmp = sum(abs(F(x0)+(Jx0*dx)).^2,1);
+        else
+            tmp = sum(abs(F(x0)+pagemtimes(Jx0,dx)).^2,1);
+        end
     end
     mk(:,:,idx2) = tmp(:,:,idx2);
 end
@@ -244,7 +265,11 @@ if any(idx3,'all')
     if gpu_yes
         tmp = sum(abs(F(x0)+pagefun(@mtimes,Jx0,dx)).^2,1);
     else
-        tmp = sum(abs(F(x0)+pagemtimes(Jx0,dx)).^2,1);
+        if single_mode_yes
+            tmp = sum(abs(F(x0)+(Jx0*dx)).^2,1);
+        else
+            tmp = sum(abs(F(x0)+pagemtimes(Jx0,dx)).^2,1);
+        end
     end
     mk(:,:,idx3) = tmp(:,:,idx3);
 end

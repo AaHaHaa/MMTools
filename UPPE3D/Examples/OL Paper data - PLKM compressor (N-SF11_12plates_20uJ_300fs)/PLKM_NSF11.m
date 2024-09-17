@@ -18,7 +18,7 @@ fiber.material = 'N-SF11'; % for finding the refractive index in GNLSE3D_propaga
 Plate_Thick = 0.5e-3; % m
 Plate_spacing = 9e-3; % m
 D = 9e-3; % m; distance between the focal point and the first plate
-MFD0 = 85e-6*sqrt(2); % m; mode-field diameter
+MFD0 = 120e-6; % m; mode-field diameter
 
 %% Initial condition
 spatial_window = 1e-3; % m
