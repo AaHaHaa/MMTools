@@ -42,13 +42,16 @@ There is a `readme.pdf` in the `Documentations/` folder. Please find details of 
 
 I'm Yi-Hao Chen, the author of the code and from Frank Wise's group at Cornell Applied Physics. This code is basically an upgraded and highly-optimized version of our "WiseLabAEP/GMMNLSE-Solver-FINAL" from "https://github.com/WiseLabAEP/GMMNLSE-Solver-FINAL," with much more functionalities, which however might overwhelm users and thus require more fiber-optic background. It can run order-of-magnitude faster than our old code due to optimizing with CUDA+shared memory, as well as reducing the usage of for-loops. Although our old one claims to be fast with GPU, its CUDA implementation is not optimized, let alone its CPU implementation with a lot of slow for-loops. Besides, this package includes adaptive step-size control, which improves the performance significantly and allows users to be free from worrying the reliability of a simulation. For optimization details, please see the supplement of our paper mentioned previously. 
 
-## How to use GPU:<br>
+## How to activate CUDA for GPU computing in MATLAB:<br>
 Typically MATLAB deals with this, but there are still come steps to follow before CUDA can really be used, especially when compiling .cu files to generate .ptx files.<br>
 1. install [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
 2. Install [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/). Only **Desktop development with C++** is required. If it later says that it needs to install some other components due to the dependency issues, also install them.
 ![VS installation screenshot image](VS_install.png)
-3. Add required path to computer's environmental PATH; otherwise, MATLAB, during compiling .cu files, "cl.exe" cannot be found.
+3. Add required path of Visual Studio to computer's environmental PATH; otherwise, MATLAB, during compiling .cu files, will say "cl.exe" cannot be found.
 ![add PATH](add_PATH.png)
+4. Restart the computer if something is wrong. Connections between MATLAB and CUDA or Visual Studio requires restarting to be effective.
+> [!WARNING]
+> MATLAB supports only a certain version of CUDA and GPUs. CUDA or GPU that is too old just isn't supported.
 
 ## History:<br>
 * 11/1/2023:<br>
