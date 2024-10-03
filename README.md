@@ -51,7 +51,7 @@ Typically MATLAB deals with this, but there are still come steps to follow befor
 ![add PATH](add_PATH.png)
 4. Restart the computer if something is wrong. Connections between MATLAB and CUDA or Visual Studio requires restarting to be effective.
 > [!WARNING]
-> MATLAB supports only a certain version of CUDA and GPUs. CUDA or GPU that is too old just isn't supported.
+> MATLAB supports only a certain version of CUDA and GPUs ([support list](https://www.mathworks.com/help/releases/R2021b/parallel-computing/gpu-support-by-release.html)) CUDA or GPU that is too old just isn't supported.
 
 ## History:<br>
 * 11/1/2023:<br>
