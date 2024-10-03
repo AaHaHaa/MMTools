@@ -44,14 +44,14 @@ I'm Yi-Hao Chen, the author of the code and from Frank Wise's group at Cornell A
 
 ## How to activate CUDA for GPU computing in MATLAB:<br>
 Typically MATLAB deals with this, but there are still come steps to follow before CUDA can really be used, especially when compiling .cu files to generate .ptx files.<br>
-1. install [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
+1. Install [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
 2. Install [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/). Only **Desktop development with C++** is required. If it later says that it needs to install some other components due to the dependency issues, also install them.
 ![VS installation screenshot image](VS_install.png)
 3. Add required path of Visual Studio to computer's environmental PATH; otherwise, MATLAB, during compiling .cu files, will say "cl.exe" cannot be found.
 ![add PATH](add_PATH.png)
 4. Restart the computer if something is wrong. Connections between MATLAB and CUDA or Visual Studio requires restarting to be effective.
 > [!WARNING]
-> MATLAB supports only a certain version of CUDA and GPUs ([support list](https://www.mathworks.com/help/releases/R2021b/parallel-computing/gpu-support-by-release.html)) CUDA or GPU that is too old just isn't supported.
+> MATLAB supports only a certain version of CUDA and GPUs ([support list](https://www.mathworks.com/help/releases/R2021b/parallel-computing/gpu-support-by-release.html)). CUDA or GPU that is too old just isn't supported.
 
 ## History:<br>
 * 11/1/2023:<br>
