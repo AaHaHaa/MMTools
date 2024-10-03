@@ -42,14 +42,11 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %
 %       sim.adaptive_dz.threshold = 1e-6;
 %
-%       sim.include_sponRS = true; % include spontaneous Raman scattering
-%
 %       sim.gpu_yes = true;
 %       sim.include_Raman = true;
 %       sim.gain_model = 0;
 %
 %       sim.pulse_centering = true;
-%       sim.num_photon_noise_per_bin = 0;
 %       sim.gpuDevice.Index = 1;
 %       sim.progress_bar = true;
 %       sim.progress_bar_name = '';
@@ -291,7 +288,6 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %
 %           pulse_centering - 1(true) = center the pulse according to the time window, 0(false) = do not
 %                             The time delay will be stored in time_delay after running GMMNLSE_propagate().
-%           num_photon_noise_per_bin- a scalar; include photon noise (typically one photon per spectral discretization bin)
 %           gpuDevice.Index - a scalar; the GPU to use
 %           gpuDevice.Device - the output of MATLAB "gpuDevice(gpu_index)"
 %           cuda_dir_path - path to the cuda directory into which ptx files will be compiled and stored

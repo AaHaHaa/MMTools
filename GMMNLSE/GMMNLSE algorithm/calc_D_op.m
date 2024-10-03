@@ -8,39 +8,43 @@ if any(size(fiber.betas) == Nt) % the betas is given over different frequencies,
         fiber.betas = fiber.betas.';
     end
     if ~isfield(sim,'betas')
-        % Obtain the betas of the input pulse
-        fftshift_omegas = fftshift(omegas,1);
-        spectrum = sum(abs(fftshift(ifft(fields),1)).^2,2);
-        omega0 = sum(fftshift_omegas.*spectrum)/sum(spectrum); % 2*pi*THz; the pulse center frequency (under shifted omega)
-        omega_range = 1/dt; % 2*pi*THz
-        omegas_idx_near_pulse = fftshift_omegas>omega0-omega_range/5 & fftshift_omegas<omega0+omega_range/5;% pick only the data near the pulse center frequency to find its beta0 and beta1
-        clear spectrum omega0 omega_range;
-
-        fit_order = max(2,min(7,sum(omegas_idx_near_pulse)-1)); % 2~7
-        [betas_Taylor_coeff,~,mu] = polyfit(fftshift_omegas(omegas_idx_near_pulse),real(fiber.betas(omegas_idx_near_pulse,1)),fit_order);
-        sim.betas = [betas_Taylor_coeff(end);betas_Taylor_coeff(end-1)];
-        sim.betas = [sim.betas(1)-sim.betas(2)*mu(1)/mu(2);...
-                     sim.betas(2)/mu(2)];
-        clear fftshift_omegas fit_order betas_Taylor_coeff mu;
-        %{
-        % The following code finds sim.betas that minimizes the range and
-        % values of betas.
-        % However, it can pick a sim.betas that is far away from the input
-        % pulse if the center frequency of the frequency window is too far away
-        % from the pulse frequency. The result can deviate from the physics if
-        % the step size isn't small enough.
-        sim.betas = zeros(2,1,'gpuArray');
-
-        % Obtain the betas of the input pulse
-        fftshift_omegas = fftshift(omegas,1);
-        fit_order = 7;
-        [betas_Taylor_coeff,~,mu] = polyfit(fftshift_omegas,real(fiber.betas(:,1)),fit_order);
-        sim.betas = [betas_Taylor_coeff(end);betas_Taylor_coeff(end-1)];
-        new_betas = real(fiber.betas(:,1))-(sim.betas(1)+sim.betas(2)*(fftshift_omegas-mu(1))/mu(2));
-        sim.betas = [sim.betas(1)-sim.betas(2)*mu(1)/mu(2) + (max(new_betas) + min(new_betas))/2;...
-                     sim.betas(2)/mu(2)];
-        clear fftshift_omegas fit_order betas_Taylor_coeff mu new_betas;
-        %}
+        if ~any(fields) % fields is all-zero, which typically happens when you want to compute ASE or inversion under rate-eqn gain modeling
+            sim.betas = [0;0];
+        else
+            % Obtain the betas of the input pulse
+            fftshift_omegas = fftshift(omegas,1);
+            spectrum = sum(abs(fftshift(ifft(fields),1)).^2,2);
+            omega0 = sum(fftshift_omegas.*spectrum)/sum(spectrum); % 2*pi*THz; the pulse center frequency (under shifted omega)
+            omega_range = 1/dt; % 2*pi*THz
+            omegas_idx_near_pulse = fftshift_omegas>omega0-omega_range/5 & fftshift_omegas<omega0+omega_range/5;% pick only the data near the pulse center frequency to find its beta0 and beta1
+            clear spectrum omega0 omega_range;
+    
+            fit_order = max(2,min(7,sum(omegas_idx_near_pulse)-1)); % 2~7
+            [betas_Taylor_coeff,~,mu] = polyfit(fftshift_omegas(omegas_idx_near_pulse),real(fiber.betas(omegas_idx_near_pulse,1)),fit_order);
+            sim.betas = [betas_Taylor_coeff(end);betas_Taylor_coeff(end-1)];
+            sim.betas = [sim.betas(1)-sim.betas(2)*mu(1)/mu(2);...
+                         sim.betas(2)/mu(2)];
+            clear fftshift_omegas fit_order betas_Taylor_coeff mu;
+            %{
+            % The following code finds sim.betas that minimizes the range and
+            % values of betas.
+            % However, it can pick a sim.betas that is far away from the input
+            % pulse if the center frequency of the frequency window is too far away
+            % from the pulse frequency. The result can deviate from the physics if
+            % the step size isn't small enough.
+            sim.betas = zeros(2,1,'gpuArray');
+    
+            % Obtain the betas of the input pulse
+            fftshift_omegas = fftshift(omegas,1);
+            fit_order = 7;
+            [betas_Taylor_coeff,~,mu] = polyfit(fftshift_omegas,real(fiber.betas(:,1)),fit_order);
+            sim.betas = [betas_Taylor_coeff(end);betas_Taylor_coeff(end-1)];
+            new_betas = real(fiber.betas(:,1))-(sim.betas(1)+sim.betas(2)*(fftshift_omegas-mu(1))/mu(2));
+            sim.betas = [sim.betas(1)-sim.betas(2)*mu(1)/mu(2) + (max(new_betas) + min(new_betas))/2;...
+                         sim.betas(2)/mu(2)];
+            clear fftshift_omegas fit_order betas_Taylor_coeff mu new_betas;
+            %}
+        end
     end
     
     D_op = 1i*(ifftshift(fiber.betas,1)-(sim.betas(1)+sim.betas(2)*omegas));

@@ -46,10 +46,10 @@ end
 W_op = W_op(idx0,:,:,:,:);
 %}
 
-if Nt == 1 || ~any(fields(:)) % CW case
-    sim.betas = [0,0];
-else
-    if ~isfield(sim,'betas')
+if ~isfield(sim,'betas')
+    if Nt == 1 || ~any(fields(:)) % CW case
+        sim.betas = [0;0];
+    else
         sim.betas = zeros(2,1,'gpuArray');
 
         % Obtain the betas of the input pulse

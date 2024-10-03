@@ -2,7 +2,7 @@ function foutput = GMMNLSE_propagate(fiber, initial_condition, sim, gain_rate_eq
 %GMMNLSE_PROPAGATE Propagate an initial multimode pulse through an arbitrary distance of an optical fiber
 %   This is a caller function, calling
 %   GMMNLSE_propagate_with_adaptive() or
-%   GMMNLSE_propagate_no_adaptive()
+%   GMMNLSE_propagate_without_adaptive()
 %   based on whether to use adaptive step-size method or not.
 % -------------------------------------------------------------------------
 %   It uses adaptive step-size method whenever possible, such as

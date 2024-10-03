@@ -22,7 +22,7 @@ if sim.pulse_centering
     TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*abs(initial_condition.fields).^2,[1,2])/sum(abs(initial_condition.fields).^2,[1,2]));
     % Because circshift is slow on GPU, I discard it.
     %last_result = ifft(circshift(initial_condition.fields,-tCenter));
-    if TCenter ~= 0
+    if ~isnan(TCenter) && TCenter ~= 0
         if TCenter > 0
             initial_condition.fields = [initial_condition.fields(1+TCenter:end,:);initial_condition.fields(1:TCenter,:)];
         elseif TCenter < 0
@@ -113,7 +113,7 @@ for ii = 2:num_zPoints
         TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*abs(last_A_in_time).^2,[1,2])/sum(abs(last_A_in_time).^2,[1,2]));
         % Because circshift is slow on GPU, I discard it.
         %last_result = ifft(circshift(last_A_in_time,-tCenter));
-        if TCenter ~= 0
+        if ~isnan(TCenter) && TCenter ~= 0
             if TCenter > 0
                 last_A = ifft([last_A_in_time(1+TCenter:end,:);last_A_in_time(1:TCenter,:)]);
             elseif TCenter < 0

@@ -51,7 +51,7 @@ mult_factor = exp(-(f-center_f).^gexpo/(2*f_0^gexpo));
 % Apply the filter in frequency space
 output = struct('dt',input.dt,...
                 'fields',fft(mult_factor.*ifft(input_field)),...
-                'rejected_fields',fft((1-mult_factor).*ifft(input_field)));
+                'rejected_fields',fft(sqrt(1-mult_factor.^2).*ifft(input_field)));
 
 if verbose
     fig = figure('Name','Filter');

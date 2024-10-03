@@ -117,9 +117,9 @@ end
 current_path = mfilename('fullpath');
 sep_pos = strfind(current_path,sep_char);
 upper_folder = current_path(1:sep_pos(end-1));
-addpath([upper_folder 'Gain_rate_eqn/'],...
-        [upper_folder 'Gain_rate_eqn/gain cross sections/'],...
-        [upper_folder 'Gain_rate_eqn/Judd-Ofelt theory/Material data/']);
+addpath([upper_folder 'Steady_state_Gain_rate_eqn/'],...
+        [upper_folder 'Steady_state_Gain_rate_eqn/gain cross sections/'],...
+        [upper_folder 'Steady_state_Gain_rate_eqn/Judd-Ofelt theory/Material data/']);
 
 %% Add more-verbose parameters
 gain_rate_eqn.include_ASE = ~gain_rate_eqn.ignore_ASE;
@@ -127,12 +127,12 @@ gain_rate_eqn.load_profiles = (isfield(fiber,'MM_folder') && ~isempty(fiber.MM_f
 
 %% linear-oscillator model
 if gain_rate_eqn.linear_oscillator
-    addpath([upper_folder 'Gain_rate_eqn/linear oscillator/']);
+    addpath([upper_folder 'Steady_state_Gain_rate_eqn/linear oscillator/']);
 
     gain_rate_eqn.reuse_data = true; % Force to reuse the previously calculated data because it's a linear oscillator
 end
 
-%% Cross sections
+%% "lambda" error check
 % "lambda" must be a column vector.
 if size(lambda,1) == 1
     lambda = lambda.';

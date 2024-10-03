@@ -143,19 +143,19 @@ function foutput = GMMNLSE_propagate_without_adaptive_rmc(fiber, initial_conditi
 %
 % =========================================================================
 % Output:
-% foutput.fields - (N, num_modes, num_save_points) matrix with the multimode field at each save point
-% foutput.dt - time grid point spacing, to fully identify the field
-% foutput.z - the propagation length of the saved points
-% foutput.dz - the (small) step size for each saved points
-% foutput.betas - the [betas0,betas1] used for the moving frame
-% foutput.t_delay - the time delay of each pulse which is centered in the time window during propagation
-% foutput.seconds - time spent in the main loop
+%   foutput.fields - (N, num_modes, num_save_points) matrix with the multimode field at each save point
+%   foutput.dt - time grid point spacing, to fully identify the field
+%   foutput.z - the propagation length of the saved points
+%   foutput.dz - the (small) step size for each saved points
+%   foutput.betas - the [betas0,betas1] used for the moving frame
+%   foutput.t_delay - the time delay of each pulse which is centered in the time window during propagation
+%   foutput.seconds - time spent in the main loop
 %
 % For gain-rate-equation model:
 %   foutput.Power.pump.forward - (1,1,num_save_points); the forward pump power along the fiber
 %   foutput.Power.pump.backward - (1,1,num_save_points); the backward pump power along the fiber
-%   *If N2 is exported,
-%       foutput.N2 - (Nx,Nx,num_save_points); the doped ion density of the upper state
+%   foutput.population - (Nx,Nx,num_save_points); the doped ion density of the various states
+%                        For single-mode, Nx=1.
 
 %% Consider only the last fields of the initial condition
 initial_condition.fields = initial_condition.fields(:,:,end);
@@ -316,7 +316,7 @@ if sim.gain_model == 2 % rate-equation-gain model
     current_path = mfilename('fullpath');
     sep_pos = strfind(current_path,sep_char);
     upper_folder = current_path(1:sep_pos(end-1));
-    addpath([upper_folder 'Gain_rate_eqn/']);
+    addpath([upper_folder 'Steady_state_Gain_rate_eqn/']);
 % -------------------------------------------------------------------------
     % For single mode, the computation of the gain amplification
     % factor is faster with CPU if the number of point < ~2^20.

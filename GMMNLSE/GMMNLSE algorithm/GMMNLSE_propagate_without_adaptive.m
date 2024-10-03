@@ -121,22 +121,22 @@ function foutput = GMMNLSE_propagate_without_adaptive(fiber, initial_condition, 
 %
 % =========================================================================
 % Output:
-% foutput.fields - (N, num_modes, num_save_points) matrix with the multimode field at each save point
-% foutput.dt - time grid point spacing, to fully identify the field
-% foutput.z - the propagation length of the saved points
-% foutput.dz - the (small) step size for each saved points
-% foutput.betas - the [betas0,betas1] used for the moving frame
-% foutput.t_delay - the time delay of each pulse which is centered in the time window during propagation
-% foutput.seconds - time spent in the main loop
+%   foutput.fields - (N, num_modes, num_save_points) matrix with the multimode field at each save point
+%   foutput.dt - time grid point spacing, to fully identify the field
+%   foutput.z - the propagation length of the saved points
+%   foutput.dz - the (small) step size for each saved points
+%   foutput.betas - the [betas0,betas1] used for the moving frame
+%   foutput.t_delay - the time delay of each pulse which is centered in the time window during propagation
+%   foutput.seconds - time spent in the main loop
 %
 % For gain-rate-equation model:
 %   foutput.Power.pump.forward - (1,1,num_save_points); the forward pump power along the fiber
 %   foutput.Power.pump.backward - (1,1,num_save_points); the backward pump power along the fiber
+%   foutput.population - (Nx,Nx,num_save_points); the doped ion density of the various states
+%                        For single-mode, Nx=1.
 %   *If ASE is considered,
 %       foutput.Power.ASE.forward - (1,1,num_save_points); the forward ASE power along the fiber
 %       foutput.Power.ASE.backward - (1,1,num_save_points); the backward ASE power along the fiber
-%   *If N2 is exported,
-%       foutput.N2 - (Nx,Nx,num_save_points); the doped ion density of the upper state
 %   *If reuse_data,
 %       foutput.saved_data - saved_data used for an oscillator to converge faster
 
