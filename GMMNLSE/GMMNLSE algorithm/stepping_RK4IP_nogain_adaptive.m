@@ -5,6 +5,7 @@ function [A1w,a5,...
                                                            D_op,...
                                                            haw, hbw,...
                                                            sponRS_prefactor,...
+                                                           At_noise,...
                                                            a5_1,...
                                                            dummy_G, dummy_saturation)
 %STEPPING_RK4IP_NOGAIN_ADAPTIVE Take one step with RK4IP without gain
@@ -67,8 +68,6 @@ if sim.gpu_yes
     
     Ra_sponRS = complex(zeros(Nt, num_modes, num_modes, 'gpuArray')); % spontaneous isotropic Raman scattering
     Rb_sponRS = complex(zeros(Nt, num_modes, num_modes, 'gpuArray')); % spontaneous anisotropic Raman scattering
-    
-    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,num_modes,'gpuArray'))).*exp(1i*2*pi*rand(Nt,num_modes,'gpuArray')));
 else
     Kerr = complex(zeros(Nt, num_modes));
     Ra = complex(zeros(Nt, num_modes, num_modes));
@@ -76,8 +75,6 @@ else
     
     Ra_sponRS = complex(zeros(Nt, num_modes, num_modes)); % spontaneous isotropic Raman scattering
     Rb_sponRS = complex(zeros(Nt, num_modes, num_modes)); % spontaneous anisotropic Raman scattering
-    
-    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,num_modes))).*exp(1i*2*pi*rand(Nt,num_modes)));
 end
 
 D = D_op*sim.dz/2;

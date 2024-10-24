@@ -7,6 +7,7 @@ function [A1w, a5,...
                                                 SK_info, SRa_info, SRb_info,...
                                                 haw, hbw,...
                                                 sponRS_prefactor,...
+                                                At_noise,...
                                                 n2_prefactor, omegas, D_op,...
                                                 Power_pump_forward, Power_pump_backward, a5_1,...
                                                 dummy_var)
@@ -84,8 +85,6 @@ if sim.gpu_yes
 
     Ra_sponRS = complex(zeros(Nt, num_modes, num_modes, 'gpuArray')); % spontaneous isotropic Raman scattering
     Rb_sponRS = complex(zeros(Nt, num_modes, num_modes, 'gpuArray')); % spontaneous anisotropic Raman scattering
-    
-    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,num_modes,'gpuArray'))).*exp(1i*2*pi*rand(Nt,num_modes,'gpuArray')));
 else
     Kerr = complex(zeros(Nt, num_modes));
     Ra = complex(zeros(Nt, num_modes, num_modes));
@@ -93,8 +92,6 @@ else
 
     Ra_sponRS = complex(zeros(Nt, num_modes, num_modes)); % spontaneous isotropic Raman scattering
     Rb_sponRS = complex(zeros(Nt, num_modes, num_modes)); % spontaneous anisotropic Raman scattering
-    
-    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,num_modes))).*exp(1i*2*pi*rand(Nt,num_modes)));
 end
 
 % Represented under the interaction picture (dispersion + gain)

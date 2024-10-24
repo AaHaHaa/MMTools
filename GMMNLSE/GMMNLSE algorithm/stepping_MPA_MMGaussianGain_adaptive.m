@@ -5,6 +5,7 @@ function [A1w, dummy_a5,...
                                                                  D_op,...
                                                                  haw,hbw,...
                                                                  sponRS_prefactor,...
+                                                                 At_noise,...
                                                                  dummy_a5_1,...
                                                                  G,saturation_intensity)
 %STEPPING_MPA_MMGAUSSIANGAIN_ADAPTIVE Take one step with MPA with a 
@@ -77,13 +78,6 @@ if sim.scalar
 else
     num_spatial_modes = num_modes/2;
     polar = 2;
-end
-
-% Spontaneous Raman scattering
-if sim.gpu_yes
-    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,sim.MPA.M+1,num_modes,'gpuArray'))).*exp(1i*2*pi*rand(Nt,sim.MPA.M+1,num_modes,'gpuArray')));
-else
-    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,sim.MPA.M+1,num_modes))).*exp(1i*2*pi*rand(Nt,sim.MPA.M+1,num_modes)));
 end
 
 % We can pre-compute exp(D_op*z) and exp(-D_op*z) for all z.

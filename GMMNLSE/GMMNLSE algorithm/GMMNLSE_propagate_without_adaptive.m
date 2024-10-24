@@ -267,6 +267,16 @@ sim.damped_freq_window = create_damped_freq_window(Nt);
 save_points = int64(num_saveSteps + 1);
 num_zPoints = num_zSteps + 1;
 
+%% Modified shot-noise for noise modeling
+if isequal(sim.step_method,'RK4IP')
+    At_noise = fft(sponRS_prefactor{1}.*randn(Nt,num_modes).*exp(1i*2*pi*rand(Nt,num_modes)));
+else % 'MPA'
+    At_noise = repmat(fft(sponRS_prefactor{1}.*randn(Nt,1,num_modes).*exp(1i*2*pi*rand(Nt,1,num_modes))),1,sim.MPA.M+1,1);
+end
+if sim.gpu_yes
+    At_noise = gpuArray(At_noise);
+end
+
 %% Run the step function over each step
 run_start = tic;
 % -------------------------------------------------------------------------
@@ -322,12 +332,14 @@ GMMNLSE_rategain_func = str2func(function_name);
                                      omegas, D,...
                                      haw, hbw,...
                                      sponRS_prefactor,...
+                                     At_noise,...
                                      gain_rate_eqn.saved_data);
 
 % -------------------------------------------------------------------------
 % Just to get an accurate timing, wait before recording the time
 if sim.gpu_yes
     sim.betas = gather(sim.betas);
+    At_noise = gather(At_noise);
     wait(sim.gpuDevice.Device);
 end
 fulltime = toc(run_start);
@@ -339,6 +351,7 @@ foutput = struct('z', sim.save_period*(0:num_saveSteps)',...
                  'betas', sim.betas,...
                  'seconds', fulltime,...
                  't_delay', T_delay_out,...
+                 'shot_noise',At_noise,...
                  'Power', Power);
 
 foutput.Power = Power; % pump and ASE powers

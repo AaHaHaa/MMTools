@@ -4,6 +4,7 @@ function A1w = stepping_MPA_nogain_rmc(A0w, dummy_dt,...
                                        D, rmc_D,...
                                        haw, hbw,...
                                        sponRS_prefactor,...
+                                       At_noise,...
                                        dummy_G, dummy_saturation)
 %STEPPING_MPA_NOGAIN_RMC Take one step with MPA without gain
 %
@@ -58,13 +59,6 @@ function A1w = stepping_MPA_nogain_rmc(A0w, dummy_dt,...
 %    success - whether the current step size is sufficiently small for the required tolerance
 
 [Nt,num_modes] = size(A0w);
-
-% Spontaneous Raman scattering
-if sim.gpu_yes
-    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,sim.MPA.M+1,num_modes,'gpuArray'))).*exp(1i*2*pi*rand(Nt,sim.MPA.M+1,num_modes,'gpuArray')));
-else
-    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,sim.MPA.M+1,num_modes))).*exp(1i*2*pi*rand(Nt,sim.MPA.M+1,num_modes)));
-end
 
 % Set initial values for psi
 psi = repmat(A0w, 1, 1, sim.MPA.M+1); % M copies of psi(w,z) = A(w,z), in the frequency domain

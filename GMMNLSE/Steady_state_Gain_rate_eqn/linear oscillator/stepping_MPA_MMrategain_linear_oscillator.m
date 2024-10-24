@@ -9,6 +9,7 @@ function [A1w,...
                                                          omegas,D,...
                                                          haw,hbw,...
                                                          sponRS_prefactor,...
+                                                         At_noise,...
                                                          gain_rate_eqn)
 %STEPPING_MPA_MMRATEGAIN_LINEAR_OSCILLATOR Take one step with MPA with a
 %gain model solved from rate equations. It's only used for multimode
@@ -81,13 +82,6 @@ function [A1w,...
 %    N - (Nx,Nx); the ion density/population of each energy level
 
 [Nt,num_modes] = size(A0w);
-
-% Spontaneous Raman scattering
-if sim.gpu_yes
-    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,sim.MPA.M+1,num_modes,'gpuArray'))).*exp(1i*2*pi*rand(Nt,sim.MPA.M+1,num_modes,'gpuArray')));
-else
-    At_noise = fft(sponRS_prefactor{1}.*sqrt(abs(randn(Nt,sim.MPA.M+1,num_modes))).*exp(1i*2*pi*rand(Nt,sim.MPA.M+1,num_modes)));
-end
 
 % Set initial values for psi
 psi = repmat(A0w,1,1,sim.MPA.M+1); % M copies of psi(w,z) = A(w,z), in the frequency domain!

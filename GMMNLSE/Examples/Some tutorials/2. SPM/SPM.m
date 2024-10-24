@@ -48,7 +48,7 @@ lambda = c./(f*1e12)*1e9; % nm
 
 %% Initial condition
 tfwhm = 1; % ps
-total_energy = 10; % nJ
+total_energy = 5; % nJ
 initial_pulse = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
 
 %% Propagate
