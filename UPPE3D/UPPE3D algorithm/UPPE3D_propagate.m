@@ -115,7 +115,7 @@ save_points = int64(num_saves_total + 1);
 save_z = double(0:save_points-1)'*sim.save_period;
 
 %% Modified shot-noise for noise modeling
-E_tr_noise = fft(sponRS_prefactor{1}.*randn(size(initial_condition.field)).*exp(1i*2*pi*rand(size(initial_condition.field))));
+E_tr_noise = 0*fft(sponRS_prefactor{1}.*randn(size(initial_condition.field)).*exp(1i*2*pi*rand(size(initial_condition.field))));
 if sim.gpu_yes
     E_tr_noise = gpuArray(E_tr_noise);
 end

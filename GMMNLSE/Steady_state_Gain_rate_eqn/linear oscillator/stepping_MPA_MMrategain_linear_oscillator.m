@@ -276,7 +276,7 @@ for n_it = 1:sim.MPA.n_tot_max
     % Incorporate dz and D.neg term for the integration
     %zero_idx = (max(abs(A0))==0);
     %gain_term(:,zero_idx,:) = 0; % clear effects from the gain model by making them all zeros
-    nonlinear = D.neg.*(sim.small_dz*nonlinear+gAwdz); % (Nt,num_modes,M+1)
+    nonlinear = D.neg.*(sim.small_dz*nonlinear + gAwdz); % (Nt,num_modes,M+1)
 	
     % Save the previous psi at the right end, then compute the new psi's
     last_psi = psi(:,:,sim.MPA.M+1);
