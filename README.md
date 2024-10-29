@@ -35,7 +35,7 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 8. For multimode, GPU computations (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
 
 ## Notes:<br>
-For details, please read the supplement of [[1]](#references-our-papers). 
+For details, please read the supplement of [[1]](#references-our-papers).  
 Please don't forget to cite our paper if you find this code useful in your work. I, the young and early-career researcher, need your support. Similarly, if you need help or have questions about the code, please feel free to ask them here or send me an email (email address is in my paper).
 
 There is a `readme.pdf` in the `Documentations/` folder. Please find details of how to use this code in it. However, the fastest way to learn how to use this package is to learn from the examples in the `Examples/` folder.
