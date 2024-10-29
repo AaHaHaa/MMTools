@@ -16,7 +16,7 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 2. Adaptive step-size control are implemented for both RK4IP and MPA, which improves the performance and allows users to be free from worrying the reliability of a simulation. Only under limited scenarios is adaptive-step method turned off, such as considering ASE and using `saved_data` for fast oscillator convergence. User doesn't choose whether to use the adaptive-step method, which is controlled by this package.
 
 > [!NOTE]
-> Although adaptive-step-size control for RK4IP isn't new with published papers, adaptive-step-size control for MPA is new. I didn't publish a separate paper discussing this numerical scheme, which is perhaps the fastest and the most convenient numerical scheme for general multimode situations (as in step-index, graded-index, or hollow-core fibers, etc.) by far (written on 2/14/2024). The implementation detail is described in the supplement of [[1]](#references-our-papers-).
+> Although adaptive-step-size control for RK4IP isn't new with published papers, adaptive-step-size control for MPA is new. I didn't publish a separate paper discussing this numerical scheme, which is perhaps the fastest and the most convenient numerical scheme for general multimode situations (as in step-index, graded-index, or hollow-core fibers, etc.) by far (written on 2/14/2024). The implementation detail is described in the supplement of [[1]](#references-our-papers).
 
 3. Support broadband scenarios by having $\beta_p(\omega)$. Please see the "Broadband SPM-based supercontinuum" examples and understand the necessity of applying this scheme in some situations.
 
