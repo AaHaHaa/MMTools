@@ -253,9 +253,6 @@ if ~isfield(fiber,'material')
 end
 [fiber,haw,hbw] = Raman_model(fiber,sim,Nt,dt);
 
-% spontaneous Raman scattering
-sponRS_prefactor = spontaneous_Raman(Nt,dt,sim);
-
 %% Work out the overlap tensor details
 [SK_info, SRa_info, SRb_info] = calc_SRSK(fiber,sim,num_spatial_modes);
 
@@ -268,11 +265,7 @@ save_points = int64(num_saveSteps + 1);
 num_zPoints = num_zSteps + 1;
 
 %% Modified shot-noise for noise modeling
-if isequal(sim.step_method,'RK4IP')
-    At_noise = fft(sponRS_prefactor{1}.*randn(Nt,num_modes).*exp(1i*2*pi*rand(Nt,num_modes)));
-else % 'MPA'
-    At_noise = repmat(fft(sponRS_prefactor{1}.*randn(Nt,1,num_modes).*exp(1i*2*pi*rand(Nt,1,num_modes))),1,sim.MPA.M+1,1);
-end
+At_noise = shot_noise(Nt,dt,sim,num_modes);
 if sim.gpu_yes
     At_noise = gpuArray(At_noise);
 end
@@ -331,7 +324,6 @@ GMMNLSE_rategain_func = str2func(function_name);
                                      SK_info, SRa_info, SRb_info,...
                                      omegas, D,...
                                      haw, hbw,...
-                                     sponRS_prefactor,...
                                      At_noise,...
                                      gain_rate_eqn.saved_data);
 

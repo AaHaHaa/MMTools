@@ -5,7 +5,7 @@ function damped_freq_window = create_damped_freq_window(Nt)
 
 f = ifftshift((1:Nt)',1);
 fc = floor(Nt/2)+1;
-ffwhm = Nt*0.9;
+ffwhm = Nt*0.85;
 f0 = ffwhm/(2*sqrt(log(2))); % 2*sqrt(log(2))=1.665
 gexpo = 2*20; % 20 is to make it a sharp window
 

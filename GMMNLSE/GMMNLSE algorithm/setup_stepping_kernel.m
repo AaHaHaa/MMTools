@@ -36,13 +36,13 @@ SRSK_filename = ['GMMNLSE_nonlinear_sum' gain_str polar_str];
 
 switch SRSK_filename
     case 'GMMNLSE_nonlinear_sum'
-        num_operations_SRSK = 3;
+        num_operations_SRSK = 2;
     case 'GMMNLSE_nonlinear_sum_MMGaussianGain'
-        num_operations_SRSK = 4;
+        num_operations_SRSK = 3;
     case 'GMMNLSE_nonlinear_sum_with_polarization'
-        num_operations_SRSK = 5;
+        num_operations_SRSK = 3;
     case 'GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization'
-        num_operations_SRSK = 6;
+        num_operations_SRSK = 4;
 end
 
 % The number of blocks is set based on the total number of threads

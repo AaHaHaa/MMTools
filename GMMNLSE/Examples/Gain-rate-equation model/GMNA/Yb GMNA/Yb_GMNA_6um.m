@@ -45,7 +45,7 @@ gain_rate_eqn.core_NA = 0.12;
 gain_rate_eqn.absorption_wavelength_to_get_N_total = 920; % nm
 gain_rate_eqn.absorption_to_get_N_total = 0.55; % dB/m
 gain_rate_eqn.pump_wavelength = 976; % nm
-gain_rate_eqn.copump_power = 1.6; % W
+gain_rate_eqn.copump_power = 1; % W
 gain_rate_eqn.counterpump_power = 0; % W
 gain_rate_eqn.reuse_data = false; % For a ring or linear cavity, the pulse will enter a steady state eventually.
                                   % If reusing the pump and ASE data from the previous roundtrip, the convergence can be much faster, especially for counterpumping.
@@ -61,7 +61,7 @@ gain_rate_eqn.verbose = false; % show the information(final pulse energy) during
 
 %% Setup general parameters
 Nt = 2^14; % the number of time points
-time_window = 100; % ps
+time_window = 50; % ps
 dt = time_window/Nt;
 f = sim.f0+(-Nt/2:Nt/2-1)'/(Nt*dt); % THz
 t = (-Nt/2:Nt/2-1)'*dt; % ps

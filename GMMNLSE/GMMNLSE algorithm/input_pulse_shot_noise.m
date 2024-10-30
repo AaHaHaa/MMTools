@@ -1,5 +1,5 @@
-function fields = include_shot_noise(sim,omegas,Nt,dt,fields)
-%INCLUDE_SHOT_NOISE It adds shot noise to the fields
+function fields = input_pulse_shot_noise(sim,omegas,Nt,dt,fields)
+%INPUT_PULSE_SHOT_NOISE It adds shot noise to the fields
 %
 % Input arguments:
 %   sim.num_photon_noise_per_bin: the number of photon noise per spectral discretization bin

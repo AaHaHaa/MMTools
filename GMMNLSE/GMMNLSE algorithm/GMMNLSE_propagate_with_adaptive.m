@@ -235,9 +235,6 @@ if ~isfield(fiber,'material')
 end
 [fiber,haw,hbw] = Raman_model(fiber,sim,Nt,dt);
 
-% spontaneous Raman scattering
-sponRS_prefactor = spontaneous_Raman(Nt,dt,sim);
-
 %% Pre-calculate the Gaussian gain term if necessary
 [G,saturation_parameter] = Gaussian_gain(fiber,sim,omegas);
 
@@ -253,11 +250,7 @@ save_points = int64(num_saves_total + 1);
 save_z = double(0:save_points-1)'*sim.save_period;
 
 %% Modified shot-noise for noise modeling
-if isequal(sim.step_method,'RK4IP')
-    At_noise = fft(sponRS_prefactor{1}.*randn(Nt,num_modes).*exp(1i*2*pi*rand(Nt,num_modes)));
-else % 'MPA'
-    At_noise = repmat(fft(sponRS_prefactor{1}.*randn(Nt,1,num_modes).*exp(1i*2*pi*rand(Nt,1,num_modes))),1,sim.MPA.M+1,1);
-end
+At_noise = shot_noise(Nt,dt,sim,num_modes);
 if sim.gpu_yes
     At_noise = gpuArray(At_noise);
 end
@@ -286,7 +279,6 @@ if sim.gain_model == 2 % rate-equation-gain model
                                            omegas, D_op,...
                                            SK_info, SRa_info, SRb_info,...
                                            haw, hbw,...
-                                           sponRS_prefactor,...
                                            At_noise);
 % -------------------------------------------------------------------------
 else % No gain, Gaussian gain
@@ -300,7 +292,6 @@ else % No gain, Gaussian gain
                                             D_op,...
                                             SK_info, SRa_info, SRb_info,...
                                             haw, hbw,...
-                                            sponRS_prefactor,...
                                             At_noise);
 end
 

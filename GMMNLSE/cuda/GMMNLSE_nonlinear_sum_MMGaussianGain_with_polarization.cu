@@ -1,8 +1,8 @@
 #define MAX_NUM_MODES 32 // the maximum number of modes for this cuda = sqrt(MaxThreadsPerBlock)
                          //                                           = sqrt(1024) for our Titan XP GPU
 
-__global__ void GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization(double2* Kerr, double2* Ra, double2* Rb, double2* Ra_sponRS, double2* Rb_sponRS, double2* transfer_matrix,
-                                                                       const double2* At, const double2* At_noise,
+__global__ void GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization(double2* Kerr, double2* Ra, double2* Rb, double2* transfer_matrix,
+                                                                       const double2* At,
                                                                        const double2* Bmn,
                                                                        const double* SK,  const unsigned char* SK_nonzero_midx1234s,  const unsigned int* SK_beginning_nonzero,  const unsigned int* SK_ending_nonzero,
                                                                        const double* SRa, const unsigned char* SRa_nonzero_midx1234s, const unsigned int* SRa_beginning_nonzero, const unsigned int* SRa_ending_nonzero,
@@ -26,28 +26,8 @@ __global__ void GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization(double2* 
     const unsigned int SMODES2 = NUM_SPATIAL_MODES*NUM_SPATIAL_MODES;
 
     // Preload At to improve the performance (avoiding accessing the global memory too many times)
-    __shared__ double2 this_At[MAX_NUM_MODES], this_At_noise[MAX_NUM_MODES];
-    switch (OPERATIONIdx) {
-        case 0: // For Kerr interactions, noise photon is included directly for accurately computing noise-seeded processes
-            if (midx1 == 0) {
-                this_At[midx2].x = At[Nidx+Midx*N+midx2*NM].x + At_noise[Nidx+Midx*N+midx2*NM].x;
-                this_At[midx2].y = At[Nidx+Midx*N+midx2*NM].y + At_noise[Nidx+Midx*N+midx2*NM].y;
-            }
-            break;
-        case 1:
-        case 2:
-            if (midx1 == 0) this_At[midx2] = At[Nidx+Midx*N+midx2*NM];
-            break;
-        case 3:
-        case 4:
-            if (midx1 == 0) {
-                this_At[midx2] = At[Nidx+Midx*N+midx2*NM];
-                this_At_noise[midx2] = At_noise[Nidx+Midx*N+midx2*NM];
-            }
-            break;
-        case 5:
-            break;
-    }
+    __shared__ double2 this_At[MAX_NUM_MODES];
+    if (midx1 == 0) this_At[midx2] = At[Nidx+Midx*N+midx2*NM];
     __syncthreads();
 
     const unsigned int this_SK_beginning_nonzero = SK_beginning_nonzero[midx2+midx1*NUM_MODES];
@@ -152,75 +132,7 @@ __global__ void GMMNLSE_nonlinear_sum_MMGaussianGain_with_polarization(double2* 
             }
             break;
         
-        case 3: // compute the spontaneous SRa tensors from the isotropic Raman response
-            if (include_Raman && this_SRa_beginning_nonzero > 0) {
-                double p, q, r, s; // this_At_noise
-                double2 this_Ra_sponRS;
-                this_Ra_sponRS.x = 0; this_Ra_sponRS.y = 0; // initialized
-                for (int i = this_SRa_beginning_nonzero-1; i < this_SRa_ending_nonzero-1; i++) {
-                    midx3 = SRa_nonzero_midx1234s[2+i*4]-1;
-                    midx4 = SRa_nonzero_midx1234s[3+i*4]-1;
-        
-                    c = this_At[midx3].x;
-                    d = this_At[midx3].y;
-                    e = this_At[midx4].x;
-                    f = this_At[midx4].y;
-
-                    p = this_At_noise[midx3].x;
-                    q = this_At_noise[midx3].y;
-                    r = this_At_noise[midx4].x;
-                    s = this_At_noise[midx4].y;
-            
-                    if (midx3 == midx4 || (int(midx3 & 1) != int(midx4 & 1)) ) {
-                        if (midx3 == midx4) {
-                            this_Ra_sponRS.x += SRa[i]*( (p*r+q*s) + (c*r+d*s)*2 );
-                        } else {
-                            this_Ra_sponRS.x += SRa[i]*( (p*r+q*s) + (c*r+d*s) + (p*e+q*f) );
-                            this_Ra_sponRS.y += SRa[i]*( (q*r-p*s) + (d*r-c*s) + (q*e-p*f) );
-                        }
-                    } else {
-                        this_Ra_sponRS.x += SRa[i]*( (p*r+q*s)*2 + (c*r+d*s)*2+(e*p+f*q)*2 );
-                    }
-                }
-                Ra_sponRS[Nidx+Midx*N+midx1*NM+midx2*NMMODES] = this_Ra_sponRS;
-            }
-            break;
-
-        case 4: // compute the spontaneous SRb tensors from the anisotropic Raman response
-            if ( (include_Raman && include_anisoRaman) && this_SRb_beginning_nonzero > 0) {
-                double p, q, r, s; // this_At_noise
-                double2 this_Rb_sponRS;
-                this_Rb_sponRS.x = 0; this_Rb_sponRS.y = 0; // initialized
-                for (int i = this_SRb_beginning_nonzero-1; i < this_SRb_ending_nonzero-1; i++) {
-                    midx3 = SRb_nonzero_midx1234s[2+i*4]-1;
-                    midx4 = SRb_nonzero_midx1234s[3+i*4]-1;
-        
-                    c = this_At[midx3].x;
-                    d = this_At[midx3].y;
-                    e = this_At[midx4].x;
-                    f = this_At[midx4].y;
-
-                    p = this_At_noise[midx3].x;
-                    q = this_At_noise[midx3].y;
-                    r = this_At_noise[midx4].x;
-                    s = this_At_noise[midx4].y;
-        
-                    if (midx3 == midx4 || (int(midx3 & 1) != int(midx4 & 1)) ) {
-                        if (midx3 == midx4) {
-                            this_Rb_sponRS.x += SRb[i]*( (p*r+q*s) + (c*r+d*s)*2 );
-                        } else {
-                            this_Rb_sponRS.x += SRb[i]*( (p*r+q*s) + (c*r+d*s) + (p*e+q*f) );
-                            this_Rb_sponRS.y += SRb[i]*( (q*r-p*s) + (d*r-c*s) + (q*e-p*f) );
-                        }
-                    } else {
-                        this_Rb_sponRS.x += SRb[i]*( (p*r+q*s)*2 + (c*r+d*s)*2+(e*p+f*q)*2 );
-                    }
-                }
-                Rb_sponRS[Nidx+Midx*N+midx1*NM+midx2*NMMODES] = this_Rb_sponRS;
-            }
-            break;
-        
-        case 5: // compute the transfer matrix
+        case 3: // compute the transfer matrix
             if (this_SRa_beginning_nonzero > 0 && Nidx == 0) { // "Nidx==0" is to limit this to run only once through different Nidx
                 unsigned int spatial_midx1, spatial_midx2, spatial_midx3, spatial_midx4;
                 unsigned int polar_idx_T, polar_idx_B;
