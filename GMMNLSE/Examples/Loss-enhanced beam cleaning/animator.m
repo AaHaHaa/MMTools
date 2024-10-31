@@ -74,6 +74,8 @@ for i = 1:save_point
     
     hold on; plot(unit_x,unit_y,'linewidth',5,'Color','k'); hold off;
 
+    set(figs,'Color',[1,1,1]);
+    
     Frame(i) = getframe(figs);
     close(figs);
 end
