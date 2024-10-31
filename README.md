@@ -66,7 +66,7 @@ Source: "Examples\Some tutorials\10. Self-steepening_Shock wave"
 
 - **Soliton self-frequency shift (SSFS)**  
 The soliton redshifts due to intrapulse Raman scattering.  
-In the animation, it shifts in time because redshifting makes the pulse slows down (in an anomalous-dispersion environment), slower than the user-defined moving window.
+In the animation, it shifts in time because redshifting makes the pulse slows down (in an anomalous-dispersion environment), slower than the user-defined moving window.  
 Source: "Examples\Some tutorials\6. Soliton self-frequency shift"
 <img src="Readme_images/SSFS.gif" width=50%>
 
