@@ -88,3 +88,6 @@ xlabel('\Deltaf (THz)');
 ylabel('z/L_D');
 title('Spectral evolution');
 set(gca,'fontsize',14);
+
+%% Save the data
+save('SSFS.mat');

@@ -60,12 +60,14 @@ Typically MATLAB deals with this, but there are still come steps to follow befor
 
 ## Demonstrations:<br>
 - **Self-steepening**  
-The pulse's peak shifts in time, creating a sharp temporal edge.  
+The pulse's peak shifts in time, creating a sharp temporal edge. Self-steepening results from the nonlinear intensity-dependent group velocity.  
+Source: "Examples\Some tutorials\10. Self-steepening_Shock wave"
 <img src="Readme_images/Self_steepening.gif" width=50%>
 
 - **Soliton self-frequency shift (SSFS)**  
 The soliton redshifts due to intrapulse Raman scattering.  
 In the animation, it shifts in time because redshifting makes the pulse slows down (in an anomalous-dispersion environment), slower than the user-defined moving window.
+Source: "Examples\Some tutorials\6. Soliton self-frequency shift"
 <img src="Readme_images/SSFS.gif" width=50%>
 
 ## History:<br>
