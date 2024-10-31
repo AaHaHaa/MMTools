@@ -427,6 +427,8 @@ if plot_yes
         ylim(c./[wavelengthlim(2),wavelengthlim(1)]);
         ylabel('Frequency (THz)');
     end
+    
+    ax = [ax;ax2;ax3];
 end
 
 end

@@ -11,7 +11,7 @@ addpath('../../../../GMMNLSE algorithm/','../../../../user_helpers/');
 sim.lambda0 = 1080e-9;
 sim.f0 = 2.99792458e-4/sim.lambda0;
 sim.gpu_yes = false;
-sim.save_period = 0.1;
+sim.save_period = 0.03;
 
 % -------------------------------------------------------------------------
 

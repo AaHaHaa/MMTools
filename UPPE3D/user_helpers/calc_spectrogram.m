@@ -10,7 +10,7 @@ function [psd,t_spectrogram,f_spectrogram,fig,ax,cb] = calc_spectrogram(t,f,fiel
 % *This code works only for a pulse.
 % Due to a better resolutioin, the sampling in time and frequency can be
 % large. I calculate the RMS duration and bandwidth to specifically filter
-% out the points with the pulse to save the memory.
+% out the points outside the pulse to save the memory.
 %
 %   Input arguments:
 %
@@ -427,6 +427,8 @@ if plot_yes
         ylim(c./[wavelengthlim(2),wavelengthlim(1)]);
         ylabel('Frequency (THz)');
     end
+    
+    ax = [ax;ax2;ax3];
 end
 
 end
