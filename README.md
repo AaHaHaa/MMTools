@@ -81,7 +81,7 @@ Source: "Examples\Gain-rate-equation model\GMNA\Yb GMNA"
 <img src="Readme_images/GMNA.gif" width=45%>
 
 - **Loss-enhanced (spatiotemporal-dissipation-enhanced) Kerr beam cleaning**  
-The multimode pulse experiences Kerr-induced beam cleaning into the fundamental Gaussian mode during amplification. Because the fundamental mode experiences less absorption from the gain fiber, gain/loss effect facilitates Kerr beam cleaning. See [[1]](#references-our papers) for details.  
+The multimode pulse experiences Kerr-induced beam cleaning into the fundamental Gaussian mode during amplification. Because the fundamental mode experiences less absorption from the gain fiber, gain/loss effect facilitates beam cleaning. See [[1]](#references-our-papers) for details.  
 The animation shows the evolutions of the (left) optical spatial profile and the (right) upper-state population (related to inversion).  
 Source: "Examples\Loss-enhanced beam cleaning"  
 <img src="Readme_images/BC_ns.jpg" width=45%><img src="Readme_images/Field_N1.gif" width=45%>
