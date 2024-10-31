@@ -64,7 +64,8 @@ The pulse's peak shifts in time, creating a sharp temporal edge.
 <img src="Readme_images/Self_steepening.gif" width=50%>
 
 - **Soliton self-frequency shift (SSFS)**  
-The soliton redshifts due to intrapulse Raman scattering.
+The soliton redshifts due to intrapulse Raman scattering.  
+In the animation, it shifts in time because redshifting makes the pulse slows down (in an anomalous-dispersion environment), slower than the user-defined moving window.
 <img src="Readme_images/SSFS.gif" width=50%>
 
 ## History:<br>
