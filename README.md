@@ -61,7 +61,8 @@ Typically MATLAB deals with this, but there are still come steps to follow befor
 ## Demonstrations:<br>
 - **Self-steepening**  
 The pulse's peak shifts in time, creating a sharp temporal edge.  
-![self-steepening animation | width = 400](Readme_images/Self_steepening.gif)
+![self-steepening animation](Readme_images/Self_steepening.gif)
+<img src="Readme_images/Self_steepening.gif" width=50%>
 - **Soliton self-frequency shift (SSFS)**  
 ![SSFS animation](Readme_images/SSFS.gif)
 
