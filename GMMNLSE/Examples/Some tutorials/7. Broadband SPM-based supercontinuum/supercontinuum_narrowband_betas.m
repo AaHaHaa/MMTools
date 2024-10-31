@@ -4,7 +4,7 @@
 % that isn't accurate at large bandwidth.
 %
 % Please compare to the other script, "supercontinuum_broadband_betas.m,"
-% for a correct result for bandwidth situations.
+% for a correct result in broadband situations.
 %
 % This code uses adaptive-step RK4IP for the passive-fiber propagation.
 

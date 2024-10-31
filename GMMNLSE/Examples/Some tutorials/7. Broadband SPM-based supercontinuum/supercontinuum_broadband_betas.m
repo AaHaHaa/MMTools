@@ -4,7 +4,7 @@
 % index, n(omega). The propagation constant is a function of frequency.
 %
 % Please compare to the other script, "supercontinuum_narrowband_betas.m,"
-% for a wrong result for bandwidth situations.
+% for a wrong result in broadband situations.
 % Taylor-series coefficients cannot approximate the broadband propagation
 % constant well.
 %
@@ -16,7 +16,7 @@ addpath('../../../GMMNLSE algorithm/','../../../user_helpers/');
 
 %% Setup fiber parameters
 sim.lambda0 = 1030e-9; % the center wavelength
-sim.gpu_yes = true;%false; % don't use GPU
+sim.gpu_yes = false; % don't use GPU
 
 % Load default parameters like 
 %
