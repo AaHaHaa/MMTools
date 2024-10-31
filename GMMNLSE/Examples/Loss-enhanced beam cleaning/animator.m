@@ -1,3 +1,9 @@
+% I copied this from my paper's code.
+% During writing my multimode gain paper, I used the notation N2 for
+% upper-state population, which is now changed into N1 in the new code.
+% The population is stored as prop_output.population in the new code,
+% rather than prop_output.N2 in the old code.
+
 close all; clearvars;
 
 load(sprintf('MM_YDFA20_10000ps.mat'));
@@ -40,6 +46,8 @@ for i = 1:save_point
     pbaspect([1 1 1]);
     xlim([-45,45]);
     ylim([-45,45]);
+    title('I');
+    set(gca,'fontsize',20);
     %set(gca,'Position',[0,0,1,1]);
     set(gca,'XTick',[],'YTick',[],'Color','None','XColor','None','YColor','None');
 
@@ -59,6 +67,8 @@ for i = 1:save_point
     pbaspect([1 1 1]);
     xlim([-45,45]);
     ylim([-45,45]);
+    title('N_1');
+    set(gca,'fontsize',20);
     %set(gca,'Position',[0,0,1,1]);
     set(gca,'XTick',[],'YTick',[],'Color','None','XColor','None','YColor','None');
     

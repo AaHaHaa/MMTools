@@ -1,6 +1,6 @@
 %clearvars; close all;
 
-addpath('../../../../MMTools/GMMNLSE/user_helpers/')
+addpath('../../user_helpers/')
 
 MM_folder = '../../Fibers/GRIN_168_400_wavelength1030nm/';
 lambda0 = 1030e-9;
