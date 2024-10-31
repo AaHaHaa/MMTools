@@ -21,7 +21,7 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 3. Support broadband scenarios by having $\beta_p(\omega)$. Please see the "Broadband SPM-based supercontinuum" examples and understand the necessity of applying this scheme in some situations.
 
 > [!NOTE]
-> This package is always solved in the frequency domain such that the nonlinear term has a $\omega$ prefactor, rather than $\omega_0(1+\frac{i}{\omega_0}\partial_t)$ with the shock-wave term. Shock-wave term is a first-order Taylor-series term of the frequency-dependent nonlinearity. There is no point using it; just use the general $\omega$, which cannot be simpler. Please see the supplement of [[2]](#references-our-papers) for the derivation of MM-UPPE and understand how the shock-wave term appears and why it's unnecessary if MM-UPPE is solved in the frequency domain.
+> Self-steepening! This package is always solved in the frequency domain such that the nonlinear term has a $\omega$ prefactor, rather than $\omega_0(1+\frac{i}{\omega_0}\partial_t)$ with the shock-wave/self-steepening term. Shock-wave/self-steepening term is a first-order Taylor-series term of the frequency-dependent nonlinearity. That said, self-steepening results from the frequency dependence of nonlinearity. The use of the $\omega$ automatically includes it, which cannot be a simpler treatment. Please see the supplement of [[2]](#references-our-papers) for the derivation of MM-UPPE and understand how the shock-wave term appears.
 
 4. Support both scalar and polarized scenarios, controlled with `sim.scalar=true/false`.
 5. Support random mode coupling.
@@ -46,9 +46,9 @@ I'm Yi-Hao Chen, the author of the code and from Frank Wise's group at Cornell A
 Typically MATLAB deals with this, but there are still come steps to follow before CUDA can really be used, especially when compiling .cu files to generate .ptx files. Below I show only steps for Windows. For linux, please search for their specific steps. I've never used Mac, so I cannot comment anything on this; some functions need to be revised for extended capabilities for Mac as far as I know.<br>
 1. Install [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
 2. Install [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/). Only **Desktop development with C++** is required. If it later says that it needs to install some other components due to the dependency issues, also install them.
-![VS installation screenshot image](VS_install.png)
+![VS installation screenshot](Readme_images/VS_install.png)
 3. Add required path of Visual Studio to computer's environmental PATH; otherwise, MATLAB, during compiling .cu files, will say "cl.exe" cannot be found.
-![add PATH](add_PATH.png)
+![add PATH screenshot](Readme_images/add_PATH.png)
 4. Restart the computer if something is wrong. Connections between MATLAB and CUDA or Visual Studio requires restarting to be effective.
 > [!WARNING]
 > MATLAB supports only a certain version of CUDA and GPUs ([support list](https://www.mathworks.com/help/releases/R2021b/parallel-computing/gpu-support-by-release.html)). CUDA or GPU that is too old just isn't supported.
@@ -57,6 +57,12 @@ Typically MATLAB deals with this, but there are still come steps to follow befor
 1. [Multimode gain](https://doi.org/10.1364/JOSAB.500586)
 2. [Raman scattering](https://doi.org/10.1063/5.0189749)
 3. [Noise modeling](https://doi.org/10.48550/arXiv.2410.20567)
+
+## Demonstrations:<br>
+- **Self-steepening**  
+![self-steepening animation](Readme_images/Self_steepening.gif)
+- **Soliton self-frequency shift (SSFS)**  
+![SSFS animation](Readme_images/SSFS.gif)
 
 ## History:<br>
 * 11/1/2023:<br>
