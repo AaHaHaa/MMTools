@@ -21,7 +21,9 @@ T_delay_out = zeros(save_points,1);
 % Pulse centering based on the moment of its intensity
 if sim.pulse_centering
     % Center the pulse
-    TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*abs(initial_condition.fields).^2,[1,2])/sum(abs(initial_condition.fields).^2,[1,2]));
+    temporal_profile = abs(initial_condition.fields).^2;
+    temporal_profile(temporal_profile<max(temporal_profile,[],1)/10) = 0;
+    TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*temporal_profile,[1,2])/sum(temporal_profile,[1,2]));
     % Because circshift is slow on GPU, I discard it.
     %last_result = ifft(circshift(initial_condition.fields,-tCenter));
     if ~isnan(TCenter) && TCenter ~= 0
@@ -155,7 +157,9 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
     % This will artificially create a noisy output.
     if sim.pulse_centering
         last_A_in_time = fft(last_A);
-        TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*abs(last_A_in_time).^2,[1,2])/sum(abs(last_A_in_time).^2,[1,2]));
+        temporal_profile = abs(last_A_in_time).^2;
+        temporal_profile(temporal_profile<max(temporal_profile,[],1)/10) = 0;
+        TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*temporal_profile,[1,2])/sum(temporal_profile,[1,2]));
         % Because circshift is slow on GPU, I discard it.
         %last_result = ifft(circshift(last_A_in_time,-tCenter));
         if ~isnan(TCenter) && TCenter ~= 0

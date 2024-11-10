@@ -32,6 +32,7 @@ sim.include_Raman = false; % turn off Raman
 [fiber,sim] = load_default_GMMNLSE_propagate([],sim); % load default parameters
 
 LD = T0^2/abs(fiber.betas(3)); % dispersion length
+Ls = LD*pi/2; % soliton length
 num_save = 100;
 fiber.L0 = 1; % m
 sim.save_period = fiber.L0/num_save;
@@ -77,23 +78,23 @@ set(gca,'fontsize',14);
 
 % Comparison of time
 figure;
-[x,y] = meshgrid(t,prop_output.z/LD);
+[x,y] = meshgrid(t,prop_output.z/Ls);
 pcolor(x,y,permute(abs(prop_output.fields(:,1,:)).^2,[3 1 2]));
 shading interp; colormap(jet);
 xlim([-2,2]);
 xlabel('t (ps)');
-ylabel('z/L_D');
+ylabel('z/L_s');
 title('Pulse evolution');
 set(gca,'fontsize',14);
 
 % Comparison of spectra
 figure;
-[x,y] = meshgrid((f-sim.f0),prop_output.z(2:end)/LD);
+[x,y] = meshgrid((f-sim.f0),prop_output.z(2:end)/Ls);
 tmp = 10*log10(permute(abs(fftshift(ifft(prop_output.fields(:,1,2:end)),1)).^2,[3 1 2])); tmp = tmp - max(tmp(:));
 pcolor(x,y,tmp);
 shading interp; colormap(jet); caxis([-20,0]);
 xlim([-2,2]);
 xlabel('\Deltaf (THz)');
-ylabel('z/L_D');
+ylabel('z/L_s');
 title('Spectral evolution');
 set(gca,'fontsize',14);

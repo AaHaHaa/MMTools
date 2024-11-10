@@ -1,5 +1,8 @@
-% This code generates the higher-order soliton, which maintains its shape
-% during propagation.
+% This code simulates the propagation of a soliton with soliton number =
+% 1.1. It will evolve osciilatorily until it reaches the new fundamental
+% soliton with a different pulse duration.
+%
+% See Ch. 5.2.5, Soliton Stability, in Nonlinear Fiber Optics by Agrawal (5ed)
 %
 % Raman scattering is turned off to avoid soliton self-frequency shift.
 
@@ -12,12 +15,11 @@ tfwhm = 0.5; % ps
 
 T0 = tfwhm/(2*asech(1/sqrt(2))); % ps; 2*asech(1/sqrt(2))=1.7627
 
-N = 3; % soliton number
+N = 1.1; % soliton number
 
 %% Setup fiber parameters
 sim.lambda0 = lambda0; % the central wavelength
-sim.pulse_centering = false;
-sim.gpu_yes = false;
+%sim.gpu_yes = false;
 sim.include_Raman = false; % turn off Raman
 
 % Load default parameters like 
@@ -33,15 +35,15 @@ sim.include_Raman = false; % turn off Raman
 
 LD = T0^2/abs(fiber.betas(3)); % dispersion length
 Ls = LD*pi/2; % soliton length
-num_save = 100;
-fiber.L0 = 20; % m
+num_save = 300;
+fiber.L0 = 3000; % m
 sim.save_period = fiber.L0/num_save;
 
 fiber.betas(4:end) = 0; % turn off higher-order dispersion (TOD, FOD, etc.)
 
 %% Setup general parameters
-Nt = 2^12; % the number of time points
-time_window = 20; % ps
+Nt = 2^17; % the number of time points
+time_window = 2000; % ps
 dt = time_window/Nt;
 f = sim.f0+(-Nt/2:Nt/2-1)'/(Nt*dt); % THz
 t = (-Nt/2:Nt/2-1)'*dt; % ps
@@ -62,7 +64,7 @@ h = plot(t,abs(prop_output.fields(:,:,end)).^2);
 xlabel('t (ps)');
 ylabel('Power (W)');
 title('Field');
-xlim([-2,2]);
+xlim([-10,10]);
 set(h,'linewidth',2);
 set(gca,'fontsize',14);
 
@@ -71,7 +73,7 @@ figure;
 h = plot(lambda,abs(fftshift(ifft(prop_output.fields(:,:,end)),1)).^2*c./lambda.^2);
 xlabel('\lambda (nm)');
 ylabel('Intensity (a.u.)');
-xlim([1500,1600]);
+xlim([1530,1570]);
 title('Spectrum');
 set(h,'linewidth',2);
 set(gca,'fontsize',14);
@@ -81,7 +83,7 @@ figure;
 [x,y] = meshgrid(t,prop_output.z/Ls);
 pcolor(x,y,permute(abs(prop_output.fields(:,1,:)).^2,[3 1 2]));
 shading interp; colormap(jet);
-xlim([-2,2]);
+xlim([-10,10]);
 xlabel('t (ps)');
 ylabel('z/L_s');
 title('Pulse evolution');
@@ -93,8 +95,34 @@ figure;
 tmp = 10*log10(permute(abs(fftshift(ifft(prop_output.fields(:,1,2:end)),1)).^2,[3 1 2])); tmp = tmp - max(tmp(:));
 pcolor(x,y,tmp);
 shading interp; colormap(jet); caxis([-20,0]);
-xlim([-8,8]);
+xlim([-2,2]);
 xlabel('\Deltaf (THz)');
 ylabel('z/L_s');
 title('Spectral evolution');
 set(gca,'fontsize',14);
+
+pulse_FWHM = zeros(length(prop_output.z),1);
+for ii = 1:length(prop_output.z)
+    threshold = max(abs(prop_output.fields(:,:,ii)).^2)/1.01;
+    [~,~,tmp_pulse_width,~] = findpeaks(abs(prop_output.fields(:,:,ii)).^2,t,'MinPeakHeight',threshold,'WidthReference','halfheight','MinPeakProminence',threshold/2);
+    pulse_FWHM(ii) = tmp_pulse_width;
+end
+
+spectrum_FWHM = zeros(length(prop_output.z),1);
+for ii = 1:length(prop_output.z)
+    %threshold = max(abs(fftshift(ifft(prop_output.fields(:,:,ii)))).^2)/1.01;
+    %[~,~,tmp_spectrum_width,~] = findpeaks(abs(fftshift(ifft(prop_output.fields(:,:,ii)))).^2,f,'MinPeakHeight',threshold,'WidthReference','halfheight','MinPeakProminence',threshold/2);
+    %spectrum_FWHM(ii) = tmp_spectrum_width;
+    f0ii = sum(f.*abs(fftshift(ifft(prop_output.fields(:,:,ii)))).^2)/sum(abs(fftshift(ifft(prop_output.fields(:,:,ii)))).^2);
+    spectrum_FWHM(ii) = sqrt(sum((f-f0ii).^2.*abs(fftshift(ifft(prop_output.fields(:,:,ii)))).^2)/sum(abs(fftshift(ifft(prop_output.fields(:,:,ii)))).^2));
+end
+figure;
+yyaxis left;
+plot(prop_output.z/Ls,pulse_FWHM,'linewidth',2,'Color','b');
+set(gca,'YColor','b');
+ylabel('Duration (ps)');
+yyaxis right;
+plot(prop_output.z/Ls,spectrum_FWHM,'linewidth',2);
+ylabel('Bandwidth (THz)')
+xlabel('z/L_s');
+set(gca,'fontsize',20);
