@@ -18,7 +18,9 @@ T_delay_out = zeros(save_points,1);
 % Pulse centering based on the moment of its intensity
 if sim.pulse_centering
     % Center the pulse
-    TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*abs(initial_condition.field).^2,[1,2,3,5])/sum(abs(initial_condition.field(:)).^2));
+    temporal_profile = abs(initial_condition.field).^2;
+    temporal_profile(temporal_profile<max(temporal_profile,[],1)/10) = 0;
+    TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*temporal_profile,[1,2,3,5])/sum(temporal_profile(:)));
     % Because circshift is slow on GPU, I discard it.
     if TCenter ~= 0
         if TCenter > 0
@@ -130,7 +132,9 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
     % Center the pulse
     if sim.pulse_centering
         last_E_in_time = fft(last_E,[],1);
-        TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*abs(last_E_in_time).^2,[1,2,3,5])/sum(abs(last_E_in_time(:)).^2));
+        temporal_profile = abs(last_E_in_time).^2;
+        temporal_profile(temporal_profile<max(temporal_profile,[],1)/10) = 0;
+        TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*temporal_profile,[1,2,3,5])/sum(temporal_profile(:)));
         % Because circshift is slow on GPU, I discard it.
         if TCenter ~= 0
             if ~isempty(a5) % RK4IP reuses a5 from the previous step
