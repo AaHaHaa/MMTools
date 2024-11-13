@@ -98,3 +98,5 @@ Addition of ASE to the coherent signal field is corrected, which was wrong previ
 I modified the populations used in rate-eqn-gain modeling from the 2nd level to the highest level ($N_1$ to $N_m$), which was the ground level to the second highest level ($N_0$ to $N_m-1$) before. This is to conform with another model I'm currently developing and will hopefully be released soon. Additionally, I updated the 3D-UPPE code for free-space modeling.
 * 10/31/2024:<br>
 Update the code with the newly-developed noise model with [the finally-published paper](https://doi.org/10.48550/arXiv.2410.20567).
+* 11/13/2024:<br>
+Fix the bug of the Raman computation in 3D-UPPE. It was wrong before. Thanks to Su-cc for finding it, which isn't easy to find.
