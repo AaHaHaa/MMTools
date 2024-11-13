@@ -123,7 +123,7 @@ span_left = max(1, floor(peak_loc-fwhm/2*3));
 span_right = min(length(total_field), ceil(peak_loc+fwhm/2*3));
 pulse_energy_ratio = trapz(total_field(span_left:span_right))/trapz(total_field);
 if pulse_energy_ratio < 0.7 % there should be a second pulse that takes up a non-negligible energy
-    [~,locs] = findpeaks(total_field,'MinPeakHeight',min_peak_height/2,'MinPeakDistance',2*fwhm);
+    [~,locs] = findpeaks(total_field,'MinPeakHeight',min_peak_height/2,'MinPeakDistance',min(length(total_field)-2,2*fwhm)); % length(total_field)-2 is just to make sure this line won't fail. MinPeakDistance shouldn't be even close to the time-window size; if it is, then something is wrong with simulations; try to turn on "sim.pulse_centering=true" or check if there are really pulse's "peaks".
     if length(locs) > 1
         multipulsing = true;
         warning('off','backtrace');
