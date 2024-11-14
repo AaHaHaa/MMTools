@@ -19,10 +19,6 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 > Although adaptive-step-size control for RK4IP isn't new with published papers, adaptive-step-size control for MPA is new. I didn't publish a separate paper discussing this numerical scheme, which is perhaps the fastest and the most convenient numerical scheme for general multimode situations (as in step-index, graded-index, or hollow-core fibers, etc.) by far (written on 2/14/2024). The implementation detail is described in the supplement of [[1]](#references-our-papers).
 
 3. Support broadband scenarios by having $\beta_p(\omega)$. Please see the "Broadband SPM-based supercontinuum" examples and understand the necessity of applying this scheme in some situations.
-
-> [!NOTE]
-> Self-steepening! This package is always solved in the frequency domain such that the nonlinear term has a $\omega$ prefactor, rather than $\omega_0(1+\frac{i}{\omega_0}\partial_t)$ with the shock-wave/self-steepening term. Shock-wave/self-steepening term is a first-order Taylor-series term of the frequency-dependent nonlinearity. That said, self-steepening results from the frequency dependence of nonlinearity. The use of the $\omega$ automatically includes it, which cannot be a simpler treatment. Please see the supplement of [[2]](#references-our-papers) for the derivation of MM-UPPE and understand how the shock-wave term appears.
-
 4. Support both scalar and polarized scenarios, controlled with `sim.scalar=true/false`.
 5. Support random mode coupling.
 6. Support both passive and gain fibers
@@ -60,7 +56,7 @@ Typically MATLAB deals with this, but there are still come steps to follow befor
 
 ## Demonstrations:<br>
 - **Self-steepening**  
-The pulse's peak shifts in time, creating a sharp temporal edge. Self-steepening results from the nonlinear intensity-dependent group velocity which arises from the frequency dependence of the nonlinearity. This term is included in UPPE with a $\omega$ nonlinear prefactor, rather than the simplified $\omega_0(1+\frac{i}{\omega_0}\partial_t)$ Taylor-series first-order approximation (see the Note in broadband support in [capabilities](#capabilities)).  
+The pulse's peak shifts in time, creating a sharp temporal edge.   
 Source: "Examples\Some tutorials\10. Self-steepening_Shock wave"  
 <img src="Readme_images/Self_steepening.gif" width=50%>
 
@@ -85,6 +81,13 @@ The multimode pulse experiences Kerr-induced beam cleaning into the fundamental 
 The animation shows the evolutions of the (left) optical spatial profile and the (right) upper-state population (related to inversion).  
 Source: "Examples\Loss-enhanced beam cleaning"  
 <img src="Readme_images/BC_ns.jpg" width=45%><img src="Readme_images/Field_N1.gif" width=45%>
+
+## Self-steepening/shock-wave effect
+Since I received many questions about whether this code includes the self-steepening/shock-wave term, I will explain it here.  
+Self-steepening, or shock wave, results from the nonlinear intensity-dependent group velocity which arises from the frequency dependence of the nonlinearity. This term is included in UPPE with a $\omega$ nonlinear prefactor, rather than the simplified $\omega_0(1+\frac{i}{\omega_0}\partial_t)$ Taylor-series first-order approximation. By solving in the frequency domain with the $\omega$ prefactor, frequency dependence of the nonlinearity is included to all orders, including the first-order self-steepening shock-wave effect.  
+This effect creates a self-steepening sharp temporal edge during nonlinear evolution (see **Self-steepening example** in [Demonstrations](#demonstrations)). Moreover, it creates an asymmetrical spectral broadening (see the left animation below), which is crucial to satisfy the photon-number conservation. During spectral broadening, two pump photons transfer the energy to one red and one blue photons. Since a bluer photon has a higher photon energy, the power spectral density at blue colors should be smaller the red one to maintain both the energy and photon-number conservation. Typical nonlinear Schrödinger equation, if ignoring the first-order shock-wave prefactor, creates only symmetical spectral shape (see the right animation below), fundamentally violating the photon-number conservation.
+<img src="Readme_images/SPM_spectrum" width=45%><img src="Readme_images/SPM_spectrum_no_shock_wave.gif" width=45%>  
+Please see the supplement of [[2]](#references-our-papers) for the derivation of MM-UPPE and understand how the shock-wave term appears.
 
 ## History:<br>
 * 11/1/2023:<br>
