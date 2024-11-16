@@ -97,5 +97,11 @@ ylabel('z/LD');
 title('Spectrum during propagation');
 set(gca,'fontsize',14);
 
+%% Visualize the nonlinear phase
+Ef = fftshift(ifft(ifftshift(prop_output.fields(:,:,end),1)),1);
+fitted_order = 3;
+verbose = true;
+[quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characterize_spectral_phase( f,Ef,fitted_order,verbose );
+
 %% Save the data
 save('SPM.mat');

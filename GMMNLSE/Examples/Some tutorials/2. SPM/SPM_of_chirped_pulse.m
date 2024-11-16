@@ -111,21 +111,11 @@ ylabel('z/LD');
 title('Spectrum during propagation');
 set(gca,'fontsize',14);
 
-pause(1);
-
-% High-resolution spectrogram
-log_yes = false; % Use "log_yes = true" to see, under log scale, how spectral interference generates temporal fringes.
-save_point = size(prop_output.fields,3);
-Frame(save_point) = struct('cdata',[],'colormap',[]);
-for i = 1:save_point
-    [~,~,~,figs,ax] = calc_spectrogram(t,f,prop_output.fields(:,1,i),[-3,3],[940,1120],400,400,true,true,log_yes);
-    set(figs,'Color',[1,1,1]);
-
-    Frame(i) = getframe(figs);
-    close(figs);
-end
-% Movie
-implay(Frame,20);
+%% Visualize the nonlinear phase
+Ef = fftshift(ifft(ifftshift(prop_output.fields(:,:,end),1)),1);
+fitted_order = 3;
+verbose = true;
+[quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characterize_spectral_phase( f,Ef,fitted_order,verbose );
 
 %% Save the data
 save('SPM_of_chirped_pulse.mat');
