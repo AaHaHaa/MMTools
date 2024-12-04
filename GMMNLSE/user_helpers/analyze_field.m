@@ -209,6 +209,15 @@ end
 peak_power = max(abs(dechirped_field).^2);
 Strehl_ratio = peak_power/max(abs(transform_limited_field).^2);
 
+transform_limited_peak_power = max(abs(transform_limited_field).^2);
+if transform_limited_peak_power > 1e6
+    power_divisor = 1e6;
+    power_unit = 'MW';
+else
+    power_divisor = 1e3;
+    power_unit = 'kW';
+end
+
 % Plot only the central part of the tme window of the dechirped and 
 % transform-limited pulse because their duration are too small compared to
 % the time window
@@ -232,12 +241,12 @@ if verbose
     screen_size = get(0,'ScreenSize');
     original_top = screen_size(4)-fp(2)-fp(4);
     set(gcf,'position',[fp(1) screen_size(4)-original_top-fp(4)*5/4 fp(3:4)*5/4]);
-    h3 = plot(t_interp*1e3,abs(transform_limited_field).^2/1e3);
+    h3 = plot(t_interp*1e3,abs(transform_limited_field).^2/power_divisor);
     hold on;
-    h4 = plot(t_interp*1e3,abs(dechirped_field).^2/1e3);
+    h4 = plot(t_interp*1e3,abs(dechirped_field).^2/power_divisor);
     hold off;
     xlim([min(t_interp(left:right)) max(t_interp(left:right))]*1e3);
-    xlabel('Time (fs)'); ylabel('Power (kW)');
+    xlabel('Time (fs)'); ylabel(sprintf('Power (%s)',power_unit));
     title('Transform-limited vs. Dechirped');
     legend('transform-limited','dechirped');
     set(h3,'linewidth',2); set(h4,'linewidth',2);

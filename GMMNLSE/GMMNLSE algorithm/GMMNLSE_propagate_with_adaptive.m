@@ -36,9 +36,10 @@ function foutput = GMMNLSE_propagate_with_adaptive(fiber, initial_condition, sim
 %                   gain_cross_section - the absorption+emission cross sections
 %
 %               saturation_intensity - for multimode Gaussian gain model (J/m^2)
-%                                      This is defined by h*f/(sigma*tau), where f is the center frequency,
+%                                      This is defined by h*f/(sigma*tau)*t_rep, where f is the center frequency,
 %                                                                                sigma is the sum of the emission and absorption cross sections,
 %                                                                                tau is the lifetime of the higher energy level for population inversion,
+%                                                                                t_rep is the repetition rate of the pulse or laser
 %                   OR
 %               saturation_energy - for single-mode Gaussian gain model (nJ)
 %                                   This is defined by "saturation_intensity*Aeff"

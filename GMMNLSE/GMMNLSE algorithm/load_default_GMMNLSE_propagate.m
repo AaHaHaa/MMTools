@@ -201,9 +201,10 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %                   gain_cross_section - the absorption+emission cross sections
 %
 %               saturation_intensity - for Taylor or new gain model, the scale intensity in J/m^2
-%                                      This is defined by h*f/(sigma*tau), where f is the center frequency,
+%                                      This is defined by h*f/(sigma*tau)*t_rep, where f is the center frequency,
 %                                                                                sigma is the sum of the emission and absorption cross sections,
 %                                                                                tau is the lifetime of the higher energy level for population inversion,
+%                                                                                t_rep is the repetition rate of the pulse or laser
 %                   OR
 %               saturation_energy - for SM gain model, the scale energy in nJ
 %                                   This is defined by "saturation_intensity*Aeff"
