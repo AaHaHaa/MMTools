@@ -301,6 +301,7 @@ save_points = int64(num_saveSteps + 1);
 num_zPoints = num_zSteps + 1;
 
 %% Shot noise for noise modeling
+sim.num_photon_noise_per_bin = 1;
 initial_condition.fields = input_pulse_shot_noise(sim,omegas,Nt,dt,initial_condition.fields);
 
 %% Run the step function over each step
