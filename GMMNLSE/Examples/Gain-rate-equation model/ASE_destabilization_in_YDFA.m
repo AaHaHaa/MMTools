@@ -143,3 +143,10 @@ set(gca,'fontsize',20);
 %% ASE
 func = analyze_sim;
 func.analyze_ASE(f,output_with_ASE.Power.ASE,output_with_ASE.z);
+
+%% PLot the spectrum with ASE
+compressor_type = 'Treacy-t'; % transmissive grating dechirper
+grating_spacing = 1e-3/1000; % 1000 line/mm
+grating_incident_angle = 30*pi/180; % rad
+ASE = struct('t_rep',gain_rate_eqn.t_rep,'spectrum',output_with_ASE.Power.ASE.forward(:,:,end)); % ASE container for plotting
+analyze_field( t,f,output_without_ASE.fields(:,:,end),'Treacy-t',1e-3/1000,30*pi/180,true,false,ASE );

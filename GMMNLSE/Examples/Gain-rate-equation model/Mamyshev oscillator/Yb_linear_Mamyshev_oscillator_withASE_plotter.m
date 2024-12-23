@@ -10,9 +10,11 @@ load(filename);
 
 addpath('../../../user_helpers/');
 
+% Plot with ASE
 ASE_out = struct('spectrum',ASE.forward{end},'t_rep',gain_rate_eqn_copumping.t_rep);
 analyze_field(t,f,output_field(:,1,end),'Treacy-t',pi/6,1e-6,true,false,ASE_out);
 
+% Plot propagation information within the cavity
 func = analyze_sim;
 func.analyze_fields(t,f,field{end},saved_z,splice_z);
 
