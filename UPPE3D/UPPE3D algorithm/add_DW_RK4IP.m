@@ -5,7 +5,7 @@ if any(W_op(:))
     F2 = @(x) fft(fft(x,[],2),[],3);
     iF2 = @(x) ifft(ifft(x,[],2),[],3);
     
-    apply_W = @(x) iF2(W_op.*F2(x));
+    apply_W = @(x) F2(W_op.*iF2(x));
 else
     apply_W = @(x) 0; % no waveguide effect
 end

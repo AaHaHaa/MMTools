@@ -64,11 +64,7 @@ function dEdz = N_op(E_wk,...
 %N_op Calculate dEdz
 
 if any(n2_prefactor(:)) % Compute the nonlinearity only when n2 isn't zero
-    if sim.scalar
-        E_tr = fftn(E_wk);
-    else % don't do fft for the polarization dimension
-        E_tr = fft(fft(fft(E_wk,[],1),[],2),[],3);
-    end
+    E_tr = ifft(ifft(fft(E_wk,[],1),[],2),[],3);
     E_tr_wNoise = E_tr + E_tr_noise;
 
     % Kerr term
@@ -100,7 +96,7 @@ if any(n2_prefactor(:)) % Compute the nonlinearity only when n2 isn't zero
     end
 
     % Finish adding the prefactor
-    dEdz = ifft(ifft(n2_prefactor.*ifft(nonlinear_tr,[],1),[],2),[],3); % nonlinear polarization
+    dEdz = fft(fft(n2_prefactor.*ifft(nonlinear_tr,[],1),[],2),[],3); % nonlinear polarization
 else
     dEdz = 0;
 end

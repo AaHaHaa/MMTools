@@ -107,3 +107,5 @@ I modified the populations used in rate-eqn-gain modeling from the 2nd level to 
 Update the code with the newly-developed noise model with [the finally-published paper](https://doi.org/10.48550/arXiv.2410.20567).
 * 11/13/2024:<br>
 Fix the bug of the Raman computation in 3D-UPPE. Thanks to Su-cc for finding this nontrivial bug.
+* 12/26/2024:<br>
+Fix a huge bug of UPPE3D. I realized that the Fourier Transform in spatial dimensions follows mathematical convention, unlike the spectral/temporal dimension.

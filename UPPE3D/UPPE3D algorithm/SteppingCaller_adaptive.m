@@ -50,7 +50,7 @@ else
     E_out(:,:,:,1,:) = initial_condition.field;
 end
 
-last_E = ifft(ifft(ifft(initial_condition.field,[],1),[],2),[],3); % in k- and frequency space
+last_E = fft(fft(ifft(initial_condition.field,[],1),[],2),[],3); % in k- and frequency space
 
 % Create a progress bar first
 if sim.progress_bar
@@ -166,7 +166,7 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
     % If it's time to save, get the result from the GPU if necessary,
     % transform to the time domain, and save it
     if z >= save_z(save_i)-eps(z)
-        E_out_ii = fft(fft(fft(last_E,[],1),[],2),[],3);
+        E_out_ii = ifft(ifft(fft(last_E,[],1),[],2),[],3);
         if sim.gpu_yes
             save_dz(save_i) = gather(sim.last_dz);
             save_z(save_i) = gather(z);
