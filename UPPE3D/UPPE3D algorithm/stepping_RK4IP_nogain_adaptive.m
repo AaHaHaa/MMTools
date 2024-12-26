@@ -63,6 +63,8 @@ function dEdz = N_op(E_wk,...
                      E_tr_noise)
 %N_op Calculate dEdz
 
+% Note that k and frequency spaces follow different Fourier-Transform conventions
+
 if any(n2_prefactor(:)) % Compute the nonlinearity only when n2 isn't zero
     E_tr = ifft(ifft(fft(E_wk,[],1),[],2),[],3);
     E_tr_wNoise = E_tr + E_tr_noise;

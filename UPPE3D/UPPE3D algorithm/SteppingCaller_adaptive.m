@@ -50,6 +50,7 @@ else
     E_out(:,:,:,1,:) = initial_condition.field;
 end
 
+% k and frequency spaces follow different Fourier-Transform conventions
 last_E = fft(fft(ifft(initial_condition.field,[],1),[],2),[],3); % in k- and frequency space
 
 % Create a progress bar first
