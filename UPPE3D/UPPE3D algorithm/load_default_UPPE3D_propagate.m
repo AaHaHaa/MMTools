@@ -1,5 +1,5 @@
 function [fiber,sim] = load_default_UPPE3D_propagate( input_fiber,input_sim )
-%LOAD_DEFAULT_GNLSE3D_PROPAGATE It loads the default settings for "fiber"
+%LOAD_DEFAULT_UPPE3D_PROPAGATE It loads the default settings for "fiber"
 %and "sim" for different types of modes used.
 %
 %   If a user has specified some of the parameters of "fiber" and "sim",
@@ -29,9 +29,9 @@ function [fiber,sim] = load_default_UPPE3D_propagate( input_fiber,input_sim )
 %       fiber.material = 'silica';
 %       fiber.n2 = 2.3e-20;
 %
-%       sim.dz = 1000e-6;
 %       sim.save_period = 0;
 %
+%       sim.ellipticity = 0; % linear polarization
 %       sim.scalar = true;
 %
 %       sim.adaptive_dz.DW_threshold = 1e-6;
@@ -44,7 +44,7 @@ function [fiber,sim] = load_default_UPPE3D_propagate( input_fiber,input_sim )
 %       sim.gpuDevice.Index = 1;
 %       sim.progress_bar = true;
 %       sim.progress_bar_name = '';
-%       sim.cuda_dir_path = [folder_of_this_function 'GNLSE3D/cuda'];
+%       sim.cuda_dir_path = [folder_of_this_function 'UPPE3D/cuda'];
 %
 %
 %   fiber.L0 = (1) input L0
@@ -60,14 +60,14 @@ function [fiber,sim] = load_default_UPPE3D_propagate( input_fiber,input_sim )
 %    fiber.L0 = 3;
 %    
 %    % Incorporate default settings
-%    [fiber,sim] = load_default_GNLSE3D_propagate(fiber,[]);
+%    [fiber,sim] = load_default_UPPE3D_propagate(fiber,[]);
 %
 %    % If there are "sim" settings
 %    sim.adaptive_dz.model = 0;
-%    [fiber,sim] =  load_default_GNLSE3D_propagate(fiber,sim);
+%    [fiber,sim] =  load_default_UPPE3D_propagate(fiber,sim);
 %
 %    % Use only user-defined "sim", not "fiber"
-%    [fiber,sim] = load_default_GNLSE3D_propagate([],sim);
+%    [fiber,sim] = load_default_UPPE3D_propagate([],sim);
 %
 % -------------------------------------------------------------------------
 %
@@ -86,7 +86,7 @@ function [fiber,sim] = load_default_UPPE3D_propagate( input_fiber,input_sim )
 %       Basic properties -->
 %
 %           fiber - fiber name; set this if you want to use the repository
-%           in this package. Check fiber_collections.m in GNLSE3D for details.
+%           in this package. Check fiber_collections.m in UPPE3D for details.
 %           material
 %           n2 - the nonlinear coefficient (default to 2.3e-20 if not set)
 %           L0 - length of fiber, in m
@@ -139,18 +139,18 @@ function [fiber,sim] = load_default_UPPE3D_propagate( input_fiber,input_sim )
 %       Others -->
 %
 %           pulse_centering - 1(true) = center the pulse according to the time window, 0(false) = do not
-%                             The time delay will be stored in time_delay after running GNLSE3D_propagate().
+%                             The time delay will be stored in time_delay after running UPPE3D_propagate().
 %           gpuDevice.Index - a scalar; the GPU to use
 %           gpuDevice.Device - the output of MATLAB "gpuDevice(gpu_index)"
 %           cuda_dir_path - path to the cuda directory into which ptx files will be compiled and stored
 %           progress_bar - 1(true) = show progress bar, 0(false) = do not
 %                          It'll slow down the code slightly. Turn it off for performance.
-%           progress_bar_name - the name of the GNLSE3D propagation shown on the progress bar.
+%           progress_bar_name - the name of the UPPE3D propagation shown on the progress bar.
 %                               If not set (no "sim.progress_bar_name"), it uses a default empty string, ''.
 %
 % =========================================================================
 
-%% Current path (or the folder where this "load_default_GNLSE3D_propagate.m" is)
+%% Current path (or the folder where this "load_default_UPPE3D_propagate.m" is)
 if ispc
     sep = '\';
 else % unix
@@ -196,7 +196,7 @@ end
 % -------------------------------------------------------------------------
 % Basic properties
 default_fiber.fiber = '1060XP'; % use the repository in this package to set the fiber index profile
-default_fiber.material = 'fused silica'; % for finding the Raman response in GNLSE3D_propagate()
+default_fiber.material = 'fused silica'; % for finding the Raman response in UPPE3D_propagate()
 default_fiber.n2 = 2.3e-20; % m^2/W
 
 % L0 is necessary to be put into "default_fiber" first for "gain_coeff" calculation.
@@ -246,7 +246,7 @@ if isempty(input_fiber)
 elseif isstruct(input_fiber)
     fiber = catstruct(default_fiber, input_fiber);
 else
-    error('LoadDefaultGNLSE3DPropagate:InputFiberError',...
+    error('LoadDefaultUPPE3DPropagate:InputFiberError',...
             '"input_fiber" should be a "structure".');
 end
 if isempty(input_sim)
@@ -254,7 +254,7 @@ if isempty(input_sim)
 elseif isstruct(input_sim)
     sim = catstruct(default_sim, input_sim);
 else
-    error('LoadDefaultGNLSE3DPropagate:InputSimError',...
+    error('LoadDefaultUPPE3DPropagate:InputSimError',...
             '"input_sim" should be a "structure".');
 end
 
