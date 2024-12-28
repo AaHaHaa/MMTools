@@ -48,7 +48,7 @@ pcolor(abs(squeeze(initial_condition.field(ceil(Nt/2),:,:))).^2); colormap(jet);
 shading interp;colormap(jet);colorbar;
 % Show initial k space
 figure;
-pcolor(abs(fftshift(ifft(ifft(squeeze(initial_condition.field(ceil(Nt/2),:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(abs(fftshift(fft(fft(squeeze(initial_condition.field(ceil(Nt/2),:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 
 fiber.n = ones(1,Nx,Nx); % air
@@ -80,7 +80,7 @@ pcolor(abs(squeeze(prop_output.field(ceil(Nt/2),:,:,end))).^2); colormap(jet);co
 shading interp;colormap(jet);colorbar;
 % Show final k space
 figure;
-pcolor(abs(fftshift(ifft(ifft(squeeze(prop_output.field(ceil(Nt/2),:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(abs(fftshift(fft(fft(squeeze(prop_output.field(ceil(Nt/2),:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 
 % Plot MFD

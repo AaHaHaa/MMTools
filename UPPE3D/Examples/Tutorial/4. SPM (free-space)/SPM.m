@@ -47,7 +47,7 @@ pcolor(abs(squeeze(initial_condition.field(Nt/2,:,:))).^2); colormap(jet);colorb
 shading interp;colormap(jet);colorbar;
 % Show initial k space
 figure;
-pcolor(abs(fftshift(ifft(ifft(squeeze(initial_condition.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(abs(fftshift(fft(fft(squeeze(initial_condition.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 
 %% Setup general parameters
@@ -80,7 +80,7 @@ pcolor(abs(squeeze(prop_output.field(Nt/2,:,:,end))).^2); colormap(jet);colorbar
 shading interp;colormap(jet);colorbar;
 % Show final k space
 figure;
-pcolor(abs(fftshift(ifft(ifft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(abs(fftshift(fft(fft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 
 % Spectrum

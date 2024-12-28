@@ -49,7 +49,7 @@ shading interp;colormap(jet);colorbar;
 title('Initial real space');
 % Show initial k space
 figure;
-pcolor(abs(fftshift(ifft(ifft(squeeze(initial_condition.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(abs(fftshift(fft(fft(squeeze(initial_condition.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 title('Initial k space');
 
@@ -84,7 +84,7 @@ shading interp;colormap(jet);colorbar;
 title('Final real space');
 % Show final k space
 figure;
-pcolor(abs(fftshift(ifft(ifft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(abs(fftshift(fft(fft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 title('Final k space')
 

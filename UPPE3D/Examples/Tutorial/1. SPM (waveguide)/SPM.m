@@ -46,8 +46,8 @@ c = 299792458; % m/s
 lambda = c./(f*1e12)*1e9; % nm
 
 %% Initial condition
-Nx = 2^8;
-spatial_window = 100; % um
+Nx = 2^7;
+spatial_window = 50; % um
 fiber.n = calc_index_profile(fiber,Nx,spatial_window,f);
 x = (-Nx/2:Nx/2-1)*spatial_window/Nx; % um
 
@@ -74,7 +74,7 @@ figure;
 pcolor(abs(squeeze(initial_pulse.field(Nt/2,:,:))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 figure;
-pcolor(abs(fftshift(ifft(ifft(squeeze(initial_pulse.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(abs(fftshift(fft(fft(squeeze(initial_pulse.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 
 %% Propagate
@@ -145,7 +145,7 @@ ylabel('Length (\mum)');
 set(gca,'fontsize',14);
 
 figure;
-pcolor(xx,yy,abs(fftshift(ifft(ifft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2);
+pcolor(xx,yy,abs(fftshift(fft(fft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2);
 shading interp;colormap(jet);colorbar;
 set(gca,'fontsize',14);
 
