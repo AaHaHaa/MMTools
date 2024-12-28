@@ -5,9 +5,6 @@ This is the shared package to simulate, with MATLAB, pulse propagation in <br>
 
 It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA).
 
-> [!CAUTION]
-> Checking 3D-UPPE code now. I'll notice if it's done.
-
 ## Capabilities:<br>
 1. It solves the pulse propagation with
    - [RK4IP](http://www.sciencedirect.com/science/article/pii/S0010465512004262) (Runge-Kutta under the interaction picture) if single-mode.
@@ -110,5 +107,5 @@ I modified the populations used in rate-eqn-gain modeling from the 2nd level to 
 Update the code with the newly-developed noise model with [the finally-published paper](https://doi.org/10.48550/arXiv.2410.20567).
 * 11/13/2024:<br>
 Fix the bug of the Raman computation in 3D-UPPE. Thanks to Su-cc for finding this nontrivial bug.
-* 12/26/2024:<br>
-Fix a huge bug of UPPE3D. I realized that the Fourier Transform in spatial dimensions follows mathematical convention, unlike the spectral/temporal dimension.
+* 12/28/2024:<br>
+Add documentations for 3D-UPPE and Fourier Transform. I realized that the convention of spatial Fourier Transform does not affect the result due to second-order derivative, unlike the spectral/temporal dimension.

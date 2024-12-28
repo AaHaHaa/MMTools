@@ -6,7 +6,7 @@ addpath('../../../UPPE3D algorithm/','../../../user_helpers/');
 
 %% Setup fiber parameters
 sim.lambda0 = 1030e-9; % the center wavelength
-sim.gpuDevice.Index = 2;
+sim.gpuDevice.Index = 1;
 
 % Load default parameters like
 %

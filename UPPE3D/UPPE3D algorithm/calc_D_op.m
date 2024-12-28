@@ -7,14 +7,15 @@ function [D_op,W_op,...
                            Nx,dx,...
                            Ny,dy,...
                            omegas,omegas_real,...
-                           fields)
+                           fields,...
+                           F_op)
 %D_OP It computes the dispersion operator used in 3D-GNLSE
 
 kx = 2*pi*ifftshift(linspace(-floor(Nx/2), floor((Nx-1)/2), Nx),2)/(Nx*dx); % in 1/m, in the order that the fft gives
 ky = 2*pi*ifftshift(linspace(-floor(Ny/2), floor((Ny-1)/2), Ny),2)/(Ny*dy); % in 1/m, in the order that the fft gives
 ky = permute(ky,[1,3,2]);
 
-% The dispersion term in the 3D-GNLSE, in frequency space
+% The dispersion term in the 3D-UPPE, in frequency space
 n = ifftshift(n,1); % (Nt,Nx,Ny,1,Np); in the order that the fft gives
 c = 299792458e-12; % m/ps
 k0 = omegas_real/c; % 1/m
@@ -32,7 +33,7 @@ W_op = 1i*kW2/2./kc;
 
 % Obtain the omega0 of the input pulse
 fftshift_omegas = fftshift(omegas,1);
-spectrum = sum(abs(fftshift(ifft(fields),1)).^2,[2,3,5]);
+spectrum = sum(abs(fftshift(F_op.Fs(fields),1)).^2,[2,3,5]);
 omega0 = sum(fftshift_omegas.*spectrum)/sum(spectrum); % 2*pi*THz; the pulse center frequency (under shifted omega)
 %{
 idx0 = find(fftshift_omegas > omega0,1);

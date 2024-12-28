@@ -4,6 +4,7 @@ function [E_out,...
                                                  save_z, save_points,...
                                                  initial_condition,...
                                                  prefactor,...
+                                                 F_op,...
                                                  D_op, W_op,...
                                                  fr, haw, hbw,...
                                                  E_tr_noise)
@@ -50,8 +51,7 @@ else
     E_out(:,:,:,1,:) = initial_condition.field;
 end
 
-% k and frequency spaces follow different Fourier-Transform conventions
-last_E = fft(fft(ifft(initial_condition.field,[],1),[],2),[],3); % in k- and frequency space
+last_E = F_op.Fk(F_op.Fs(initial_condition.field)); % in k- and frequency space
 
 % Create a progress bar first
 if sim.progress_bar
@@ -108,6 +108,7 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
         [last_E,a5,...
          opt_dz, success] = stepping_RK4IP_nogain_adaptive(last_E,...
                                                            sim, prefactor,...
+                                                           F_op,...
                                                            D_op, W_op,...
                                                            fr, haw, hbw,...
                                                            E_tr_noise,...
@@ -132,25 +133,25 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
 
     % Center the pulse
     if sim.pulse_centering
-        last_E_in_time = fft(last_E,[],1);
+        last_E_in_time = F_op.iFs(last_E);
         temporal_profile = abs(last_E_in_time).^2;
         temporal_profile(temporal_profile<max(temporal_profile,[],1)/10) = 0;
         TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*temporal_profile,[1,2,3,5])/sum(temporal_profile(:)));
         % Because circshift is slow on GPU, I discard it.
         if TCenter ~= 0
             if ~isempty(a5) % RK4IP reuses a5 from the previous step
-                a5 = fft(a5);
+                a5 = F_op.iFs(a5);
             end
             if TCenter > 0
                 if ~isempty(a5) % RK4IP reuses a5 from the previous step
-                    a5 = ifft([a5(1+TCenter:end,:,:,:,:);a5(1:TCenter,:,:,:,:)]);
+                    a5 = F_op.Fs([a5(1+TCenter:end,:,:,:,:);a5(1:TCenter,:,:,:,:)]);
                 end
-                last_E = ifft([last_E_in_time(1+TCenter:end,:,:,:,:);last_E_in_time(1:TCenter,:,:,:,:)],[],1);
+                last_E = F_op.Fs([last_E_in_time(1+TCenter:end,:,:,:,:);last_E_in_time(1:TCenter,:,:,:,:)]);
             elseif TCenter < 0
                 if ~isempty(a5) % RK4IP reuses a5 from the previous step
-                    a5 = ifft([a5(end+1+TCenter:end,:,:,:,:);a5(1:end+TCenter,:,:,:,:)]);
+                    a5 = F_op.Fs([a5(end+1+TCenter:end,:,:,:,:);a5(1:end+TCenter,:,:,:,:)]);
                 end
-                last_E = ifft([last_E_in_time(end+1+TCenter:end,:,:,:,:);last_E_in_time(1:end+TCenter,:,:,:,:)],[],1);
+                last_E = F_op.Fs([last_E_in_time(end+1+TCenter:end,:,:,:,:);last_E_in_time(1:end+TCenter,:,:,:,:)]);
             end
             if sim.gpu_yes
                 TCenter = gather(TCenter);
@@ -167,7 +168,7 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
     % If it's time to save, get the result from the GPU if necessary,
     % transform to the time domain, and save it
     if z >= save_z(save_i)-eps(z)
-        E_out_ii = ifft(ifft(fft(last_E,[],1),[],2),[],3);
+        E_out_ii = F_op.iFk(F_op.iFs(last_E));
         if sim.gpu_yes
             save_dz(save_i) = gather(sim.last_dz);
             save_z(save_i) = gather(z);

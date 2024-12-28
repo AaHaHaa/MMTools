@@ -1,12 +1,8 @@
-function last_E = add_DW_RK4IP(E0,D_op,W_op,L0,DW_threshold)
+function last_E = add_DW_RK4IP(E0,F_op,D_op,W_op,L0,DW_threshold)
 %ADD_DW_RK4IP This computes the exp(D_op+W_op)*E0 with the adaptive-step RK4IP
 
 if any(W_op(:))
-    F2 = @(x) fft(fft(x,[],2),[],3);
-    iF2 = @(x) ifft(ifft(x,[],2),[],3);
-    
-    % k and frequency spaces follow different Fourier-Transform conventions
-    apply_W = @(x) F2(W_op.*iF2(x)); % apply waveguide effect in position space
+    apply_W = @(x) F_op.Fk(W_op.*F_op.iFk(x)); % apply waveguide effect in position space
 else
     apply_W = @(x) 0; % no waveguide effect
 end
