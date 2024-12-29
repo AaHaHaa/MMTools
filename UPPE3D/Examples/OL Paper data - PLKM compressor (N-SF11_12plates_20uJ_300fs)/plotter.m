@@ -29,16 +29,16 @@ xlabel('x (\mum)');
 title('Beam profile output');
 
 subplot(2,2,3)
-plot(z*1e2,MFD*1e3);
+plot(z*1e2,MFD*1e3,'Color','k','linewidth',2);
 xlabel('z (cm)');
 title('Beam size evolution')
 
 subplot(2,2,4)
 output_center_spectrum = abs(fftshift(ifft(A(:,Nx/2,Nx/2,end)),1)).^2./lambda.^2; % "./lambda" is to make it into the wavelength domain (not with the correct unit but the correct relative strength; we'll normalize it later)
 output_center_spectrum = output_center_spectrum/max(output_center_spectrum); % normalized
-plot(lambda,output_center_spectrum);
+plot(lambda,output_center_spectrum,'Color','b','linewidth',2);
 xlabel('Wavelength (norm.)');
-xlim([980,1100]);
+xlim([950,1100]);
 title('Spectral domain')
 
 drawnow; % plot it during running the code

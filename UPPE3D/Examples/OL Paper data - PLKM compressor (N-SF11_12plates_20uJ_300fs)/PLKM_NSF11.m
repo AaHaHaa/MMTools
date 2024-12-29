@@ -23,7 +23,7 @@ MFD0 = 120e-6; % m; mode-field diameter
 %% Initial condition
 spatial_window = 1e-3; % m
 tfwhm = 0.31; % ps
-time_window = 1; % ps
+time_window = 2; % ps
 energy = ((20)*0.85)*1e3; % nJ
 Nt = 2^8; % the number of time points
 Nx = 2^6; % the number of spatial points
@@ -58,6 +58,8 @@ num_plates = 12;
 z_all = zeros(num_save,2*num_plates+1);
 MFD_all = zeros(num_save,2*num_plates+1);
 
+Frame(num_save,2*num_plates+1) = struct('cdata',[],'colormap',[]);
+
 %% air0; before the beam hits the first plate
 fiber.L0 = D; % m
 fiber.n =  n_freespace;
@@ -79,6 +81,12 @@ fig = plotter([],...
               prop_output.field,...
               z_all(1:num_to_plot),MFD_all(1:num_to_plot),...
               Nt,Nx,spatial_window/Nx,lambda);
+
+% Animation
+Frame(:,1) = animator(Frame(:,1),...
+                      prop_output.field,...
+                      z_all(1:num_to_plot),MFD_all(1:num_to_plot),0,...
+                      Nt,dt,Nx,spatial_window/Nx,lambda);
 
 %% PLKM: plate, air, plate, air,......
 for i = 1+(1:num_plates*2)
@@ -113,4 +121,13 @@ for i = 1+(1:num_plates*2)
                   prop_output.field,...
                   z_all(1:num_to_plot),MFD_all(1:num_to_plot),...
                   Nt,Nx,spatial_window/Nx,lambda);
+
+    % Animation
+    Frame(:,i) = animator(Frame(:,i),...
+                          prop_output.field,...
+                          z_all(1:num_to_plot),MFD_all(1:num_to_plot),(i-1)*num_save,...
+                          Nt,dt,Nx,spatial_window/Nx,lambda);
 end
+
+% Movie
+implay(Frame(:),20);
