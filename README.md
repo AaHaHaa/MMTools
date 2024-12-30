@@ -85,13 +85,13 @@ The animation shows the evolutions of the (left) optical spatial profile and the
 Source: "GMMNLSE/Examples/Loss-enhanced beam cleaning"  
 <img src="Readme_images/BC_ns.jpg" width=45%><img src="Readme_images/Field_N1.gif" width=45%>
 
-- **Periodically-layered Kerr medium (non-waveguide)**
+- **Periodically-layered Kerr medium (non-waveguide)**  
 Periodically-layered medium in air can be a waveguide in nonlinear conditions.  
 It acts as a discrete "nonlinear" waveguide with interleaving media of low (e.g., air) and high (e.g., thin glass) nonlinear refractive indices. Thin glass induces nonlinear self-focusing and air introduces diffraction. This artificially-contructed waveguide nonlinearly broadens the pulse, introducing self-phase modulation that can be compensated with a dechirper. This results in a temporally-compressed pulse. Typical compression factor is around 5.  
 Source: "UPPE3D/Examples/OL Paper data - PLKM compressor (N-SF11_12plates_20uJ_300fs)"  
 <img src="Readme_images/PLKM.gif" width=45%>
 
-- **Self focusing (non-waveguide)**
+- **Self focusing (non-waveguide)**  
 Pulse with high peak power will experience self-focusing in a Kerr medium with a positive nonlinear refractive index. The medium effectively acts as a lens, reducing the propagating beam size.  
 Source: "UPPE3D/Examples/Tutorial/3. Self-focusing"  
 <img src="Readme_images/self_focusing.gif" width=45%>
