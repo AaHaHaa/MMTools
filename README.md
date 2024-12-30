@@ -5,7 +5,7 @@ This is the shared package to simulate, with MATLAB, pulse propagation in <br>
 
 It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA).
 
-## Capabilities:<br>
+## Capabilities:
 1. It solves the pulse propagation with
    - [RK4IP](http://www.sciencedirect.com/science/article/pii/S0010465512004262) (Runge-Kutta under the interaction picture) if single-mode.
    - [MPA](https://ieeexplore.ieee.org/document/8141863) (massively parallel algorithm) if multimode.
@@ -30,18 +30,10 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 7. Support noise-seeded processes, such as spontaneous Raman scattering, with [the newly-developed noise model](https://doi.org/10.48550/arXiv.2410.20567).
 8. For multimode, GPU computations (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
 
-## Notes:<br>
-For details, please read the supplement of [[1]](#references-our-papers).  
-Please don't forget to cite our paper if you find this code useful in your work. I, the young and early-career researcher, need your support. Similarly, if you need help or have questions about the code, please feel free to ask them here or send me an email (email address is in my paper).
-
-There is a `readme.pdf` in the `Documentations/` folder. Please find details of how to use this code in it. However, the fastest way to learn how to use this package is to learn from the examples in the `Examples/` folder.
-
-I'm Yi-Hao Chen, the author of the code and from Frank Wise's group at Cornell Applied Physics. This code is basically an upgraded and highly-optimized version of our [WiseLabAEP/GMMNLSE-Solver-FINAL](https://github.com/WiseLabAEP/GMMNLSE-Solver-FINAL) with much more functionalities, which however might overwhelm users and thus require more fiber-optic background. It can run order-of-magnitude faster than our old code due to optimizing with CUDA+shared memory, as well as reducing the usage of for-loops. Although our old one claims to be fast with GPU, its CUDA implementation is not optimized, let alone its CPU implementation with a lot of slow for-loops. Besides, this package includes adaptive step-size control, which improves the performance significantly and allows users to be free from worrying the reliability of a simulation. For optimization details, please see the supplement of our paper mentioned previously. 
-
 ## Fourier-Transform tutorial
 Since I've seen many misuse of Fourier Transform, I wrote [this tutorial](Readme_images/Fourier_Transform_tutorial.pdf). Please take a look. Briefly speaking for one misuse, it's necessary to use MATLAB's `ifft` for Fourier Transform into the spectral domain.
 
-## How to activate CUDA for GPU computing in MATLAB:<br>
+## How to activate CUDA for GPU computing in MATLAB:
 Typically MATLAB deals with this, but there are still come steps to follow before CUDA can really be used, especially when compiling .cu files to generate .ptx files. Below I show only steps for Windows. For linux, please search for their specific steps. I've never used Mac, so I cannot comment anything on this; some functions need to be revised for extended capabilities for Mac as far as I know.<br>
 1. Install [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
 2. Install [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/). Only **Desktop development with C++** is required. If it later says that it needs to install some other components due to the dependency issues, also install them.
@@ -52,12 +44,12 @@ Typically MATLAB deals with this, but there are still come steps to follow befor
 > [!WARNING]
 > MATLAB supports only a certain version of CUDA and GPUs ([support list](https://www.mathworks.com/help/releases/R2021b/parallel-computing/gpu-support-by-release.html)). CUDA or GPU that is too old just isn't supported.
 
-## References (our papers):<br>
+## References (our papers):
 1. [Multimode gain](https://doi.org/10.1364/JOSAB.500586)
 2. [Raman scattering](https://doi.org/10.1063/5.0189749)
 3. [Noise modeling](https://doi.org/10.48550/arXiv.2410.20567)
 
-## Demonstrations:<br>
+## Demonstrations:
 - **Self-steepening (waveguide)**  
 The pulse's peak shifts in time, creating a sharp temporal edge.   
 Source: "GMMNLSE/Examples/Some tutorials/10. Self-steepening_Shock wave"  
@@ -86,7 +78,7 @@ Source: "GMMNLSE/Examples/Loss-enhanced beam cleaning"
 <img src="Readme_images/BC_ns.jpg" width=45%><img src="Readme_images/Field_N1.gif" width=45%>
 
 - **Periodically-layered Kerr medium (non-waveguide)**  
-Periodically-layered medium in air can be a waveguide in nonlinear conditions.  
+[Periodically-layered medium](https://doi.org/10.1364/OL.539381) in air can be a waveguide in nonlinear conditions.  
 It acts as a discrete "nonlinear" waveguide with interleaving media of low (e.g., air) and high (e.g., thin glass) nonlinear refractive indices. Thin glass induces nonlinear self-focusing and air introduces diffraction. This artificially-contructed waveguide nonlinearly broadens the pulse, introducing self-phase modulation that can be compensated with a dechirper. This results in a temporally-compressed pulse. Typical compression factor is around 5.  
 Source: "UPPE3D/Examples/OL Paper data - PLKM compressor (N-SF11_12plates_20uJ_300fs)"  
 <img src="Readme_images/PLKM.gif" width=45%>
@@ -104,7 +96,14 @@ This term creates a self-steepening sharp temporal edge during nonlinear evoluti
 Please see the supplement of [[2]](#references-our-papers) for the derivation of MM-UPPE and understand how the shock-wave term appears and see how it's transformed into a simple $\omega$ prefactor in the frequency domain.  
 Shock-wave effect cannot be turned off in this package. I specifically created another code privately for the animation demonstration in this section.
 
-## History:<br>
+## Notes:
+There is two `readme.pdf` in the `Documentations/` folders of **GMMNLSE** and **UPPE3D**. Please find details of how to use this package in them. However, the fastest way to learn how to use this package is to learn from the examples in their `Examples/` folders.
+
+I'm Yi-Hao Chen, the author of the code and from Frank Wise's group at Cornell Applied Physics. This code is basically an upgraded and highly-optimized version of our [WiseLabAEP/GMMNLSE-Solver-FINAL](https://github.com/WiseLabAEP/GMMNLSE-Solver-FINAL) with much more functionalities, which however might overwhelm users and thus require more fiber-optic background. It can run order-of-magnitude faster than our old code due to optimizing with CUDA+shared memory, as well as reducing the usage of for-loops. Although our old one claims to be fast with GPU, its CUDA implementation is not optimized, let alone its CPU implementation with a lot of slow for-loops. Besides, this package includes adaptive step-size control, which improves the performance significantly and allows users to be free from worrying the reliability of a simulation. For optimization details, please see the supplement of our paper [[1]](#references-our-papers). 
+
+Please don't forget to cite our paper if you find this code useful in your work. I, the young and early-career researcher, need your support. Similarly, if you need help or have questions about the code, please feel free to ask them here or send me an email (email address is in my paper).
+
+## History:
 * 11/1/2023:<br>
 If you downloaded the code earlier, please re-download it. There was a huge bug in polarization modes. I fixed it only recently. Now it works correctly.
 * 1/17/2024:<br>
