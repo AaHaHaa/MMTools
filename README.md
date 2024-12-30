@@ -1,6 +1,6 @@
 # MMTools
 This is the shared package to simulate, with MATLAB, pulse propagation in <br>
-1. non-waveguide: free space with 3D-UPPE
+1. non-waveguide: bulk crystal/free space with 3D-UPPE
 2. waveguide: a solid-core fiber with GMMNLSE/MM-UPPE
 
 It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA).
@@ -58,32 +58,43 @@ Typically MATLAB deals with this, but there are still come steps to follow befor
 3. [Noise modeling](https://doi.org/10.48550/arXiv.2410.20567)
 
 ## Demonstrations:<br>
-- **Self-steepening**  
+- **Self-steepening (waveguide)**  
 The pulse's peak shifts in time, creating a sharp temporal edge.   
-Source: "Examples\Some tutorials\10. Self-steepening_Shock wave"  
+Source: "GMMNLSE/Examples/Some tutorials/10. Self-steepening_Shock wave"  
 <img src="Readme_images/Self_steepening.gif" width=50%>
 
-- **Soliton self-frequency shift (SSFS)**  
+- **Soliton self-frequency shift (SSFS) (waveguide)**  
 The soliton redshifts due to intrapulse Raman scattering.  
 In the animation, it shifts in time because redshifting makes the pulse slows down (in an anomalous-dispersion environment), slower than the user-defined moving window.  
-Source: "Examples\Some tutorials\6. Soliton self-frequency shift"  
+Source: "GMMNLSE/Examples/Some tutorials/6. Soliton self-frequency shift"  
 <img src="Readme_images/SSFS.gif" width=45%>
 
-- **Orthogonally-polarized Raman coupling**  
+- **Orthogonally-polarized Raman coupling (waveguide)**  
 The soliton couples its energy from one polarization mode to the other, while redshifting due to SSFS.  
-Source: "Examples\Orthogonally-polarized Raman scattering"  
+Source: "GMMNLSE/Examples/Orthogonally-polarized Raman scattering"  
 <img src="Readme_images/vector_Raman.gif" width=45%>
 
-- **Gain-managed nonlinear amplification (GMNA)**  
+- **Gain-managed nonlinear amplification (GMNA) (waveguide)**  
 The pulse is amplified in an Yb-doped fiber amplifier, along with the gain management of a spectrally-shifting gain spectrum as the pulse is amplified. This is a new recently-discovered amplification, called [GMNA](http://www.osapublishing.org/optica/abstract.cfm?URI=optica-6-10-1328).  
-Source: "Examples\Gain-rate-equation model\GMNA\Yb GMNA"  
+Source: "GMMNLSE/Examples/Gain-rate-equation model/GMNA/Yb GMNA"  
 <img src="Readme_images/GMNA.gif" width=45%>
 
-- **Loss-enhanced (spatiotemporal-dissipation-enhanced) Kerr beam cleaning**  
+- **Loss-enhanced (spatiotemporal-dissipation-enhanced) Kerr beam cleaning (waveguide)**  
 The multimode pulse experiences Kerr-induced beam cleaning into the fundamental Gaussian mode during amplification. Because the fundamental mode experiences less absorption from the gain fiber, gain/loss effect facilitates beam cleaning. See [[1]](#references-our-papers) for details.  
 The animation shows the evolutions of the (left) optical spatial profile and the (right) upper-state population (related to inversion).  
-Source: "Examples\Loss-enhanced beam cleaning"  
+Source: "GMMNLSE/Examples/Loss-enhanced beam cleaning"  
 <img src="Readme_images/BC_ns.jpg" width=45%><img src="Readme_images/Field_N1.gif" width=45%>
+
+- **Periodically-layered Kerr medium (non-waveguide)**
+Periodically-layered medium in air can be a waveguide in nonlinear conditions.  
+It acts as a discrete "nonlinear" waveguide with interleaving media of low (e.g., air) and high (e.g., thin glass) nonlinear refractive indices. Thin glass induces nonlinear self-focusing and air introduces diffraction. This artificially-contructed waveguide nonlinearly broadens the pulse, introducing self-phase modulation that can be compensated with a dechirper. This results in a temporally-compressed pulse. Typical compression factor is around 5.  
+Source: "UPPE3D/Examples/OL Paper data - PLKM compressor (N-SF11_12plates_20uJ_300fs)"  
+<img src="Readme_images/PLKM.gif width=45%>
+
+- **Self focusing (non-waveguide)**
+Pulse with high peak power will experience self-focusing in a Kerr medium with a positive nonlinear refractive index. The medium effectively acts as a lens, reducing the propagating beam size.  
+Source: "UPPE3D/Examples/Tutorial/3. Self-focusing"  
+<img src="Readme_images/self_focusing.gif width=45%>
 
 ## Self-steepening/shock-wave effect
 Since I've received many questions about whether this code includes the self-steepening/shock-wave term, I will explain it here.  

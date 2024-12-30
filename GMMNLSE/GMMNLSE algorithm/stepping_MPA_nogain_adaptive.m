@@ -76,7 +76,7 @@ for n_it = 1:sim.MPA.n_tot_max
     %    A_w = D.pos*psi
     Aw = permute(D.pos.*psi, [1 3 2]); % (Nt, M+1, num_modes)
     % Calculate A(t,z) at all z
-    At = fft(Aw);
+    At = fft(Aw,[],1);
     At_wNoise = At + At_noise;
 
     % Calculate Kerr, SRa, and SRb terms
@@ -213,10 +213,10 @@ for n_it = 1:sim.MPA.n_tot_max
     % "https://blogs.mathworks.com/steve/2009/11/03/the-conv-function-and-implementation-tradeoffs/"
     % for more information.
     if sim.include_Raman
-        Ra = fft(haw.*ifft(Ra));
+        Ra = fft(haw.*ifft(Ra,[],1),[],1);
         
         if ~isempty(hbw) % polarized fields with an anisotropic Raman
-            Rb = fft(hbw.*ifft(Rb));
+            Rb = fft(hbw.*ifft(Rb,[],1),[],1);
         end
         
         if isempty(hbw)
@@ -229,7 +229,7 @@ for n_it = 1:sim.MPA.n_tot_max
     end
 
     % Multiply the nonlinear factor
-    nonlinear = n2_prefactor.*ifft(nonlinear);
+    nonlinear = n2_prefactor.*ifft(nonlinear,[],1);
 
     % Incorporate dz and D.neg term for the integration.
     nonlinear = permute(nonlinear,[1,3,2]); % (Nt,num_modes,M+1)

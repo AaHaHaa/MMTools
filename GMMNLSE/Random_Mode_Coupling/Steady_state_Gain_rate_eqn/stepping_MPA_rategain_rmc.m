@@ -90,7 +90,7 @@ for n_it = 1:sim.MPA.n_tot_max
                        sim.rmc.cuda_mypagemtimes);
 
     % Calculate A(t,z) at all z
-    At = permute(fft(Aw),[1 3 2]); % (Nt, M+1, num_modes)
+    At = permute(fft(Aw,[],1),[1 3 2]); % (Nt, M+1, num_modes)
 
     % Set up matrices for the following Kerr, Ra, and Rb computations
     if sim.gpu_yes
@@ -234,10 +234,10 @@ for n_it = 1:sim.MPA.n_tot_max
     % "https://blogs.mathworks.com/steve/2009/11/03/the-conv-function-and-implementation-tradeoffs/"
     % for more information.
     if sim.include_Raman
-        Ra = fft(haw.*ifft(Ra));
+        Ra = fft(haw.*ifft(Ra,[],1),[],1);
         
         if ~isempty(hbw) % polarized fields with an anisotropic Raman
-            Rb = fft(hbw.*ifft(Rb));
+            Rb = fft(hbw.*ifft(Rb,[],1),[],1);
         end
         
         if isempty(hbw)
@@ -250,7 +250,7 @@ for n_it = 1:sim.MPA.n_tot_max
     end
     
     % Multiply the nonlinear factor
-    nonlinear = n2_prefactor.*permute(ifft(nonlinear),[1 3 2]); % (Nt,num_modes,M+1)
+    nonlinear = n2_prefactor.*permute(ifft(nonlinear,[],1),[1 3 2]); % (Nt,num_modes,M+1)
     
     % Incorporate small_dz and exp(-D*z) term for the integration
     nonlinear = add_D_and_rmc(false,...

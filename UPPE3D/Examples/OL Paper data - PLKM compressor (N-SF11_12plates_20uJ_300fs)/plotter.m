@@ -19,6 +19,8 @@ input_A = A(Nt/2,:,:,1);
 pcolor(x,x,abs(squeeze(input_A)).^2);
 shading interp; colormap(jet);
 xlabel('x (\mum)');
+xlim([-160,160]);
+ylim([-160,160]);
 title('Beam profile input');
 
 subplot(2,2,2)
@@ -26,6 +28,8 @@ output_A = A(Nt/2,:,:,end);
 pcolor(x,x,abs(squeeze(output_A)).^2);
 shading interp; colormap(jet);
 xlabel('x (\mum)');
+xlim([-160,160]);
+ylim([-160,160]);
 title('Beam profile output');
 
 subplot(2,2,3)
@@ -37,7 +41,7 @@ subplot(2,2,4)
 output_center_spectrum = abs(fftshift(ifft(A(:,Nx/2,Nx/2,end)),1)).^2./lambda.^2; % "./lambda" is to make it into the wavelength domain (not with the correct unit but the correct relative strength; we'll normalize it later)
 output_center_spectrum = output_center_spectrum/max(output_center_spectrum); % normalized
 plot(lambda,output_center_spectrum,'Color','b','linewidth',2);
-xlabel('Wavelength (norm.)');
+xlabel('Wavelength (nm)');
 xlim([950,1100]);
 title('Spectral domain')
 

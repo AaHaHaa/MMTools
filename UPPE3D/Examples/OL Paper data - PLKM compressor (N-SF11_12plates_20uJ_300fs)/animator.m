@@ -1,7 +1,8 @@
 function Frame = animator(Frame,...
                           A,...
                           z,MFD,start_idx,...
-                          Nt,dt,Nx,dx,lambda)
+                          Nt,dt,Nx,dx,lambda,...
+                          plate_z)
 
 % Make them column vectors
 z = z(:);
@@ -30,10 +31,17 @@ for j = 1:size(A,4)-1
     ylim([-160,160]);
 
     subplot(2,2,2);
+    plot_plate_MFD = [70;180];
+    for i = 1:length(plate_z)-1
+        plot(plate_z(i)*1e2*[1;1],plot_plate_MFD,'Color','r','linewidth',1);
+        hold on;
+    end
     plot(z(1:start_idx+j)*1e2,MFD(1:start_idx+j)*1e3,'Color','k','linewidth',2);
+    hold off;
     xlabel('z (cm)');
     ylabel('MFD (\mum)');
-    ylim([80,160]);
+    xlim([0,plate_z(end)*1e2]); % cm
+    ylim(plot_plate_MFD);
 
     subplot(2,2,[3,4]);
     spectrum = abs(fftshift(ifft(A(:,Nx/2,Nx/2,j+1),[],1),1)).^2*factor_correct_unit.*factor; % in wavelength domain

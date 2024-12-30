@@ -1,6 +1,8 @@
 function fields = input_pulse_shot_noise(sim,omegas,Nt,dt,fields)
 %INPUT_PULSE_SHOT_NOISE It adds shot noise to the fields
 %
+% *This is used only for simulations with random mode coupling.
+%
 % Input arguments:
 %   sim.num_photon_noise_per_bin: the number of photon noise per spectral discretization bin
 %   sim.f0: center frequency of the numerical frequency window (THz);
@@ -16,7 +18,7 @@ function fields = input_pulse_shot_noise(sim,omegas,Nt,dt,fields)
 %   intensity = abs(field).^2;
 %   energy = trapz(t,intensity) = trapz(intensity)*dt;       % pJ
 %   
-%   spectrum_unknown_unit = abs(fftshift(ifft(field),1)).^2;
+%   spectrum_unknown_unit = abs(fftshift(ifft(field,[],1),1)).^2;
 %
 %   Parseval's theorem: sum(intensity) = sum(spectrum_unknown_unit)*N;
 %                       * Note that spectrum_unknown_unit is from "ifft".
@@ -64,7 +66,7 @@ if sim.num_photon_noise_per_bin ~= 0
     else
         rand_phase = exp(1i*2*pi*rand(Nt,size(fields,2)));
     end
-    fields = fft(ifft(fields) + photon_noise_amplitude.*rand_phase);
+    fields = fft(ifft(fields,[],1) + photon_noise_amplitude.*rand_phase,[],1);
 
     clear hbar photon_noise_intensity photon_noise_amplitude rand_phase;
 end

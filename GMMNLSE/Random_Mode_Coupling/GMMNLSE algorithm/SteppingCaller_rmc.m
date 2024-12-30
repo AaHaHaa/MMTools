@@ -22,7 +22,7 @@ if sim.pulse_centering
     temporal_profile(temporal_profile<max(temporal_profile,[],1)/10) = 0;
     TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*temporal_profile,[1,2])/sum(temporal_profile,[1,2]));
     % Because circshift is slow on GPU, I discard it.
-    %last_result = ifft(circshift(initial_condition.fields,-tCenter));
+    %last_result = ifft(circshift(initial_condition.fields,-tCenter),[],1);
     if ~isnan(TCenter) && TCenter ~= 0
         if TCenter > 0
             initial_condition.fields = [initial_condition.fields(1+TCenter:end,:);initial_condition.fields(1:TCenter,:)];
@@ -51,7 +51,7 @@ else
     A_out(:,:,1) = initial_condition.fields;
 end
 
-last_A = ifft(initial_condition.fields);
+last_A = ifft(initial_condition.fields,[],1);
 
 % Create a progress bar first
 if sim.progress_bar
@@ -109,17 +109,17 @@ for ii = 2:num_zPoints
 
     % Center the pulse
     if sim.pulse_centering
-        last_A_in_time = fft(last_A);
+        last_A_in_time = fft(last_A,[],1);
         temporal_profile = abs(last_A_in_time).^2;
         temporal_profile(temporal_profile<max(temporal_profile,[],1)/10) = 0;
         TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*temporal_profile,[1,2])/sum(temporal_profile,[1,2]));
         % Because circshift is slow on GPU, I discard it.
-        %last_result = ifft(circshift(last_A_in_time,-tCenter));
+        %last_result = ifft(circshift(last_A_in_time,-tCenter),[],1);
         if ~isnan(TCenter) && TCenter ~= 0
             if TCenter > 0
-                last_A = ifft([last_A_in_time(1+TCenter:end,:);last_A_in_time(1:TCenter,:)]);
+                last_A = ifft([last_A_in_time(1+TCenter:end,:);last_A_in_time(1:TCenter,:)],[],1);
             elseif TCenter < 0
-                last_A = ifft([last_A_in_time(end+1+TCenter:end,:);last_A_in_time(1:end+TCenter,:)]);
+                last_A = ifft([last_A_in_time(end+1+TCenter:end,:);last_A_in_time(1:end+TCenter,:)],[],1);
             end
             if sim.gpu_yes
                 TCenter = gather(TCenter);
@@ -131,7 +131,7 @@ for ii = 2:num_zPoints
     % If it's time to save, get the result from the GPU if necessary,
     % transform to the time domain, and save it
     if rem(ii-1, num_zPoints_persave) == 0
-        A_out_ii = fft(last_A);
+        A_out_ii = fft(last_A,[],1);
 
         if sim.gpu_yes
             A_out(:, :, int64((ii-1)/num_zPoints_persave)+1) = gather(A_out_ii);

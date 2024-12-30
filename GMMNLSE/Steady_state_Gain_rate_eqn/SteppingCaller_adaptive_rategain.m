@@ -220,7 +220,7 @@ Power_pump_backward_out = cell2mat(Power_pump_backward_out);
 
 Power_out.pump = struct('forward', Power_pump_forward_out,...
                         'backward',Power_pump_backward_out);
-signal_fields_out = fft(signal_fields_out);
+signal_fields_out = fft(signal_fields_out,[],1);
 
 end
 
@@ -254,7 +254,7 @@ if sim.pulse_centering
     temporal_profile(temporal_profile<max(temporal_profile,[],1)/10) = 0;
     TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*temporal_profile,[1,2])/sum(temporal_profile,[1,2]));
     % Because circshift is slow on GPU, I discard it.
-    %last_result = ifft(circshift(initial_condition.fields,-tCenter));
+    %last_result = ifft(circshift(initial_condition.fields,-tCenter),[],1);
     if ~isnan(TCenter) && TCenter ~= 0
         if TCenter > 0
             initial_condition.fields = [initial_condition.fields(1+TCenter:end,:);initial_condition.fields(1:TCenter,:)];
@@ -273,7 +273,7 @@ else
     T_delay = 0;
 end
 T_delay_out(1) = T_delay;
-initial_condition.fields = ifft(initial_condition.fields);
+initial_condition.fields = ifft(initial_condition.fields,[],1);
 
 switch direction
     case 'forward'
@@ -389,27 +389,27 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
             % resulting in a different noise field overlapped with the coherent pulse.
             % This will artificially create a noisy output.
             if sim.pulse_centering
-                last_signal_fields_in_time = fft(last_signal_fields);
+                last_signal_fields_in_time = fft(last_signal_fields,[],1);
                 temporal_profile = abs(last_signal_fields_in_time).^2;
                 temporal_profile(temporal_profile<max(temporal_profile,[],1)/10) = 0;
                 TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*temporal_profile,[1,2])/sum(temporal_profile,[1,2]));
                 if ~isnan(TCenter) && TCenter ~= 0 % all-zero fields; for calculating ASE power only
                     % Because circshift is slow on GPU, I discard it.
-                    %last_signal_fields = ifft(circshift(last_signal_fields_in_time,-tCenter));
+                    %last_signal_fields = ifft(circshift(last_signal_fields_in_time,-tCenter),[],1);
                     if ~isempty(a5) % RK4IP reuses a5 from the previous step
-                        a5 = fft(a5);
+                        a5 = fft(a5,[],1);
                     end
                     if TCenter > 0
                         if ~isempty(a5) % RK4IP reuses a5 from the previous step
-                            a5 = ifft([a5(1+TCenter:end,:);a5(1:TCenter,:)]);
+                            a5 = ifft([a5(1+TCenter:end,:);a5(1:TCenter,:)],[],1);
                         end
-                        last_signal_fields = ifft([last_signal_fields_in_time(1+TCenter:end,:);last_signal_fields_in_time(1:TCenter,:)]);
+                        last_signal_fields = ifft([last_signal_fields_in_time(1+TCenter:end,:);last_signal_fields_in_time(1:TCenter,:)],[],1);
                         At_noise = cat(1,At_noise(1+TCenter:end,:,:),At_noise(1:TCenter,:,:));
                     elseif TCenter < 0
                         if ~isempty(a5) % RK4IP reuses a5 from the previous step
-                            a5 = ifft([a5(end+1+TCenter:end,:);a5(1:end+TCenter,:)]);
+                            a5 = ifft([a5(end+1+TCenter:end,:);a5(1:end+TCenter,:)],[],1);
                         end
-                        last_signal_fields = ifft([last_signal_fields_in_time(end+1+TCenter:end,:);last_signal_fields_in_time(1:end+TCenter,:)]);
+                        last_signal_fields = ifft([last_signal_fields_in_time(end+1+TCenter:end,:);last_signal_fields_in_time(1:end+TCenter,:)],[],1);
                         At_noise = cat(1,At_noise(end+1+TCenter:end,:,:),At_noise(1:end+TCenter,:,:));
                     end
                     if sim.gpu_yes

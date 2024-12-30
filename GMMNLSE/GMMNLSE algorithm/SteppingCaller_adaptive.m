@@ -25,7 +25,7 @@ if sim.pulse_centering
     temporal_profile(temporal_profile<max(temporal_profile,[],1)/10) = 0;
     TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*temporal_profile,[1,2])/sum(temporal_profile,[1,2]));
     % Because circshift is slow on GPU, I discard it.
-    %last_result = ifft(circshift(initial_condition.fields,-tCenter));
+    %last_result = ifft(circshift(initial_condition.fields,-tCenter),[],1);
     if ~isnan(TCenter) && TCenter ~= 0
         if TCenter > 0
             initial_condition.fields = [initial_condition.fields(1+TCenter:end,:);initial_condition.fields(1:TCenter,:)];
@@ -54,7 +54,7 @@ else
     A_out(:,:,1) = initial_condition.fields;
 end
 
-last_A = ifft(initial_condition.fields);
+last_A = ifft(initial_condition.fields,[],1);
 
 % Create a progress bar first
 if sim.progress_bar
@@ -156,27 +156,27 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
     % resulting in a different noise field overlapped with the coherent pulse.
     % This will artificially create a noisy output.
     if sim.pulse_centering
-        last_A_in_time = fft(last_A);
+        last_A_in_time = fft(last_A,[],1);
         temporal_profile = abs(last_A_in_time).^2;
         temporal_profile(temporal_profile<max(temporal_profile,[],1)/10) = 0;
         TCenter = floor(sum((-floor(Nt/2):floor((Nt-1)/2))'.*temporal_profile,[1,2])/sum(temporal_profile,[1,2]));
         % Because circshift is slow on GPU, I discard it.
-        %last_result = ifft(circshift(last_A_in_time,-tCenter));
+        %last_result = ifft(circshift(last_A_in_time,-tCenter),[],1);
         if ~isnan(TCenter) && TCenter ~= 0
             if ~isempty(a5) % RK4IP reuses a5 from the previous step
-                a5 = fft(a5);
+                a5 = fft(a5,[],1);
             end
             if TCenter > 0
                 if ~isempty(a5) % RK4IP reuses a5 from the previous step
-                    a5 = ifft([a5(1+TCenter:end,:,:,:);a5(1:TCenter,:,:,:)]);
+                    a5 = ifft([a5(1+TCenter:end,:,:,:);a5(1:TCenter,:,:,:)],[],1);
                 end
-                last_A = ifft([last_A_in_time(1+TCenter:end,:);last_A_in_time(1:TCenter,:)]);
+                last_A = ifft([last_A_in_time(1+TCenter:end,:);last_A_in_time(1:TCenter,:)],[],1);
                 At_noise = cat(1,At_noise(1+TCenter:end,:,:),At_noise(1:TCenter,:,:));
             elseif TCenter < 0
                 if ~isempty(a5) % RK4IP reuses a5 from the previous step
-                    a5 = ifft([a5(end+1+TCenter:end,:,:,:);a5(1:end+TCenter,:,:,:)]);
+                    a5 = ifft([a5(end+1+TCenter:end,:,:,:);a5(1:end+TCenter,:,:,:)],[],1);
                 end
-                last_A = ifft([last_A_in_time(end+1+TCenter:end,:);last_A_in_time(1:end+TCenter,:)]);
+                last_A = ifft([last_A_in_time(end+1+TCenter:end,:);last_A_in_time(1:end+TCenter,:)],[],1);
                 At_noise = cat(1,At_noise(end+1+TCenter:end,:,:),At_noise(1:end+TCenter,:,:));
             end
             if sim.gpu_yes
@@ -214,7 +214,7 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
     % If it's time to save, get the result from the GPU if necessary,
     % transform to the time domain, and save it
     if z >= save_z(save_i)-eps(z)
-        A_out_ii = fft(last_A);
+        A_out_ii = fft(last_A,[],1);
         if sim.gpu_yes
             save_dz(save_i) = gather(sim.last_dz);
             save_z(save_i) = gather(z);

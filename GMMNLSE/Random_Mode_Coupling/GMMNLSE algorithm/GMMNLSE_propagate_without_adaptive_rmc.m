@@ -256,7 +256,7 @@ sim.small_dz = sim.dz/sim.MPA.M;
 %% % We can pre-compute exp(D_op*z) and exp(-D_op*z) for all z
 % Variable "z" for the computation of the dispersion operator
 fftshift_omegas = fftshift(omegas,1);
-spectrum = sum(abs(fftshift(ifft(initial_condition.fields),1)).^2,2);
+spectrum = sum(abs(fftshift(ifft(initial_condition.fields,[],1),1)).^2,2);
 omega0 = sum(fftshift_omegas.*spectrum)/sum(spectrum); % 2*pi*THz; the pulse center frequency (under shifted omega)
 idx0 = find(fftshift_omegas>=omega0,1);
 if idx0 > floor(Nt/2)

@@ -13,7 +13,7 @@ if any(size(fiber.betas) == Nt) % the betas is given over different frequencies,
         else
             % Obtain the betas of the input pulse
             fftshift_omegas = fftshift(omegas,1);
-            spectrum = sum(abs(fftshift(ifft(fields),1)).^2,2);
+            spectrum = sum(abs(fftshift(ifft(fields,[],1),1)).^2,2);
             omega0 = sum(fftshift_omegas.*spectrum)/sum(spectrum); % 2*pi*THz; the pulse center frequency (under shifted omega)
             omega_range = 1/dt; % 2*pi*THz
             omegas_idx_near_pulse = fftshift_omegas>omega0-omega_range/5 & fftshift_omegas<omega0+omega_range/5;% pick only the data near the pulse center frequency to find its beta0 and beta1

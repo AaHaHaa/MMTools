@@ -15,18 +15,29 @@ fiber.material = 'N-SF11'; % for finding the refractive index in GNLSE3D_propaga
 [fiber,sim] = load_default_UPPE3D_propagate(fiber,sim); % load default parameters
 
 %% Setup PLKM parameters
-Plate_Thick = 0.5e-3; % m
+num_plates = 12;
+Plate_thickness = 0.5e-3; % m
 Plate_spacing = 9e-3; % m
 D = 9e-3; % m; distance between the focal point and the first plate
 MFD0 = 120e-6; % m; mode-field diameter
 
+plate_z = Plate_spacing;
+for i = 2:num_plates*2+1
+    if mod(i,2) == 0
+        zi = Plate_thickness;
+    else
+        zi = Plate_spacing;
+    end
+    plate_z = [plate_z;plate_z(end)+zi];
+end
+
 %% Initial condition
-spatial_window = 1e-3; % m
+spatial_window = 2e-3; % m
 tfwhm = 0.31; % ps
 time_window = 2; % ps
 energy = ((20)*0.85)*1e3; % nJ
 Nt = 2^8; % the number of time points
-Nx = 2^6; % the number of spatial points
+Nx = 2^7; % the number of spatial points
 initial_condition = build_3Dgaussian(MFD0, spatial_window, tfwhm, time_window, energy, Nt, Nx);
 
 %% Setup general parameters
@@ -53,8 +64,7 @@ n2_freespace = 0; % no nonlinearity
 % =========================================================================
 % Start the simulation of PLKM
 % =========================================================================
-num_save = 100;
-num_plates = 12;
+num_save = 50;
 z_all = zeros(num_save,2*num_plates+1);
 MFD_all = zeros(num_save,2*num_plates+1);
 
@@ -86,14 +96,15 @@ fig = plotter([],...
 Frame(:,1) = animator(Frame(:,1),...
                       prop_output.field,...
                       z_all(1:num_to_plot),MFD_all(1:num_to_plot),0,...
-                      Nt,dt,Nx,spatial_window/Nx,lambda);
+                      Nt,dt,Nx,spatial_window/Nx,lambda,...
+                      plate_z);
 
 %% PLKM: plate, air, plate, air,......
 for i = 1+(1:num_plates*2)
     initial_condition.field = prop_output.field(:,:,:,end);
     
     if mod(i,2) == 0 % plate
-        fiber.L0 = Plate_Thick; % m
+        fiber.L0 = Plate_thickness; % m
         fiber.n =  n_plate;
         fiber.n2 = n2_plate;
     else % mod(i,2) == 1; air
@@ -126,8 +137,14 @@ for i = 1+(1:num_plates*2)
     Frame(:,i) = animator(Frame(:,i),...
                           prop_output.field,...
                           z_all(1:num_to_plot),MFD_all(1:num_to_plot),(i-1)*num_save,...
-                          Nt,dt,Nx,spatial_window/Nx,lambda);
+                          Nt,dt,Nx,spatial_window/Nx,lambda,...
+                          plate_z);
 end
 
 % Movie
 implay(Frame(:),20);
+exportVideo = VideoWriter('PLKM');
+exportVideo.FrameRate = 20;
+open(exportVideo);
+writeVideo(exportVideo, Frame(:));
+close(exportVideo);

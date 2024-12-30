@@ -37,21 +37,10 @@ MFD0 = 100e-6; % m
 spatial_window = 1e-3; % m
 tfwhm = 1; % ps
 time_window = 10; % ps
-energy = 10e3; % nJ
-Nt = 2^7; % the number of time points
+energy = 9e3; % nJ
+Nt = 2^8; % the number of time points
 Nx = 2^8; % the number of spatial points
 initial_condition = build_3Dgaussian(MFD0, spatial_window, tfwhm, time_window, energy, Nt, Nx);
-
-% Show initial real space
-figure;
-pcolor(abs(squeeze(initial_condition.field(Nt/2,:,:))).^2); colormap(jet);colorbar;
-shading interp;colormap(jet);colorbar;
-title('Initial real space');
-% Show initial k space
-figure;
-pcolor(abs(fftshift(fft(fft(squeeze(initial_condition.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
-shading interp;colormap(jet);colorbar;
-title('Initial k space');
 
 %% Setup general parameters
 dt = time_window/Nt;
@@ -59,6 +48,8 @@ f = sim.f0+(-Nt/2:Nt/2-1)'/(Nt*dt); % THz
 t = (-Nt/2:Nt/2-1)'*dt; % ps
 c = 299792458; % m/s
 lambda = c./(f*1e12)*1e9; % nm
+dx = spatial_window/Nx; % m
+x = (-Nx/2:Nx/2-1)*dx;
 
 %% Fiber waveguide structure
 % Sellmeier coefficients
@@ -69,18 +60,36 @@ n_from_Sellmeier = @(lambda) sqrt(1+sum(Sellmeier_terms(lambda,a,b),2));
 
 fiber.n = n_from_Sellmeier(lambda/1e3).*ones(1,Nx,Nx);
 
+%% Plot the initial field
+% Show initial real space
+figure;
+pcolor(x*1e6,x*1e6,abs(squeeze(initial_condition.field(Nt/2,:,:))).^2); colormap(jet);colorbar;
+shading interp;colormap(jet);colorbar;
+xlabel('x (\mum)');
+xlim([-1,1]*1e2);
+ylim([-1,1]*1e2);
+title('Initial real space');
+% Show initial k space
+figure;
+pcolor(abs(fftshift(fft(fft(squeeze(initial_condition.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
+shading interp;colormap(jet);colorbar;
+title('Initial k space');
+
 %% Propagate
 prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
 
 %% Results
-MFD = squeeze(calcMFD(squeeze(prop_output.field(Nt/2,:,:,:)),spatial_window))*1e3;
+MFD = squeeze(calcMFD(squeeze(prop_output.field(Nt/2,:,:,:)),spatial_window))*1e6; % um
 energy3D = squeeze(sum(abs(prop_output.field).^2,[1,2,3]));
 
 %% Plot
 % Show final real space
 figure;
-pcolor(abs(squeeze(prop_output.field(Nt/2,:,:,end))).^2); colormap(jet);colorbar;
+pcolor(x*1e6,x*1e6,abs(squeeze(prop_output.field(Nt/2,:,:,end))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
+xlabel('x (\mum)');
+xlim([-1,1]*1e2);
+ylim([-1,1]*1e2);
 title('Final real space');
 % Show final k space
 figure;
@@ -91,6 +100,18 @@ title('Final k space')
 % Plot MFD
 figure;
 plot(prop_output.z*1e2,MFD,'linewidth',2);
-xlabel('Propagation distance (mm)');
-ylabel('MFD (cm)');
+xlabel('Propagation distance (cm)');
+ylabel('MFD (\mum)');
 set(gca,'fontsize',20);
+
+% Movie
+Frame = animator(prop_output.field,...
+                 prop_output.z,MFD,...
+                 Nt,dt,Nx,dx,lambda,...
+                 fiber.L0);
+implay(Frame(:),20);
+exportVideo = VideoWriter('self-focusing');
+exportVideo.FrameRate = 20;
+open(exportVideo);
+writeVideo(exportVideo, Frame(:));
+close(exportVideo);

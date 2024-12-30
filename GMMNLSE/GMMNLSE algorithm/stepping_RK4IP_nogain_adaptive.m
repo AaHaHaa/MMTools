@@ -149,7 +149,7 @@ function dAdz = N_op(Aw,...
                      Nt, num_modes)
 %N_op Calculate dAdz
 
-At = fft(Aw);
+At = fft(Aw,[],1);
 At_wNoise = At + At_noise;
 
 % Calculate large num_modes^4 Kerr, Ra, and Rb terms.
@@ -268,10 +268,10 @@ end
 % "https://blogs.mathworks.com/steve/2009/11/03/the-conv-function-and-implementation-tradeoffs/"
 % for more information.
 if sim.include_Raman
-    Ra = fft(haw.*ifft(Ra)); % stimulated Raman scattering
+    Ra = fft(haw.*ifft(Ra,[],1),[],1); % stimulated Raman scattering
     
     if ~isempty(hbw) % polarized fields with an anisotropic Raman
-        Rb = fft(hbw.*ifft(Rb)); % stimulated Raman scattering
+        Rb = fft(hbw.*ifft(Rb,[],1),[],1); % stimulated Raman scattering
     end
     
     if isempty(hbw)
@@ -285,6 +285,6 @@ end
 
 % Now eveyerthing has been summed into "nonlinear", so transform into the
 % frequency domain for the n2_prefactor
-dAdz = n2_prefactor.*ifft(nonlinear);
+dAdz = n2_prefactor.*ifft(nonlinear,[],1);
 
 end

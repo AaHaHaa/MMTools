@@ -14,9 +14,9 @@ real_f(real_f<0) = 0; % no noise at negative frequencies
 noise_amplitude = sqrt(h.*real_f/(time_window*1e-12));
 
 if isequal(sim.step_method,'RK4IP')
-    At_noise = fft(noise_amplitude.*randn(Nt,num_modes).*exp(1i*2*pi*rand(Nt,num_modes)));
+    At_noise = fft(noise_amplitude.*randn(Nt,num_modes).*exp(1i*2*pi*rand(Nt,num_modes)),[],1);
 else % 'MPA'
-    At_noise = repmat(fft(noise_amplitude.*randn(Nt,1,num_modes).*exp(1i*2*pi*rand(Nt,1,num_modes))),1,sim.MPA.M+1,1);
+    At_noise = repmat(fft(noise_amplitude.*randn(Nt,1,num_modes).*exp(1i*2*pi*rand(Nt,1,num_modes)),[],1),1,sim.MPA.M+1,1);
 end
 
 end
