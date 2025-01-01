@@ -7,30 +7,32 @@
 
 addpath('helpers/');
 
+clearvars; close all;
+
 %% Set parameters (users modify only this block)
 % Frequency window
-Nf = 10; % number of frequency points at which the modes will be calculated; usually 20
-wavelength0 = 1550e-9; % center wavelength, in m
-freq_range = 50; % THz; frequency range, in m. If 0, only the center wavelength will be used. Usually 100 THz.
-num_modes = 6; % number of modes to compute; you can use a large number, since this code can find the maximum supported modes itself
-include_cladding_modes = false;
+Nf = 1; % number of frequency points at which the modes will be calculated; usually 20
+wavelength0 = 1060e-9; % center wavelength, in m
+freq_range = 50; % THz; frequency range, in THz. If 0, only the center wavelength will be used. Usually 100 THz.
+num_modes = 2; % number of modes to compute; you can use a large number, since this code can find the maximum supported modes itself
+include_cladding_modes = true;
 
 % Spatial profile
 Nx = 400; % number of spatial grid points
-spatial_window = 100; % full spatial window size, in um, usually set to 100 um
-
-% Extra parameters:
-% (1) step fiber:
-% No extra parameters for the step-index fibers.
-% (2) GRIN fiber:
-alpha = 2; % Shape parameter
+spatial_window = 150; % full spatial window size, in um, usually set to 100 um
 
 use_fiber_collection = true; % use fibers in "/helpers/fiber_collections.m"
 if use_fiber_collection
-    fiber = 'ER80-8_125';
+    fiber = '1060XP';
     
     [fiber_type,core_diameter,clad_diameter,core_NA,clad_NA,fname_user_defined,alpha] = fiber_collections(fiber,wavelength0);
 else
+    % Extra parameters:
+    % (1) step fiber:
+    % No extra parameters for the step-index fibers.
+    % (2) GRIN fiber:
+    alpha = 2; % Shape parameter
+
     fiber_type = 'GRIN'; % type of fiber; 'step' or 'GRIN'
     core_diameter = 10; % core diameter of fiber, in um
     clad_diameter = 125; % cladding diameter of fiber, in um
@@ -45,7 +47,7 @@ end
 material = 'fused silica';
 [a,b] = Sellmeier_coefficients(material);
 
-%% Calculate the modes
+%% Calculate the basic information first
 core_radius = core_diameter/2; % core radius of fiber, in um
 clad_radius = clad_diameter/2; % cladding radius, in um
 
@@ -133,11 +135,12 @@ for midx = 1:num_modes
     D4Sigma = max(D4SigmaX,D4SigmaY);
 
     if include_cladding_modes
-        [xx,yy] = meshgrid(x,x);
-        core_region = sqrt(xx.^2+yy.^2)<core_radius;
-        if max(max(mode_intensity(core_region)))/max(max(mode_intensity)) < 0.5
-            delete_midx(midx) = midx;
-        end
+        % Delete those modes that have very low energy fraction in the core
+        %[xx,yy] = meshgrid(x,x);
+        %core_region = sqrt(xx.^2+yy.^2)<core_radius;
+        %if max(max(mode_intensity(core_region)))/max(max(mode_intensity)) < 0.5
+        %    delete_midx(midx) = midx;
+        %end
     else
         if D4Sigma*dx > threshold
             num_modes = midx-1;
