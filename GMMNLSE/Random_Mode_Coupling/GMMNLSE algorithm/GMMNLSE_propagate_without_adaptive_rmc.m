@@ -231,7 +231,7 @@ if sim.gpu_yes
 else
     dt = initial_condition.dt;
 end
-omegas = 2*pi*ifftshift(linspace(-floor(Nt/2), floor((Nt-1)/2), Nt))'/(Nt*dt); % in 1/ps, in the order that the fft gives
+omegas = 2*pi*ifftshift(linspace(-floor(Nt/2), floor((Nt-1)/2), Nt))'/(Nt*dt); % in rad/ps, in the order that the fft gives
 
 % The dispersion term in the GMMNLSE, in frequency space
 [D_op,sim] = calc_D_op(fiber,sim,Nt,dt,omegas,initial_condition.fields);
