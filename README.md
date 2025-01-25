@@ -130,5 +130,5 @@ Update the code with the newly-developed noise model with [the finally-published
 Fix the bug of the Raman computation in 3D-UPPE. Thanks to Su-cc for finding this nontrivial bug.
 * 1/1/2025:<br>
 Add documentations for 3D-UPPE and Fourier Transform. I realized that the convention of spatial Fourier Transform does not affect the result due to second-order derivative, unlike the spectral/temporal dimension. Finish adding documentation for BuildFiber which I should have done a year ago.
-*1/25/2025:<br>
+* 1/25/2025:<br>
 Implement the fast radially-symmetric scheme for the 3D-UPPE with the Hankel transform.
