@@ -39,6 +39,7 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 4. Support both scalar and polarized scenarios, controlled with `sim.scalar=true/false`.
 7. Support noise-seeded processes, such as spontaneous Raman scattering, with [the newly-developed noise model](https://doi.org/10.48550/arXiv.2410.20567).
 8. Efficient GPU computations (with Nvidia CUDA) is implemented. It is controlled by `sim.gpu_yes=true/false`.
+9. Support radially-symmetric scheme with the Hankel transform for efficent modeling.
 
 ## Fourier-Transform tutorial
 Since I've seen many misuse of Fourier Transform, I wrote [this tutorial](https://doi.org/10.48550/arXiv.2412.20698). Please take a look. Briefly speaking for one misuse, it's necessary to use MATLAB's `ifft` for Fourier Transform into the spectral domain.
