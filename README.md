@@ -1,11 +1,13 @@
 # MMTools
 This is the shared package to simulate, with MATLAB, pulse propagation in <br>
-1. non-waveguide: bulk crystal/free space with 3D-UPPE
-2. waveguide: a solid-core fiber with GMMNLSE/MM-UPPE
+1. waveguide: a solid-core fiber with GMMNLSE/MM-UPPE
+2. non-waveguide: bulk crystal/free space with 3D-UPPE
 
-It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA).
+It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA). The non-waveguide code is useful for simulating multipass cell or multiplate compressor, etc.
 
 ## Capabilities:
+
+### Waveguide MM-UPPE:
 1. It solves the pulse propagation with
    - [RK4IP](http://www.sciencedirect.com/science/article/pii/S0010465512004262) (Runge-Kutta under the interaction picture) if single-mode.
    - [MPA](https://ieeexplore.ieee.org/document/8141863) (massively parallel algorithm) if multimode.
@@ -29,6 +31,14 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
    - Support ring- and linear-oscillator configurations with fast convergence (with the use of `saved_data`). For linear oscillators, inclusion of influence from pulses of both directions to the gain medium is considered. As an example, please see the numerical section of [our paper](http://josab.osa.org/abstract.cfm?URI=josab-38-3-743) to understand the necessity of this two-pulse saturation effect in a linear oscillator.
 7. Support noise-seeded processes, such as spontaneous Raman scattering, with [the newly-developed noise model](https://doi.org/10.48550/arXiv.2410.20567).
 8. For multimode, GPU computations (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
+
+### Non-waveguide 3D-UPPE:
+1. It solves the pulse propagation with a nested [RK4IP](http://www.sciencedirect.com/science/article/pii/S0010465512004262) (Runge-Kutta under the interaction picture). Please find details in the 3D-UPPE's readme.
+2. Adaptive step-size control are implemented (for the nested RK4IP).
+3. Support broadband scenarios by having $\beta_p(\omega)$.
+4. Support both scalar and polarized scenarios, controlled with `sim.scalar=true/false`.
+7. Support noise-seeded processes, such as spontaneous Raman scattering, with [the newly-developed noise model](https://doi.org/10.48550/arXiv.2410.20567).
+8. Efficient GPU computations (with Nvidia CUDA) is implemented. It is controlled by `sim.gpu_yes=true/false`.
 
 ## Fourier-Transform tutorial
 Since I've seen many misuse of Fourier Transform, I wrote [this tutorial](https://doi.org/10.48550/arXiv.2412.20698). Please take a look. Briefly speaking for one misuse, it's necessary to use MATLAB's `ifft` for Fourier Transform into the spectral domain.
@@ -119,3 +129,5 @@ Update the code with the newly-developed noise model with [the finally-published
 Fix the bug of the Raman computation in 3D-UPPE. Thanks to Su-cc for finding this nontrivial bug.
 * 1/1/2025:<br>
 Add documentations for 3D-UPPE and Fourier Transform. I realized that the convention of spatial Fourier Transform does not affect the result due to second-order derivative, unlike the spectral/temporal dimension. Finish adding documentation for BuildFiber which I should have done a year ago.
+*1/25/2025:<br>
+Implement the fast radially-symmetric scheme for the 3D-UPPE with the Hankel transform.

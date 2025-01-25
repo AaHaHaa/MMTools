@@ -121,10 +121,10 @@ if include_anisotropic_Raman
     end
 end
 
-haw = ifft(ha)*Nt*dt; % isotropic Raman; The factor of Nt is needed and used later in the convolution theorem because of how ifft is defined.
-                      %                  The convolution theorem is PQ=F[(p*q)]/N, where (p*q) is the discrete-form convolution, for discrete Fourier transforms.
-                      %                  Normal (integral-form) convolution is p*q=(p*q)*dt.
-hbw = ifft(hb)*Nt*dt; % anisotropic Raman
+haw = ifft(ha,[],1)*Nt*dt; % isotropic Raman; The factor of Nt is needed and used later in the convolution theorem because of how ifft is defined.
+                           %                  The convolution theorem is PQ=F[(p*q)]/N, where (p*q) is the discrete-form convolution, for discrete Fourier transforms.
+                           %                  Normal (integral-form) convolution is p*q=(p*q)*dt.
+hbw = ifft(hb,[],1)*Nt*dt; % anisotropic Raman
 
 % Incoporate fiber.fr into haw and hbw to save the computational time
 haw = fiber.fr*haw;
@@ -144,4 +144,3 @@ if ~include_anisotropic_Raman
 end
 
 end
-

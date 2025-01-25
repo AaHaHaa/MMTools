@@ -40,10 +40,6 @@ fiber.L0 = 1;
 fiber.betas = zeros(size(fiber.betas)); % no dispersion
 sim.save_period = fiber.L0/num_save;
 
-% Or you can use the GUI version.
-% Remember to modify according to the above values.
-%[fiber,sim] = load_default_GMMNLSE_propagate_GUI(); % load default parameters with GUI
-
 %% Setup general parameters
 Nt = 2^10; % the number of time points
 time_window = 10; % ps

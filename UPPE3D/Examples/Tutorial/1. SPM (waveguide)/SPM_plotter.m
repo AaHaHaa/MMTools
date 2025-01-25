@@ -54,6 +54,6 @@ ylabel('Length (\mum)');
 set(gca,'fontsize',14);
 
 figure;
-pcolor(xx,yy,abs(fftshift(ifft(ifft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2);
+pcolor(xx,yy,abs(fftshift(fft(fft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2);
 shading interp;colormap(jet);colorbar;
 set(gca,'fontsize',14);

@@ -85,17 +85,18 @@ function [fiber,sim] = load_default_UPPE3D_propagate( input_fiber,input_sim )
 %
 %       Basic properties -->
 %
-%           fiber - fiber name; set this if you want to use the repository
-%           in this package. Check fiber_collections.m in UPPE3D for details.
-%           material
+%           fiber - fiber name; set this if you want to use the repository in this package.
+%                   Check fiber_collections.m in UPPE3D for details.
 %           n2 - the nonlinear coefficient (default to 2.3e-20 if not set)
 %           L0 - length of fiber, in m
+%           material - 'silica', 'chalcogenide', or 'ZBLAN' (default: 'silica')
+%                      This is used to determine the Raman parameters to use.
 %
 % -------------------------------------------------------------------------
 %
 %   "initial_condition" is a structure with the field:
 %
-%       dt - time step
+%       dt - time step, in ps
 %       field - initial field
 %
 % -------------------------------------------------------------------------

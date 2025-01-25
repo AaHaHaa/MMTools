@@ -1,8 +1,15 @@
-function last_E = add_DW_RK4IP(E0,F_op,D_op,W_op,L0,DW_threshold)
+function [last_E,...
+          opt_dz] = add_DW_RK4IP(E0,...
+                                 F_op,...
+                                 D_op,W_op,...
+                                 dz,...
+                                 L0,...
+                                 Kz_correction,...
+                                 DW_threshold)
 %ADD_DW_RK4IP This computes the exp(D_op+W_op)*E0 with the adaptive-step RK4IP
 
 if any(W_op(:))
-    apply_W = @(x) F_op.Fk(W_op.*F_op.iFk(x)); % apply waveguide effect in position space
+    apply_W = @(x) Kz_correction.*F_op.Fk(W_op.*F_op.iFk(x)); % apply waveguide effect in position space
 else
     apply_W = @(x) 0; % no waveguide effect
 end
@@ -10,7 +17,7 @@ end
 last_E = E0;
 z = 0;
 a5 = [];
-dz = min(1e-6,L0/2); % m; start with a small value to avoid initial blowup
+dz = min(dz,L0/2);
 while z+eps(z) < L0 % eps(z) here is necessary due to the numerical error
     ever_fail = false;
     previous_E = last_E;
