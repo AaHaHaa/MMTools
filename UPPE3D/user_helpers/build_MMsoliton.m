@@ -67,10 +67,10 @@ n2 = change_to_row(n2);
 t0 = tfwhm/(asech(1/sqrt(2))*2);    % ps; 2*sqrt(log(2))=1.665 is for Gaussian
                                     %     2*asech(1/sqrt(2))=1.7627 is for fundamental solitons
 dt = time_window/Nt;  % ps
-t = (-Nt/2:Nt/2-1)'*dt; % ps
+t = (-floor(Nt/2):floor((Nt-1)/2))'*dt; % ps
 
 %% Soliton fields
-% Construct a single gaussian electric field envelope, in W^0.5
+% Construct a single sech2 electric field envelope, in W^0.5
 LD = t0.^2./abs(beta2);
 c = 299792458;
 lambda0 = c./(c./lambda0 + frequency_shift{2}*1e12); % calibrate lambda0 by including the frequency shift

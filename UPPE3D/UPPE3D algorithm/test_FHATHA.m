@@ -31,7 +31,7 @@ plot(kr,real(f_H)*2*pi,'linewidth',2,'Color','b')
 
 %% Analytic solution of the Hankel transform of f
 eta = kr*r_max;
-F = sqrt(10*pi)*eta.^(-4).*(2*eta.^2.*besselj(0,eta) + (eta.^3-4*eta).*besselj(1,eta));
+F = sqrt(10*pi)*eta.^(-3).*(2*eta.*besselj(0,eta) + (eta.^2-4).*besselj(1,eta));
 
 hold on;
 plot(kr(1:5:end),F(1:5:end),'o','linewidth',1,'Color','r'); % reduce the sampling rate for visualization

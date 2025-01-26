@@ -43,6 +43,7 @@ num_fields = size(field,2);
 
 % Intensity
 I = abs(field).^2;
+I = I/max(I(:));
 % Removen noise for the mode-field calculation
 switch remove_noise_model
     case 1

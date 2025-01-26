@@ -49,7 +49,7 @@ W_op = W_op(idx0,:,:,:,:);
 
 if ~isfield(sim,'betas')
     if Nt == 1 || ~any(fields(:)) % CW case
-        sim.betas = [0;0];
+        sim.betas = [kc;0];
     else
         sim.betas = zeros(2,1,'gpuArray');
 

@@ -39,12 +39,11 @@ remove_noise_model = optargs{:};
 
 [Nx, Ny, num_fields] = size(field);
 dx = spatial_window/Nx;
-dy = dx;
-x = (-Nx/2:Nx/2-1)'*dx;
-y = (-Ny/2:Ny/2-1)*dy;
+dy = spatial_window/Ny;
 
 % Intensity
 I = abs(field).^2;
+I = I/max(I(:));
 % Removen noise for the mode-field calculation
 switch remove_noise_model
     case 1

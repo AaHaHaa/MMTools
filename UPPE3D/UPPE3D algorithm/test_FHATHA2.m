@@ -20,7 +20,7 @@ k_max = 2*pi*Nf/r_max;
  l0,exp_prefactor,...
  Q] = Hankel_info(Nr,r_max,k_max);
 
-f = exp(-r.^2/0.05);
+f = exp(-20*r.^2);
 
 f_H = FHATHA(f,...
              r_max,kr,...
@@ -32,7 +32,7 @@ plot(kr,real(f_H)*2*pi,'linewidth',2,'Color','b')
 
 %% Analytic solution of the Hankel transform of f
 eta = kr*r_max;
-F = 2*pi/40*exp(-kr.^2/2/40);
+F = pi/20*exp(-kr.^2/80);
 
 hold on;
 plot(kr(1:5:end),F(1:5:end),'o','linewidth',1,'Color','r'); % reduce the sampling rate for visualization

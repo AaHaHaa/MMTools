@@ -30,7 +30,7 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
    - Rate-equation model supports `Nd`, `Yb`, `Er`, `Tm`, `Ho`. For more details, see `readme.pdf`.
    - Support ring- and linear-oscillator configurations with fast convergence (with the use of `saved_data`). For linear oscillators, inclusion of influence from pulses of both directions to the gain medium is considered. As an example, please see the numerical section of [our paper](http://josab.osa.org/abstract.cfm?URI=josab-38-3-743) to understand the necessity of this two-pulse saturation effect in a linear oscillator.
 7. Support noise-seeded processes, such as spontaneous Raman scattering, with [the newly-developed noise model](https://doi.org/10.48550/arXiv.2410.20567).
-8. For multimode, GPU computations (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
+8. For multimode, GPU computation (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
 
 ### Non-waveguide 3D-UPPE:
 1. It solves the pulse propagation with a nested [RK4IP](http://www.sciencedirect.com/science/article/pii/S0010465512004262) (Runge-Kutta under the interaction picture). Please find details in the 3D-UPPE's readme.
@@ -38,8 +38,8 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 3. Support broadband scenarios by having $\beta_p(\omega)$.
 4. Support both scalar and polarized scenarios, controlled with `sim.scalar=true/false`.
 7. Support noise-seeded processes, such as spontaneous Raman scattering, with [the newly-developed noise model](https://doi.org/10.48550/arXiv.2410.20567).
-8. Efficient GPU computations (with Nvidia CUDA) is implemented. It is controlled by `sim.gpu_yes=true/false`.
-9. Support radially-symmetric scheme with the Hankel transform for efficent modeling.
+8. Efficient GPU computation (with Nvidia CUDA) is implemented. It is controlled by `sim.gpu_yes=true/false`.
+9. Support radially-symmetric scheme with the Hankel transform for efficient modeling.
 
 ## Fourier-Transform tutorial
 Since I've seen many misuse of Fourier Transform, I wrote [this tutorial](https://doi.org/10.48550/arXiv.2412.20698). Please take a look. Briefly speaking for one misuse, it's necessary to use MATLAB's `ifft` for Fourier Transform into the spectral domain.

@@ -1,6 +1,8 @@
 function [fig,ax] = radialPcolor(r,A2)
-%RADIALPCOLOR Summary of this function goes here
-%   Detailed explanation goes here
+%RADIALPCOLOR Plot the radially-symmetric field
+%
+% r: radial sampled positions (m)
+% A2: the field intensity profile with size (1,Nr)
 
 r_max = max(r); % m
 
@@ -14,9 +16,8 @@ rr = sqrt(xx.^2+yy.^2);
 A2 = reshape(interp1(r.',A2.',rr(:),'linear',0),Nx,Nx);
 
 fig = figure;
-pcolor(x*1e6,x*1e6,A2);
+pcolor(x,x,A2);
 shading interp; colormap(jet);
-xlabel('x (\mum)');
 ax = gca;
 
 end

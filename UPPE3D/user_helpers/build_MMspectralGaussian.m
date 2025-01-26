@@ -1,11 +1,11 @@
-function output = build_MMspectralGaussian(ffwhm, time_window, total_energy, num_modes, N, varargin)
+function output = build_MMspectralGaussian(ffwhm, time_window, total_energy, num_modes, Nt, varargin)
 %BUILD_MMSPECTRALGAUSSIAN Build a multimode spectrally-supergaussian pulse using the following parameters:
 %
 % ffwhm - full width at half maximum of pulse, in nm
 % time_window - width of entire time window, in ps
 % total_energy - total energy of the pulse in all modes, in nJ
 % num_modes - number of modes
-% N - number of time grid points
+% Nt - number of time grid points
 %
 % Optional inputs (varargin):
 %   frequency_shift - a cell with two elements:
@@ -14,7 +14,7 @@ function output = build_MMspectralGaussian(ffwhm, time_window, total_energy, num
 %                     Fourier Transform type: 'fft' or 'ifft' (default is 'ifft')
 %	coeffs - the normalized complex amplitude coefficients of the different modes (default is equal across all modes)
 %   center - temporal position of the pulse in the time window (default is 0)
-%   gaussexpo - supergaussian exponent (~exp(-t^(2*gaussexpo))) (default is 1)
+%   gaussexpo - supergaussian exponent (~exp(-f^(2*gaussexpo))) (default is 1)
 %
 % Note:
 %   Nonlinear Fiber Optics by Agrawal defines 'ifft' for Fourier Transform.
@@ -25,7 +25,7 @@ function output = build_MMspectralGaussian(ffwhm, time_window, total_energy, num
 numvarargs = length(varargin);
 if numvarargs > 4
     error('build_MMgaussian:TooManyInputs', ...
-        'It takes only at most 4 optional inputs');
+          'It takes only at most 4 optional inputs');
 end
 
 % Set defaults for optional inputs
@@ -48,9 +48,9 @@ coeffs = coeffs./sqrt(sum(abs(coeffs).^2)); % normalization
 
 %% Gaussian fields
 f0 = ffwhm/(2*sqrt(log(2)));    % THz; 2*sqrt(log(2))=1.665
-dt = time_window/N;  % ps
-t = (-N/2:N/2-1)'*dt; % ps
-f = (-N/2:N/2-1)'/time_window; % THz
+dt = time_window/Nt;  % ps
+%t = (-floor(Nt/2):floor((Nt-1)/2))'*dt; % ps
+f = (-floor(Nt/2):floor((Nt-1)/2))'/time_window; % THz
 
 gexpo = 2*gaussexpo;
 
@@ -68,7 +68,7 @@ switch frequency_shift{1}
               'The type of the Fourier Transform can only be ''ifft'' or ''fft''.');
 end
 [~, max_idx] = max(abs(time_profile));
-time_profile = circshift(time_profile,(floor(N/2)+1)-max_idx+round(center));
+time_profile = circshift(time_profile,(floor(Nt/2)+1)-max_idx+round(center));
 time_profile = time_profile.*sqrt(total_energy/(sum(abs(time_profile).^2)*dt/1e3));
 
 % Apply this time profile to each mode using the coefficients

@@ -93,6 +93,9 @@ end
                      F_op);
 
 %% Pre-calculate the factor used in 3D-UPPE
+if Nt == 1 % ignore nonlinearity under CW cases
+    fiber.n2 = 0;
+end
 prefactor = {1 + kxy2/2./kc.^2,... % correction factor for using kc as the denominator in nonlinear computations (in k-space)
              (1i/2./kc).*(k0.^2*2.*fiber.n*fiber.n2/3)}; % nonlinear prefactor (in real-xy space)
 

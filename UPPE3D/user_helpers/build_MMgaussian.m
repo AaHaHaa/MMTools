@@ -1,11 +1,11 @@
-function output = build_MMgaussian(tfwhm, time_window, total_energy, num_modes, N, varargin)
+function output = build_MMgaussian(tfwhm, time_window, total_energy, num_modes, Nt, varargin)
 %BUILD_MMGAUSSIAN Build a multimode temporally-supergaussian pulse using the following parameters:
 %
 % tfwhm - full width at half maximum of pulse, in ps
 % time_window - width of entire time window, in ps
 % total_energy - total energy of the pulse in all modes, in nJ
 % num_modes - number of modes
-% N - number of time grid points
+% Nt - number of time grid points
 %
 % Optional inputs (varargin):
 %   frequency_shift - a cell with two elements:
@@ -25,7 +25,7 @@ function output = build_MMgaussian(tfwhm, time_window, total_energy, num_modes, 
 numvarargs = length(varargin);
 if numvarargs > 4
     error('build_MMgaussian:TooManyInputs', ...
-        'It takes only at most 4 optional inputs');
+          'It takes only at most 4 optional inputs');
 end
 
 % Set defaults for optional inputs
@@ -48,8 +48,8 @@ coeffs = coeffs./sqrt(sum(abs(coeffs).^2)); % normalization
 
 %% Gaussian fields
 t0 = tfwhm/(2*sqrt(log(2)));    % ps; 2*sqrt(log(2))=1.665
-dt = time_window/N;  % ps
-t = (-N/2:N/2-1)'*dt; % ps
+dt = time_window/Nt;  % ps
+t = (-floor(Nt/2):floor((Nt-1)/2))'*dt; % ps
 
 gexpo = 2*gaussexpo;
 
@@ -69,9 +69,9 @@ switch frequency_shift{1}
 end
 
 % Apply this time profile to each mode using the coefficients
-fields = coeffs.*time_profile;
+field = coeffs.*time_profile;
 
 % Output as a struct
-output = struct('fields',fields,'dt',dt);
+output = struct('fields',field,'dt',dt);
 
 end

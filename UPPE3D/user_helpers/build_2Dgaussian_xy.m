@@ -30,7 +30,7 @@ optargs(1:numvarargs) = varargin;
 
 %% Gausian spatial profile
 dx = spatial_window/Nx;  % m
-x = (-Nx/2:Nx/2-1)'*dx; % m
+x = (-floor(Nx/2):floor((Nx-1)/2))'*dx; % m
 y = x';
 MFR = MFD/2; % mode-field radius; m
 
