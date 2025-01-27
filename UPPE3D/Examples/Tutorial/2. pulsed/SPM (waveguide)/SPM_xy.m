@@ -1,13 +1,14 @@
 % This code demonstrates the SPM .
 %
-% This code uses adaptive-step RK4IP for the passive-fiber propagation.
-%
-% This script uses the radially-symmetric scheme of the UPPE code, rather
-% than a full x-y dimension.
+% This script employs the 3D-UPPE that uses full x-y dimension. For
+% more-efficient modeling, pelase see its radially-symmetric version.
 
 close all; clearvars;
 
-addpath('../../../UPPE3D algorithm/','../../../user_helpers/');
+addpath('../../../../UPPE3D algorithm/','../../../../user_helpers/');
+
+% Add the path for the fiber profile
+addpath('../../../../Fibers/Single-mode-fiber profile for examples/');
 
 lambda0 = 1030e-9; % m
 
@@ -39,19 +40,6 @@ fiber.L0 = 0.01;
 num_save = 10;
 sim.save_period = fiber.L0/num_save;
 
-%% Information for the Hankel transform
-Nr = 2^10; % the number of radial sampling points
-r_max = 25e-6; % the maximum radius; half of the spatial window
-kr_max = 100e5; % the maximum kr vector
-
-[r,kr,...
- l0,exp_prefactor,...
- Q] = Hankel_info(Nr,r_max,kr_max);
-
-% Arrange required Hankel information into "sim" for radially-symmetric
-% UPPE to use later.
-sim.Hankel = struct('r',r,'kr',kr,'l0',l0,'exp_prefactor',exp_prefactor,'Q',Q);
-
 %% Setup general parameters
 Nt = 2^8; % the number of time points
 time_window = 0.8; % ps
@@ -62,54 +50,65 @@ c = 299792458; % m/s
 lambda = c./(f*1e12)*1e9; % nm
 
 %% Initial condition
-fiber.n = calc_index_profile_r(fiber,r,f);
+Nx = 2^7;
+spatial_window = 50; % um
+fiber.n = calc_index_profile_xy(fiber,Nx,spatial_window,f);
+x = (-Nx/2:Nx/2-1)*spatial_window/Nx; % um
+kx = 2*pi*(-Nx/2:Nx/2-1)/spatial_window; % 2*pi/um
 
 loaded_data = load('mode1wavelength10300.mat','phi','x','epsilon');
 
 % take only the central part
-phi = interp1(loaded_data.x*1e-6,loaded_data.phi(:,ceil(length(loaded_data.x)/2)),r,'linear',0);
-phi = phi/sqrt(2*pi*trapz(r,abs(phi).^2.*r));
+[loaded_data.xx,loaded_data.yy] = meshgrid(loaded_data.x,loaded_data.x);
+[xx,yy] = meshgrid(x,x);
+phi = interp2(loaded_data.xx,loaded_data.yy,loaded_data.phi,xx,yy,'linear',0); % downsampling
+phi = phi/sqrt(sum(abs(phi(:)).^2)*mean(diff(x*1e-6))^2);
 
-Aeff = (2*pi*trapz(r,abs(phi).^2.*r)).^2./(2*pi*trapz(r,abs(phi).^4.*r)); % effective mode-field area (m^2)
+dx = mean(diff(x));
+Aeff = 1/(sum(phi(:).^4)*(dx*1e-6)^2); % mode area; m^2
 MFR = sqrt(Aeff/pi)*1e6; % um
 
 % input pulse
 tfwhm = 0.03; % ps
 total_energy = 10; % nJ
-initial_pulse = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
-initial_pulse.field = initial_pulse.fields.*phi; initial_pulse = rmfield(initial_pulse,'fields');
-initial_pulse.r = r;
+initial_condition = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
+initial_condition.field = recompose_into_space(sim.gpu_yes,phi,initial_condition.fields,sim.cuda_dir_path); initial_condition = rmfield(initial_condition,'fields');
+initial_condition.dx = mean(diff(x*1e-6)); initial_condition.dy = initial_condition.dx;
 
+%% Plot the initial field
 % Show initial real space
 figure;
-plot(r*1e6,abs(squeeze(initial_pulse.field(ceil(Nt/2),:))).^2);
-xlabel('r (\mum)');
-xlim([0,10]);
-title('initial real space');
-
-A0_H = 2*pi*FHATHA(squeeze(initial_pulse.field(ceil(Nt/2),:)),...
-                   r_max,kr,...
-                   l0,exp_prefactor,...
-                   Q);
-
+pcolor(x,x,abs(squeeze(initial_condition.field(Nt/2,:,:))).^2); colormap(jet);
+shading interp;colormap(jet);colorbar;
+xlabel('x (\mum)');
+ylabel('y (\mum)');
+xlim([-1,1]*10);
+ylim([-1,1]*10);
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
+title('Initial real space');
 % Show initial k space
 figure;
-plot(kr,abs(A0_H).^2);
-xlabel('k_r (2\pi/m)');
-title('initial k space');
+pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(initial_condition.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);
+shading interp;colormap(jet);colorbar;
+xlabel('k_x (2\pi/\mum)');
+ylabel('k_y (2\pi/\mum)');
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
+title('Initial k space');
 
 %% Propagate
-prop_output = UPPE3D_propagate(fiber,initial_pulse,sim);
+prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
 
 spectrum3D = abs(fftshift(ifft(prop_output.field,[],1))).^2;
 
 output_field = zeros(Nt,1,num_save+1);
 for i = 1:num_save+1
-    output_field(:,:,i) = trapz(r,prop_output.field(:,:,i).*conj(phi).*r,2);
+    output_field(:,:,i) = decompose_into_modes(sim.gpu_yes,phi,prop_output.field(:,:,:,i), prop_output.dx, sim.cuda_dir_path);
 end
 
 energy = squeeze(sum(abs(output_field).^2,1))*dt/1e3;
-energy3D = squeeze(sum(abs(prop_output.field).^2,[1,2]));
+energy3D = squeeze(sum(abs(prop_output.field).^2,[1,2,3]));
 
 %% Plot
 % Time
@@ -154,23 +153,26 @@ ylabel('z');
 title('Spectrum during propagation');
 set(gca,'fontsize',14);
 
-% The final spatial profile at the peak power
+% Show final real space
 figure;
-plot(r*1e6,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2);
-xlabel('r (\mum)');
-%xlim([0,10]);
-title('final real space');
-
-A_H = 2*pi*FHATHA(squeeze(prop_output.field(ceil(Nt/2),:,end)),...
-                   r_max,kr,...
-                   l0,exp_prefactor,...
-                   Q);
-
+pcolor(x,x,abs(squeeze(prop_output.field(Nt/2,:,:,end))).^2); colormap(jet);colorbar;
+shading interp;colormap(jet);colorbar;
+xlabel('x (\mum)');
+ylabel('y (\mum)');
+xlim([-1,1]*10);
+ylim([-1,1]*10);
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
+title('Final real space');
 % Show final k space
 figure;
-plot(kr,abs(A_H).^2);
-xlabel('k_r (2\pi/m)');
-title('final k space');
+pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
+shading interp;colormap(jet);colorbar;
+xlabel('k_x (2\pi/\mum)');
+ylabel('k_y (2\pi/\mum)');
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
+title('Final k space')
 
 %% Save the data
-%save('SPM3D.mat');
+save('SPM3D.mat');

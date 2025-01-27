@@ -1,8 +1,12 @@
 % This code simulates a diverging Gaussian beam in air. The simulated MFD
 % is compared to the theoretical values.
 %
-% This script uses the radially-symmetric scheme of the UPPE code, rather
-% than a full x-y dimension.
+% This script employs the radially-symmetric scheme of the UPPE code, 
+% rather than a full x-y dimension.
+%
+% In addition, this script simulates with continuous-wave (CW) light, which
+% focuses only on the evolution of its spatial profile through the
+% diffraction effect.
 
 close all; clearvars;
 
@@ -55,11 +59,26 @@ energy = 1e-3; % nJ
 Nt = 1; % the number of time points
 initial_condition = build_3Dgaussian_r(MFD0, tfwhm, time_window, energy, Nt, r);
 
+fiber.n = ones(1,Nr); % air
+fiber.n2 = 0; % no nonlinearity
+
+%% Show initial spaces
 % Show initial real space
 figure;
-plot(r,abs(squeeze(initial_condition.field(ceil(Nt/2),:))).^2);
-xlabel('r (m)');
-title('initial real space');
+plot(r*1e3,abs(squeeze(initial_condition.field(ceil(Nt/2),:))).^2,'linewidth',2,'Color','b');
+xlabel('r (mm)');
+set(gca,'fontsize',20);
+title('Initial real space');
+% Plot the 2D field with pcolor
+% However, the Hankel transform doesn't sample at the origin r=0, so we
+% need to find it first. This can be done with Hankel_f_at_0().
+A0 = Hankel_f_at_0(initial_condition.field(ceil(Nt/2),:,end),l0);
+radialPcolor([0,r]*1e3,cat(2,abs(A0).^2,abs(squeeze(initial_condition.field(ceil(Nt/2),:,end))).^2));
+xlabel('r (mm)');
+ylabel('r (mm)');
+set(gca,'fontsize',20);
+daspect([1 1 1]); % make aspect ratio = 1
+title('Initial real space');
 
 A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(ceil(Nt/2),:)),...
                    r_max,kr,...
@@ -68,12 +87,18 @@ A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(ceil(Nt/2),:)),...
 
 % Show initial k space
 figure;
-plot(kr,abs(A0_H).^2);
-xlabel('k_r (2\pi/m)');
-title('initial k space');
-
-fiber.n = ones(1,Nr); % air
-fiber.n2 = 0; % no nonlinearity
+plot(kr/1e3,abs(A0_H).^2,'linewidth',2,'Color','r');
+xlabel('k_r (2\pi/mm)');
+set(gca,'fontsize',20);
+title('Initial k space');
+% Plot the 2D field with pcolor
+A0_H0 = Hankel_f_at_0(A0_H,l0);
+radialPcolor([0,kr]/1e3,cat(2,abs(A0_H0).^2,abs(A0_H).^2));
+xlabel('k_r (2\pi/mm)');
+ylabel('k_r (2\pi/mm)');
+set(gca,'fontsize',20);
+daspect([1 1 1]); % make aspect ratio = 1
+title('Initial k space');
 
 %% Setup general parameters
 dt = time_window/Nt;
@@ -97,20 +122,44 @@ MFD_theory = MFD0*sqrt(1+(squeeze(prop_output.z)/zR).^2)*1e3; % mm
 %% Plot
 % Show final real space
 figure;
-plot(r,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2);
+plot(r*1e3,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2,'linewidth',2,'Color','b');
+xlabel('r (mm)');
+set(gca,'fontsize',20);
+title('Final real space');
+% Plot the 2D field with pcolor
+% However, the Hankel transform doesn't sample at the origin r=0, so we
+% need to find it first. This can be done with Hankel_f_at_0().
+A0 = Hankel_f_at_0(prop_output.field(ceil(Nt/2),:,end),l0);
+radialPcolor([0,r]*1e3,cat(2,abs(A0).^2,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2));
+xlabel('r (mm)');
+ylabel('r (mm)');
+set(gca,'fontsize',20);
+daspect([1 1 1]); % make aspect ratio = 1
+title('Final real space');
 % Show final k space
 A_H = 2*pi*FHATHA(squeeze(prop_output.field(ceil(Nt/2),:,end)),...
                   r_max,kr,...
                   l0,exp_prefactor,...
                   Q);
 figure;
-plot(kr,abs(A_H).^2);
-xlabel('k_r (m)');
+plot(kr/1e3,abs(A_H).^2,'linewidth',2,'Color','r');
+xlabel('k_r (2\pi/mm)');
+set(gca,'fontsize',20);
+title('Final k space');
+% Plot the 2D field with pcolor
+A_H0 = Hankel_f_at_0(A_H,l0);
+radialPcolor([0,kr]/1e3,cat(2,abs(A_H0).^2,abs(A_H).^2));
+xlabel('k_r (2\pi/mm)');
+ylabel('k_r (2\pi/mm)');
+set(gca,'fontsize',20);
+daspect([1 1 1]); % make aspect ratio = 1
+title('Final k space');
 
 % Plot MFD
 figure;
-plot(prop_output.z,[MFD,MFD_theory],'linewidth',2);
+h = plot(prop_output.z,[MFD,MFD_theory],'linewidth',2);
+set(h(1),'Color','b'); set(h(2),'Color','r');
+set(gca,'fontsize',20);
 xlabel('Propagation distance (m)');
 ylabel('MFD (mm)');
 l = legend('Simulated','Calculated'); set(l,'location','northwest');
-set(gca,'fontsize',20);

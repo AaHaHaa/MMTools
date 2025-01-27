@@ -1,7 +1,7 @@
-% This code simulates a Gaussian beam passing through a thick lens (in air).
+% This code simulates a Gaussian beam passing through a thin lens (in air).
 % The simulated MFD is compared to the theoretical values.
 %
-% This script uses the 3D-UPPE that uses full x-y dimension. For
+% This script employs the 3D-UPPE that uses full x-y dimension. For
 % more-efficient modeling, pelase see its radially-symmetric version.
 
 close all; clearvars;
@@ -46,12 +46,12 @@ initial_condition = build_3Dgaussian_xy(MFD0, spatial_window, tfwhm, time_window
 
 % Show initial real space
 figure;
-pcolor(abs(squeeze(initial_condition.field(ceil(Nt/2),:,:))).^2); colormap(jet);colorbar;
+pcolor(abs(squeeze(initial_condition.field(Nt/2,:,:))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 title('initial real space');
 % Show initial k space
 figure;
-pcolor(abs(fftshift(fft(fft(squeeze(initial_condition.field(ceil(Nt/2),:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(abs(fftshift(fft(fft(squeeze(initial_condition.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 title('initial k space');
 
@@ -70,15 +70,14 @@ lambda = c./(f*1e12)*1e9; % nm
 prop_output1 = UPPE3D_propagate(fiber,initial_condition,sim);
 % lens
 focal_length = 0.5; % m
-radius_of_curvature = 0.25;
-Ef_out = add_spherical_lens_phase_xy(ifft(prop_output1.field,[],1),prop_output1.dx,prop_output1.dy,fftshift(lambda,1)/1e9,radius_of_curvature);
+Ef_out = add_thin_lens_phase_xy(ifft(prop_output1.field,[],1),prop_output1.dx,prop_output1.dy,fftshift(lambda,1)/1e9,focal_length);
 % free space after the lens
 initial_condition2 = prop_output1; initial_condition2.field = fft(Ef_out(:,:,:,end),[],1);
 prop_output2 = UPPE3D_propagate(fiber,initial_condition2,sim);
 
 %% Results
-MFD1 = squeeze(calcMFD_xy(squeeze(prop_output1.field(ceil(Nt/2),:,:,:)),spatial_window))*1e3;
-MFD2 = squeeze(calcMFD_xy(squeeze(prop_output2.field(ceil(Nt/2),:,:,:)),spatial_window))*1e3;
+MFD1 = squeeze(calcMFD_xy(squeeze(prop_output1.field(Nt/2,:,:,:)),spatial_window))*1e3;
+MFD2 = squeeze(calcMFD_xy(squeeze(prop_output2.field(Nt/2,:,:,:)),spatial_window))*1e3;
 
 z = [prop_output1.z; prop_output2.z(2:end)+prop_output1.z(end)];
 MFD = [MFD1;MFD2(2:end)];
@@ -102,12 +101,12 @@ MFD_theory = [MFD1_theory; MFD2_theory(2:end)];
 %% Plot
 % Show final real space
 figure;
-pcolor(abs(squeeze(prop_output2.field(ceil(Nt/2),:,:,end))).^2); colormap(jet);colorbar;
+pcolor(abs(squeeze(prop_output2.field(Nt/2,:,:,end))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 title('final real space');
 % Show final k space
 figure;
-pcolor(abs(fftshift(fft(fft(squeeze(prop_output2.field(ceil(Nt/2),:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(abs(fftshift(fft(fft(squeeze(prop_output2.field(Nt/2,:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 title('final k space');
 

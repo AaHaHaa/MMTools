@@ -1,11 +1,11 @@
-% This code simulates self-focusing of a Gaussian pulse.
+% This code simulates self-focusing of a Gaussian pulse in a bulk silica.
 %
-% This script uses the radially-symmetric scheme of the UPPE code, rather
-% than a full x-y dimension.
+% This script employs the radially-symmetric scheme of the UPPE code, 
+% rather than a full x-y dimension.
 
 close all; clearvars;
 
-addpath('../../../UPPE3D algorithm/','../../../user_helpers/');
+addpath('../../../../UPPE3D algorithm/','../../../../user_helpers/');
 
 %% Setup fiber parameters
 sim.lambda0 = 1030e-9; % the center wavelength
@@ -71,13 +71,26 @@ n_from_Sellmeier = @(lambda) sqrt(1+sum(Sellmeier_terms(lambda,a,b),2));
 
 fiber.n = n_from_Sellmeier(lambda/1e3).*ones(1,Nr);
 
-%% Plot the initial field
+%% Show initial spaces
 % Show initial real space
 figure;
-plot(r*1e6,abs(squeeze(initial_condition.field(ceil(Nt/2),:))).^2);
+plot(r*1e6,abs(squeeze(initial_condition.field(ceil(Nt/2),:))).^2,'linewidth',2,'Color','b');
 xlabel('r (\mum)');
-xlim([0,1]*1e2);
-title('initial real space');
+xlim([0,100]);
+set(gca,'fontsize',20);
+title('Initial real space');
+% Plot the 2D field with pcolor
+% However, the Hankel transform doesn't sample at the origin r=0, so we
+% need to find it first. This can be done with Hankel_f_at_0().
+A0 = Hankel_f_at_0(initial_condition.field(ceil(Nt/2),:,end),l0);
+radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(initial_condition.field(ceil(Nt/2),:,end))).^2));
+xlabel('x (\mum)');
+ylabel('y (\mum)');
+xlim([-100,100]);
+ylim([-100,100]);
+set(gca,'fontsize',20);
+daspect([1 1 1]); % make aspect ratio = 1
+title('Initial real space');
 
 A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(ceil(Nt/2),:)),...
                    r_max,kr,...
@@ -86,9 +99,18 @@ A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(ceil(Nt/2),:)),...
 
 % Show initial k space
 figure;
-plot(kr,abs(A0_H).^2);
-xlabel('k_r (2\pi/m)');
-title('initial k space');
+plot(kr/1e6,abs(A0_H).^2,'linewidth',2,'Color','r');
+xlabel('k_r (2\pi/\mum)');
+set(gca,'fontsize',20);
+title('Initial k space');
+% Plot the 2D field with pcolor
+A0_H0 = Hankel_f_at_0(A0_H,l0);
+radialPcolor([0,kr]/1e6,cat(2,abs(A0_H0).^2,abs(A0_H).^2));
+xlabel('k_x (2\pi/\mum)');
+ylabel('k_y (2\pi/\mum)');
+set(gca,'fontsize',20);
+daspect([1 1 1]); % make aspect ratio = 1
+title('Initial k space');
 
 %% Propagate
 prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
@@ -102,19 +124,39 @@ energy3D = squeeze(sum(abs(prop_output.field).^2,[1,2]));
 figure;
 plot(r*1e6,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2,'linewidth',2,'Color','b');
 xlabel('r (\mum)');
-xlim([0,1]*1e2);
-title('final real space');
-
+xlim([0,100]);
+set(gca,'fontsize',20);
+title('Final real space');
+% Plot the 2D field with pcolor
+% However, the Hankel transform doesn't sample at the origin r=0, so we
+% need to find it first. This can be done with Hankel_f_at_0().
+A0 = Hankel_f_at_0(prop_output.field(ceil(Nt/2),:,end),l0);
+radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2));
+xlabel('x (\mum)');
+ylabel('y (\mum)');
+xlim([-100,100]);
+ylim([-100,100]);
+set(gca,'fontsize',20);
+daspect([1 1 1]); % make aspect ratio = 1
+title('Final real space');
+% Show final k space
 A_H = 2*pi*FHATHA(squeeze(prop_output.field(ceil(Nt/2),:,end)),...
                   r_max,kr,...
                   l0,exp_prefactor,...
                   Q);
-
-% Show final k space
 figure;
-plot(kr,abs(A_H).^2);
-xlabel('k_r (2\pi/m)');
-title('final k space');
+plot(kr/1e6,abs(A_H).^2,'linewidth',2,'Color','r');
+xlabel('k_r (2\pi/\mum)');
+set(gca,'fontsize',20);
+title('Final k space');
+% Plot the 2D field with pcolor
+A_H0 = Hankel_f_at_0(A_H,l0);
+radialPcolor([0,kr]/1e6,cat(2,abs(A_H0).^2,abs(A_H).^2));
+xlabel('k_x (2\pi/\mum)');
+ylabel('k_y (2\pi/\mum)');
+set(gca,'fontsize',20);
+daspect([1 1 1]); % make aspect ratio = 1
+title('Final k space');
 
 % Plot MFD
 figure;
@@ -124,7 +166,7 @@ ylabel('MFD (\mum)');
 set(gca,'fontsize',20);
 
 % Movie
-Frame = animator_r(prop_output.field,...
+Frame = animator_r(prop_output.field,l0,....
                    prop_output.z,MFD,...
                    Nt,dt,r,lambda,...
                    fiber.L0);

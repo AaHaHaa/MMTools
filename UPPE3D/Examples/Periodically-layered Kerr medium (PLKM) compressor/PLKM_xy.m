@@ -1,14 +1,14 @@
 % This code simulates a 12-plate PKLM compressor of a Gaussian pulse.
 % The medium is N-SF11.
 % A PLKM-based compressor is used to establish a discrete waveguide for
-% nonlinear pulse compressor, which, here, compresses a 310-fs pulse to 80
+% nonlinear pulse compressor, which, here, compresses a 310-fs pulse to <80
 % fs.
 %
 % Please check our paper for details:
 %   Wang et al., "Efficient temporal compression of 10-μJ pulses in
 %   periodic layered Kerr media," Opt. Lett. 49(20), 5787-5790 (2024)
 %
-% This script uses the 3D-UPPE that uses full x-y dimension. For
+% This script employs the 3D-UPPE that uses full x-y dimension. For
 % more-efficient modeling, pelase see its radially-symmetric version.
 
 clearvars; close all;

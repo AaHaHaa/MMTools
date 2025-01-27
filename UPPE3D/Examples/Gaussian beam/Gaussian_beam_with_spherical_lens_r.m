@@ -1,8 +1,8 @@
-% This code simulates a Gaussian beam passing through a thin lens (in air).
+% This code simulates a Gaussian beam passing through a thick lens (in air).
 % The simulated MFD is compared to the theoretical values.
 %
-% This script uses the 3D-UPPE that uses full x-y dimension. For
-% more-efficient modeling, pelase see its radially-symmetric version.
+% This script employs the radially-symmetric scheme of the UPPE code, 
+% rather than a full x-y dimension.
 
 close all; clearvars;
 
@@ -34,28 +34,45 @@ fiber.L0 = 1;
 num_save = 50;
 sim.save_period = fiber.L0/num_save;
 
+%% Information for the Hankel transform
+Nr = 2^10; % the number of radial sampling points
+r_max = 5e-3; % the maximum radius; half of the spatial window
+kr_max = 8e4; % the maximum kr vector
+
+[r,kr,...
+ l0,exp_prefactor,...
+ Q] = Hankel_info(Nr,r_max,kr_max);
+
+% Arrange required Hankel information into "sim" for radially-symmetric
+% UPPE to use later.
+sim.Hankel = struct('r',r,'kr',kr,'l0',l0,'exp_prefactor',exp_prefactor,'Q',Q);
+
 %% Initial condition
 MFD0 = 500e-6; % m
-spatial_window = 10e-3; % m
 tfwhm = 1; % ps
 time_window = 10; % ps
 energy = 1e-3; % nJ
 Nt = 2^5; % the number of time points
-Nx = 2^7; % the number of spatial points
-initial_condition = build_3Dgaussian_xy(MFD0, spatial_window, tfwhm, time_window, energy, Nt, Nx);
+initial_condition = build_3Dgaussian_r(MFD0, tfwhm, time_window, energy, Nt, r);
 
 % Show initial real space
 figure;
-pcolor(abs(squeeze(initial_condition.field(Nt/2,:,:))).^2); colormap(jet);colorbar;
-shading interp;colormap(jet);colorbar;
+plot(r,abs(squeeze(initial_condition.field(ceil(Nt/2),:))).^2);
+xlabel('r (m)');
 title('initial real space');
+
+A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(ceil(Nt/2),:)),...
+                   r_max,kr,...
+                   l0,exp_prefactor,...
+                   Q);
+
 % Show initial k space
 figure;
-pcolor(abs(fftshift(fft(fft(squeeze(initial_condition.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
-shading interp;colormap(jet);colorbar;
+plot(kr,abs(A0_H).^2);
+xlabel('k_r (2\pi/m)');
 title('initial k space');
 
-fiber.n = ones(1,Nx,Nx); % air
+fiber.n = ones(1,Nr); % air
 fiber.n2 = 0; % no nonlinearity
 
 %% Setup general parameters
@@ -70,14 +87,15 @@ lambda = c./(f*1e12)*1e9; % nm
 prop_output1 = UPPE3D_propagate(fiber,initial_condition,sim);
 % lens
 focal_length = 0.5; % m
-Ef_out = add_thin_lens_phase_xy(ifft(prop_output1.field,[],1),prop_output1.dx,prop_output1.dy,fftshift(lambda,1)/1e9,focal_length);
+radius_of_curvature = 0.25;
+Ef_out = add_spherical_lens_phase_r(ifft(prop_output1.field,[],1),prop_output1.r,fftshift(lambda,1)/1e9,radius_of_curvature);
 % free space after the lens
 initial_condition2 = prop_output1; initial_condition2.field = fft(Ef_out(:,:,:,end),[],1);
 prop_output2 = UPPE3D_propagate(fiber,initial_condition2,sim);
 
 %% Results
-MFD1 = squeeze(calcMFD_xy(squeeze(prop_output1.field(Nt/2,:,:,:)),spatial_window))*1e3;
-MFD2 = squeeze(calcMFD_xy(squeeze(prop_output2.field(Nt/2,:,:,:)),spatial_window))*1e3;
+MFD1 = calcMFD_r(squeeze(prop_output1.field(ceil(Nt/2),:,:,:)),r)'*1e3;
+MFD2 = calcMFD_r(squeeze(prop_output2.field(ceil(Nt/2),:,:,:)),r)'*1e3;
 
 z = [prop_output1.z; prop_output2.z(2:end)+prop_output1.z(end)];
 MFD = [MFD1;MFD2(2:end)];
@@ -101,13 +119,19 @@ MFD_theory = [MFD1_theory; MFD2_theory(2:end)];
 %% Plot
 % Show final real space
 figure;
-pcolor(abs(squeeze(prop_output2.field(Nt/2,:,:,end))).^2); colormap(jet);colorbar;
-shading interp;colormap(jet);colorbar;
+plot(r,abs(squeeze(prop_output2.field(ceil(Nt/2),:,end))).^2);
+xlabel('r (m)');
 title('final real space');
+
+A_H = 2*pi*FHATHA(squeeze(prop_output2.field(ceil(Nt/2),:,end)),...
+                  r_max,kr,...
+                  l0,exp_prefactor,...
+                  Q);
+
 % Show final k space
 figure;
-pcolor(abs(fftshift(fft(fft(squeeze(prop_output2.field(Nt/2,:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
-shading interp;colormap(jet);colorbar;
+plot(kr,abs(A_H).^2);
+xlabel('k_r (2\pi/m)');
 title('final k space');
 
 % Plot MFD

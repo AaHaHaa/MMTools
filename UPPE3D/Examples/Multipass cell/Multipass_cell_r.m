@@ -4,8 +4,8 @@
 % Hanna et al., "Nonlinear temporal compression in multipass cells:
 % theory," J. Opt. Soc. Am. B 34(7), 1340-1347 (2017)
 %
-% This script uses the radially-symmetric scheme of the UPPE code, rather
-% than a full x-y dimension.
+% This script employs the radially-symmetric scheme of the UPPE code, 
+% rather than a full x-y dimension.
 
 clearvars; close all;
 

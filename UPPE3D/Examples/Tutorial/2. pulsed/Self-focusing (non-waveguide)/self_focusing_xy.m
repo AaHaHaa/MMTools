@@ -1,6 +1,6 @@
-% This code simulates self-focusing of a Gaussian pulse.
+% This code simulates self-focusing of a Gaussian pulse in a bulk silica.
 %
-% This script uses the 3D-UPPE that uses full x-y dimension. For
+% This script employs the 3D-UPPE that uses full x-y dimension. For
 % more-efficient modeling, pelase see its radially-symmetric version.
 %
 % Note that this simulation is less accurate than the other one run with
@@ -14,7 +14,7 @@
 
 close all; clearvars;
 
-addpath('../../../UPPE3D algorithm/','../../../user_helpers/');
+addpath('../../../../UPPE3D algorithm/','../../../../user_helpers/');
 
 %% Setup fiber parameters
 sim.lambda0 = 1030e-9; % the center wavelength
@@ -60,7 +60,8 @@ t = (-Nt/2:Nt/2-1)'*dt; % ps
 c = 299792458; % m/s
 lambda = c./(f*1e12)*1e9; % nm
 dx = spatial_window/Nx; % m
-x = (-Nx/2:Nx/2-1)*dx;
+x = (-Nx/2:Nx/2-1)*dx; % m
+kx = 2*pi*(-Nx/2:Nx/2-1)/spatial_window; % 2*pi/m
 
 %% Fiber waveguide structure
 % Sellmeier coefficients
@@ -77,13 +78,20 @@ figure;
 pcolor(x*1e6,x*1e6,abs(squeeze(initial_condition.field(Nt/2,:,:))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 xlabel('x (\mum)');
+ylabel('y (\mum)');
 xlim([-1,1]*1e2);
 ylim([-1,1]*1e2);
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
 title('Initial real space');
 % Show initial k space
 figure;
-pcolor(abs(fftshift(fft(fft(squeeze(initial_condition.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(kx/1e6,kx/1e6,abs(fftshift(fft(fft(squeeze(initial_condition.field(Nt/2,:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
+xlabel('k_x (2\pi/\mum)');
+ylabel('k_y (2\pi/\mum)');
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
 title('Initial k space');
 
 %% Propagate
@@ -99,13 +107,20 @@ figure;
 pcolor(x*1e6,x*1e6,abs(squeeze(prop_output.field(Nt/2,:,:,end))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
 xlabel('x (\mum)');
+ylabel('y (\mum)');
 xlim([-1,1]*1e2);
 ylim([-1,1]*1e2);
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
 title('Final real space');
 % Show final k space
 figure;
-pcolor(abs(fftshift(fft(fft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(kx/1e6,kx/1e6,abs(fftshift(fft(fft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
+xlabel('k_x (2\pi/\mum)');
+ylabel('k_y (2\pi/\mum)');
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
 title('Final k space')
 
 % Plot MFD

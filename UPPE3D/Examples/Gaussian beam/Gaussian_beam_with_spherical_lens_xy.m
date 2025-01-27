@@ -1,7 +1,7 @@
-% This code simulates a diverging Gaussian beam in air. The simulated MFD
-% is compared to the theoretical values.
+% This code simulates a Gaussian beam passing through a thick lens (in air).
+% The simulated MFD is compared to the theoretical values.
 %
-% This script uses the 3D-UPPE that uses full x-y dimension. For
+% This script employs the 3D-UPPE that uses full x-y dimension. For
 % more-efficient modeling, pelase see its radially-symmetric version.
 
 close all; clearvars;
@@ -31,7 +31,7 @@ sim.lambda0 = 1030e-9; % the center wavelength
 [fiber,sim] = load_default_UPPE3D_propagate([],sim); % load default parameters
 
 fiber.L0 = 1;
-num_save = 100;
+num_save = 50;
 sim.save_period = fiber.L0/num_save;
 
 %% Initial condition
@@ -40,7 +40,7 @@ spatial_window = 10e-3; % m
 tfwhm = 1; % ps
 time_window = 10; % ps
 energy = 1e-3; % nJ
-Nt = 1; % the number of time points
+Nt = 2^5; % the number of time points
 Nx = 2^7; % the number of spatial points
 initial_condition = build_3Dgaussian_xy(MFD0, spatial_window, tfwhm, time_window, energy, Nt, Nx);
 
@@ -48,10 +48,12 @@ initial_condition = build_3Dgaussian_xy(MFD0, spatial_window, tfwhm, time_window
 figure;
 pcolor(abs(squeeze(initial_condition.field(ceil(Nt/2),:,:))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
+title('initial real space');
 % Show initial k space
 figure;
 pcolor(abs(fftshift(fft(fft(squeeze(initial_condition.field(ceil(Nt/2),:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
+title('initial k space');
 
 fiber.n = ones(1,Nx,Nx); % air
 fiber.n2 = 0; % no nonlinearity
@@ -64,30 +66,58 @@ c = 299792458; % m/s
 lambda = c./(f*1e12)*1e9; % nm
 
 %% Propagate
-prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
+% free space before the lens
+prop_output1 = UPPE3D_propagate(fiber,initial_condition,sim);
+% lens
+focal_length = 0.5; % m
+radius_of_curvature = 0.25;
+Ef_out = add_spherical_lens_phase_xy(ifft(prop_output1.field,[],1),prop_output1.dx,prop_output1.dy,fftshift(lambda,1)/1e9,radius_of_curvature);
+% free space after the lens
+initial_condition2 = prop_output1; initial_condition2.field = fft(Ef_out(:,:,:,end),[],1);
+prop_output2 = UPPE3D_propagate(fiber,initial_condition2,sim);
 
 %% Results
-MFD = squeeze(calcMFD_xy(squeeze(prop_output.field(ceil(Nt/2),:,:,:)),spatial_window))*1e3;
-energy3D = squeeze(sum(abs(prop_output.field).^2,[1,2,3]));
+MFD1 = squeeze(calcMFD_xy(squeeze(prop_output1.field(ceil(Nt/2),:,:,:)),spatial_window))*1e3;
+MFD2 = squeeze(calcMFD_xy(squeeze(prop_output2.field(ceil(Nt/2),:,:,:)),spatial_window))*1e3;
+
+z = [prop_output1.z; prop_output2.z(2:end)+prop_output1.z(end)];
+MFD = [MFD1;MFD2(2:end)];
 
 %% Theoretical Gaussian propagation
 w0 = MFD0/2;
-zR = pi*w0^2/sim.lambda0; % Raylength length
-MFD_theory = MFD0*sqrt(1+(squeeze(prop_output.z)/zR).^2)*1e3; % mm
+zR0 = pi*w0^2/sim.lambda0; % initial Raylength length
+MFD1_theory = MFD0*sqrt(1+(squeeze(prop_output1.z)/zR0).^2)*1e3; % mm
+
+lens_ABCD = @(q,f) q./(1-q/f);
+tran_ABCD = @(q,l) q+l;
+q1 = fiber.L0 + 1i*zR0;
+q1_lens = lens_ABCD(q1,focal_length);
+q2 = tran_ABCD(q1_lens,prop_output2.z);
+w0_2 = sqrt(imag(q2)/pi*sim.lambda0); % Raylength length after the lens
+MFD0_2 = w0_2*2; % MFD0 at the beam waisst after the lens
+MFD2_theory = squeeze(MFD0_2).*sqrt(1+(squeeze(real(q2))./imag(q2)).^2)*1e3; % mm
+
+MFD_theory = [MFD1_theory; MFD2_theory(2:end)];
 
 %% Plot
 % Show final real space
 figure;
-pcolor(abs(squeeze(prop_output.field(ceil(Nt/2),:,:,end))).^2); colormap(jet);colorbar;
+pcolor(abs(squeeze(prop_output2.field(ceil(Nt/2),:,:,end))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
+title('final real space');
 % Show final k space
 figure;
-pcolor(abs(fftshift(fft(fft(squeeze(prop_output.field(ceil(Nt/2),:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(abs(fftshift(fft(fft(squeeze(prop_output2.field(ceil(Nt/2),:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
+title('final k space');
 
 % Plot MFD
 figure;
-plot(prop_output.z,[MFD,MFD_theory],'linewidth',2);
+plot(z,[MFD,MFD_theory],'linewidth',2);
+hold on;
+plot(prop_output1.z(end)*[1,1],[0,2],'linewidth',2,'LineStyle','--','Color','k');
+hold off
+ylim([0,3]);
 xlabel('Propagation distance (m)');
 ylabel('MFD (mm)');
 l = legend('Simulated','Calculated'); set(l,'location','northwest');

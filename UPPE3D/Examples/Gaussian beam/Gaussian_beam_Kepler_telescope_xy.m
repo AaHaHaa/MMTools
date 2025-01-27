@@ -1,7 +1,7 @@
-% This code simulates a Gaussian beam passing through a Galileo telescope with a convex and a concave lenses.
+% This code simulates a Gaussian beam passing through a Kepler telescope with two convex lenses.
 % The simulated MFD is compared to the theoretical values.
 %
-% This script uses the 3D-UPPE that uses full x-y dimension. For
+% This script employs the 3D-UPPE that uses full x-y dimension. For
 % more-efficient modeling, pelase see its radially-symmetric version.
 
 close all; clearvars;
@@ -66,7 +66,7 @@ lambda = c./(f*1e12)*1e9; % nm
 %% Propagate
 % free space before the telescope
 fiber1 = fiber;
-fiber1.L0 = 0.9;
+fiber1.L0 = 0.01;
 sim1 = sim;
 sim1.save_period = fiber1.L0/num_save;
 prop_output1 = UPPE3D_propagate(fiber1,initial_condition,sim1);
@@ -74,25 +74,25 @@ prop_output1 = UPPE3D_propagate(fiber1,initial_condition,sim1);
 % -------------------------------------------------------------------------
 % Telescope
 % -------------------------------------------------------------------------
-convex_focal_length = 0.9;
-concave_focal_length = -0.3;
+convex_focal_length1 = 0.9;
+convex_focal_length2 = 0.3;
 
 % convex lens 1
-convex_radius_of_curvature = convex_focal_length/2;
-%Ef_out = add_spherical_lens_phase_xy(ifft(prop_output1.field,[],1),prop_output1.dx,prop_output1.dy,fftshift(lambda,1)/1e9,convex_radius_of_curvature);
-Ef_out = add_thin_lens_phase_xy(ifft(prop_output1.field,[],1),prop_output1.dx,prop_output1.dy,fftshift(lambda,1)/1e9,convex_focal_length);
+convex_radius_of_curvature1 = convex_focal_length1/2;
+%Ef_out = add_spherical_lens_phase_xy(ifft(prop_output1.field,[],1),prop_output1.dx,prop_output1.dy,fftshift(lambda,1)/1e9,convex_radius_of_curvature1);
+Ef_out = add_thin_lens_phase_xy(ifft(prop_output1.field,[],1),prop_output1.dx,prop_output1.dy,fftshift(lambda,1)/1e9,convex_focal_length1);
 % free space after the convex lens 1
 fiber2 = fiber;
-fiber2.L0 = convex_focal_length + concave_focal_length;
+fiber2.L0 = convex_focal_length1 + convex_focal_length2;
 sim2 = sim;
 sim2.save_period = fiber2.L0/num_save;
 initial_condition2 = prop_output1; initial_condition2.field = fft(Ef_out(:,:,:,end),[],1);
 prop_output2 = UPPE3D_propagate(fiber2,initial_condition2,sim2);
 
 % convex lens 2
-concave_radius_of_curvature = concave_focal_length/2;
-%Ef_out = add_spherical_lens_phase_xy(ifft(prop_output2.field,[],1),prop_output2.dx,prop_output2.dy,fftshift(lambda,1)/1e9,concave_radius_of_curvature);
-Ef_out = add_thin_lens_phase_xy(ifft(prop_output2.field,[],1),prop_output2.dx,prop_output2.dy,fftshift(lambda,1)/1e9,concave_focal_length);
+convex_radius_of_curvature2 = convex_focal_length2/2;
+%Ef_out = add_spherical_lens_phase_xy(ifft(prop_output2.field,[],1),prop_output2.dx,prop_output2.dy,fftshift(lambda,1)/1e9,convex_radius_of_curvature2);
+Ef_out = add_thin_lens_phase_xy(ifft(prop_output2.field,[],1),prop_output2.dx,prop_output2.dy,fftshift(lambda,1)/1e9,convex_focal_length2);
 % free space after the convex lens 2
 fiber3 = fiber;
 fiber3.L0 = 0.5;
@@ -117,16 +117,16 @@ MFD1_theory = MFD0*sqrt(1+(squeeze(prop_output1.z)/zR0).^2)*1e3; % mm
 lens_ABCD = @(q,f) q./(1-q/f);
 tran_ABCD = @(q,l) q+l;
 
-% convex lens
+% convex lens 1
 q1 = fiber1.L0 + 1i*zR0;
-q1_lens = lens_ABCD(q1,convex_focal_length);
+q1_lens = lens_ABCD(q1,convex_focal_length1);
 q2 = tran_ABCD(q1_lens,prop_output2.z);
 w0_2 = sqrt(imag(q2)/pi*sim.lambda0); % Raylength length after the lens
 MFD0_2 = w0_2*2; % MFD0 at the beam waisst after the lens
 MFD2_theory = squeeze(MFD0_2).*sqrt(1+(squeeze(real(q2))./imag(q2)).^2)*1e3; % mm
 
-% concave lens
-q2_lens = lens_ABCD(q2(end),concave_focal_length);
+% convex lens 2
+q2_lens = lens_ABCD(q2(end),convex_focal_length2);
 q3 = tran_ABCD(q2_lens,prop_output3.z);
 w0_3 = sqrt(imag(q3)/pi*sim.lambda0); % Raylength length after the lens
 MFD0_3 = w0_3*2; % MFD0 at the beam waisst after the lens
@@ -153,7 +153,7 @@ hold on;
 plot(prop_output1.z(end)*[1,1],[0,10],'linewidth',2,'LineStyle','--','Color','k');
 plot((prop_output1.z(end)+prop_output2.z(end))*[1,1],[0,10],'linewidth',2,'LineStyle','--','Color','k');
 hold off
-ylim([0,3.5]);
+ylim([0,2]);
 xlabel('Propagation distance (m)');
 ylabel('MFD (mm)');
 l = legend('Simulated','Calculated'); set(l,'location','northwest');

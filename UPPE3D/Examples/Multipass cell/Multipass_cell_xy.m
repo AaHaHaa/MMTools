@@ -4,7 +4,7 @@
 % Hanna et al., "Nonlinear temporal compression in multipass cells:
 % theory," J. Opt. Soc. Am. B 34(7), 1340-1347 (2017)
 %
-% This script uses the 3D-UPPE that uses full x-y dimension. For
+% This script employs the 3D-UPPE that uses full x-y dimension. For
 % more-efficient modeling, pelase see its radially-symmetric version.
 
 clearvars; close all;

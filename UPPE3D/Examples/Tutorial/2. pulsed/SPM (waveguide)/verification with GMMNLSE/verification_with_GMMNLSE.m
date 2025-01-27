@@ -20,7 +20,7 @@
 
 close all; clearvars;
 
-addpath('../../../../../GMMNLSE/GMMNLSE algorithm/','../../../../../GMMNLSE/user_helpers/');
+addpath('../../../../../../GMMNLSE/GMMNLSE algorithm/','../../../../../../GMMNLSE/user_helpers/');
 
 %% Setup fiber parameters
 sim.lambda0 = 1030e-9; % the center wavelength

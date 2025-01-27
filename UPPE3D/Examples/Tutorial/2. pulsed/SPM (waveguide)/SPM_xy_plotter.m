@@ -36,8 +36,8 @@ set(gca,'fontsize',14);
 
 % Comparison of spectra
 figure;
-[x,y] = meshgrid(f-sim.f0,prop_output.z(2:end));
-pcolor(x,y,permute(abs(fftshift(ifft(output_field(:,1,2:end)),1)).^2,[3 1 2]));
+[x_f,y_z] = meshgrid(f-sim.f0,prop_output.z(2:end));
+pcolor(x_f,y_z,permute(abs(fftshift(ifft(output_field(:,1,2:end)),1)).^2,[3 1 2]));
 xlim([-100,100]);
 shading interp; colormap(jet);
 xlabel('\nu-\nu_0');
@@ -45,15 +45,23 @@ ylabel('z');
 title('Spectrum during propagation');
 set(gca,'fontsize',14);
 
-% The final spatial profile at the peak power
+% Show final real space
 figure;
-pcolor(xx,yy,abs(squeeze(prop_output.field(Nt/2,:,:,end))).^2);
+pcolor(x,x,abs(squeeze(prop_output.field(Nt/2,:,:,end))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
-xlabel('Length (\mum)');
-ylabel('Length (\mum)');
-set(gca,'fontsize',14);
-
+xlabel('x (\mum)');
+ylabel('y (\mum)');
+xlim([-1,1]*10);
+ylim([-1,1]*10);
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
+title('Final real space');
+% Show final k space
 figure;
-pcolor(xx,yy,abs(fftshift(fft(fft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2);
+pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(prop_output.field(Nt/2,:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
 shading interp;colormap(jet);colorbar;
-set(gca,'fontsize',14);
+xlabel('k_x (2\pi/\mum)');
+ylabel('k_y (2\pi/\mum)');
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
+title('Final k space')
