@@ -23,7 +23,7 @@ n = 0:(Nr-1);
 
 % Finding alpha requires MATLAB's symbolic toolbox
 syms a;
-alpha = double(vpasolve(exp(-a*(Nr-1))==1-exp(-a),a));
+alpha = double(vpasolve(exp(-a*(Nr-1))==1-exp(-a),a,0.01)); % I pick 0.01 as initial guess
 
 %% Function-evaluation points
 zeta0 = (1+exp(alpha))/2*exp(-alpha*Nr); % the parameter that makes normalized function-evaluation point at the center of each sampling interval
