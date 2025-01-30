@@ -1,7 +1,7 @@
 function [last_E,...
           opt_dz] = add_DW_RK4IP(E0,...
                                  F_op,...
-                                 D_op,W_op,...
+                                 D_op,W_op,loss_op,...
                                  dz,...
                                  L0,...
                                  Kz_correction,...
@@ -44,6 +44,9 @@ while z+eps(z) < L0 % eps(z) here is necessary due to the numerical error
             dz = opt_dz;
         end
     end
+    % Add the loss effect
+    loss = exp(loss_op*dz);
+    last_E = loss.*last_E;
 
     % Update z
     z = z + dz;
@@ -108,12 +111,12 @@ end
 err = sqrt(err/norm2_E);
 
 % Stepsize control
-if isnan(norm2_E) % the computation is just so wrong, so we reduce the step size and do it again
-    opt_dz = 0.5*dz;
-    success = false;
-elseif norm2_E == 0 % all-zero field
+if norm2_E == 0 % all-zero field; this will make err NaN (the 2nd if-condition below), so this condition needs to be determined first
     opt_dz = 2*dz;
     success = true;
+elseif isnan(err) % the computation is just so wrong, so we reduce the step size and do it again
+    opt_dz = 0.5*dz;
+    success = false;
 else
     opt_dz = max(0.5,min(2,0.8*(DW_threshold/err)^(1/4)))*dz;
 

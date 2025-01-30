@@ -48,8 +48,8 @@ remove_noise_model = optargs{:};
 [Nx, Ny, num_fields] = size(field);
 dx = spatial_window/Nx;
 dy = dx;
-x = (-Nx/2:Nx/2-1)'*dx;
-y = (-Ny/2:Ny/2-1)*dy;
+x = (-floor(Nx/2):floor((Nx-1)/2))'*dx;
+y = (-floor(Ny/2):floor((Ny-1)/2))*dy;
 
 % Intensity
 I = abs(field).^2;

@@ -204,7 +204,7 @@ function [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mi
 Nt = length(time); % the number of time points
 dt = abs(time(2)-time(1)); % ps
 c = 299792.458; % nm/ps
-wavelength = c./((-Nt/2:Nt/2-1)'/Nt/dt + c/wavelength0); % nm
+wavelength = c./((-floor(Nt/2):floor((Nt-1)/2))'/Nt/dt + c/wavelength0); % nm
 if size(time,1) == 1
     time = time';
 end
@@ -381,7 +381,7 @@ function [optimal_separation,dechirped_FWHM,dechirped_field,prism_height,roof_mi
 Nt = length(time); % the number of time points
 dt = abs(time(2)-time(1)); % ps
 c = 299792.458; % nm/ps
-wavelength = c./((-Nt/2:Nt/2-1)'/Nt/dt + c/wavelength0); % nm
+wavelength = c./((-floor(Nt/2):floor((Nt-1)/2))'/Nt/dt + c/wavelength0); % nm
 if size(time,1) == 1
     time = time';
 end
@@ -566,7 +566,7 @@ function [optimal_separation,dechirped_FWHM,dechirped_field,grism_height,roof_mi
 Nt = length(time); % the number of time points
 dt = abs(time(2)-time(1)); % ps
 c = 299792.458; % nm/ps
-wavelength = c./((-Nt/2:Nt/2-1)'/Nt/dt + c/wavelength0); % nm
+wavelength = c./((-floor(Nt/2):floor((Nt-1)/2))'/Nt/dt + c/wavelength0); % nm
 if size(time,1) == 1
     time = time';
 end
@@ -790,7 +790,7 @@ function [optimal_value,dechirped_FWHM,dechirped_field,grating_size,roof_mirror_
 Nt = length(time); % the number of time points
 dt = abs(time(2)-time(1)); % ps
 c = 299792.458; % nm/ps
-wavelength = c./((-Nt/2:Nt/2-1)'/Nt/dt + c/wavelength0); % nm
+wavelength = c./((-floor(Nt/2):floor((Nt-1)/2))'/Nt/dt + c/wavelength0); % nm
 if size(time,1) == 1
     time = time';
 end
@@ -1084,7 +1084,7 @@ function [optimal_separation,dechirped_FWHM,dechirped_field,grating_size,roof_mi
 Nt = length(time); % the number of time points
 dt = abs(time(2)-time(1)); % ps
 c = 299792.458; % nm/ps
-wavelength = c./((-Nt/2:Nt/2-1)'/Nt/dt + c/wavelength0); % nm
+wavelength = c./((-floor(Nt/2):floor((Nt-1)/2))'/Nt/dt + c/wavelength0); % nm
 if size(time,1) == 1
     time = time';
 end

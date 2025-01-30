@@ -28,7 +28,7 @@ function output = build_MMsoliton(tfwhm, beta2, fiiii, lambda0, time_window, num
 numvarargs = length(varargin);
 if numvarargs > 4
     error('build_MMsoltion:TooManyInputs', ...
-        'It takes only at most 4 optional inputs');
+          'It takes only at most 4 optional inputs');
 end
 
 % Set defaults for optional inputs

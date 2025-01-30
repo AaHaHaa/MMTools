@@ -13,7 +13,7 @@ function output = build_2Dgaussian_r(MFD, r, varargin)
 numvarargs = length(varargin);
 if numvarargs > 1
     error('build_2Dgaussian:TooManyInputs', ...
-        'It takes only at most 1 optional inputs');
+          'It takes only at most 1 optional inputs');
 end
 
 % Set defaults for optional inputs

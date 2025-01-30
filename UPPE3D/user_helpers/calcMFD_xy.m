@@ -8,7 +8,7 @@ function MFD = calcMFD_xy(field,spatial_window,varargin)
 %   --> MFD = MFR*2
 %
 % field: a (Nx,Nx,num_fields) (multi)dimensional array; the spatial "field", not intensity (be careful!)
-% spatial_window: a scalar; the size of the spatial window
+% spatial_window: a scalar; the size of the spatial window (m)
 %
 % optional input arguments:
 %   remove_noise_model:

@@ -6,6 +6,14 @@
 % In addition, this script simulates with continuous-wave (CW) light, which
 % focuses only on the evolution of its spatial profile through the
 % waveguide and diffraction effect.
+%
+% To run with CW, make Nt = 1.
+%
+% This code loads a mode profile generated from the FEM mode solver.
+% However, in transforming it into the field to be computed in 3D-UPPE with
+% an approach based on effective mode-field area, small deviation happens.
+% This is why in MFD evolution, we can see variations of the mode spatial
+% profile, which stabilizes to a slightly-different mode profile.
 
 close all; clearvars;
 
@@ -68,13 +76,17 @@ loaded_data = load('mode1wavelength10300.mat','phi','x','epsilon');
 phi = interp2(loaded_data.xx,loaded_data.yy,loaded_data.phi,xx,yy,'linear',0); % downsampling
 phi = phi/sqrt(sum(abs(phi(:)).^2)*mean(diff(x*1e-6))^2);
 
-dx = mean(diff(x));
+dx = mean(diff(x)); % um
 Aeff = 1/(sum(phi(:).^4)*(dx*1e-6)^2); % mode area; m^2
 MFR = sqrt(Aeff/pi)*1e6; % um
 
 % input pulse
-tfwhm = 0.03; % ps
-total_energy = 10; % nJ
+% Pulse duration and energy itself have no meaning here. Only the peak
+% power is retained as the CW power in building the initial profile.
+% However, still ensure that pulse duration is around 5-10x smaller than
+% the time window for correct generation of the CW profile.
+tfwhm = 1; % ps
+total_energy = 1e-3; % nJ
 initial_condition = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
 initial_condition.field = recompose_into_space(sim.gpu_yes,phi,initial_condition.fields,sim.cuda_dir_path); initial_condition = rmfield(initial_condition,'fields');
 initial_condition.dx = mean(diff(x*1e-6)); initial_condition.dy = initial_condition.dx;
@@ -82,7 +94,7 @@ initial_condition.dx = mean(diff(x*1e-6)); initial_condition.dy = initial_condit
 %% Show initial spaces
 % Show initial real space
 figure;
-pcolor(x,x,abs(squeeze(initial_condition.field(ceil(Nt/2),:,:))).^2); colormap(jet);
+pcolor(x,x,abs(squeeze(initial_condition.field(floor(Nt/2)+1,:,:))).^2); colormap(jet);
 shading interp;colormap(jet);colorbar;
 xlabel('x (\mum)');
 ylabel('y (\mum)');
@@ -91,7 +103,7 @@ set(gca,'fontsize',20);
 title('Initial real space');
 % Show initial k space
 figure;
-pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(initial_condition.field(ceil(Nt/2),:,:)),[],1),[],2))).^2); colormap(jet);
+pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(initial_condition.field(floor(Nt/2)+1,:,:)),[],1),[],2))).^2); colormap(jet);
 shading interp;colormap(jet);colorbar;
 xlabel('k_x (2\pi/\mum)');
 ylabel('k_y (2\pi/\mum)');
@@ -103,13 +115,13 @@ title('Initial k space');
 prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
 
 %% Results
-MFD = squeeze(calcMFD_xy(squeeze(prop_output.field(ceil(Nt/2),:,:,:)),spatial_window))*1e3; % mm
-energy = squeeze(sum(abs(prop_output.field).^2,[1,2,3])*dx^2); % W
+MFD = squeeze(calcMFD_xy(squeeze(prop_output.field(floor(Nt/2)+1,:,:,:)),spatial_window)); % um
+optical_power = squeeze(sum(abs(prop_output.field).^2,[1,2,3])*(dx*1e-6)^2); % W
 
 %% Plot
 % Show final real space
 figure;
-pcolor(x,x,abs(squeeze(prop_output.field(ceil(Nt/2),:,:,end))).^2); colormap(jet);
+pcolor(x,x,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,:,end))).^2); colormap(jet);
 shading interp;colormap(jet);colorbar;
 xlabel('x (\mum)');
 ylabel('y (\mum)');
@@ -118,7 +130,7 @@ set(gca,'fontsize',20);
 title('Final real space');
 % Show final k space
 figure;
-pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(prop_output.field(ceil(Nt/2),:,:,end)),[],1),[],2))).^2); colormap(jet);
+pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(prop_output.field(floor(Nt/2)+1,:,:,end)),[],1),[],2))).^2); colormap(jet);
 shading interp;colormap(jet);colorbar;
 xlabel('x (2\pi/\mum)');
 ylabel('y (2\pi/\mum)');
@@ -130,12 +142,13 @@ title('Final k space');
 figure;
 plot(prop_output.z,MFD,'linewidth',2,'Color','b');
 xlabel('Propagation distance (m)');
-ylabel('MFD (mm)');
+ylabel('MFD (\mum)');
 set(gca,'fontsize',20);
 
-% Energy
+% Power
+% Check that whether it's conserved
 figure;
-plot(prop_output.z,energy,'linewidth',2,'Color','b');
+plot(prop_output.z,optical_power,'linewidth',2,'Color','b');
 xlabel('Propagation distance (m)');
 ylabel('Power (W)');
 set(gca,'fontsize',20);

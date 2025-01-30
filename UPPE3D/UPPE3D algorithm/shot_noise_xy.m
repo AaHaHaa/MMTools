@@ -23,7 +23,7 @@ Aeff = (sum(I*dx*dy,[1,2]))^2/sum(I.^2*dx*dy,[1,2]); % effective mode-field area
 h = 6.62607015e-34; % J*s
 
 time_window = Nt*dt; % ps
-f = ifftshift((-Nt/2:Nt/2-1)'/time_window,1); % THz
+f = ifftshift((-floor(Nt/2):floor((Nt-1)/2))'/time_window,1); % THz
 real_f = (f+f0)*1e12; % Hz
 
 % I use analytical-signal representation for solving GMMNLSE, so the field

@@ -33,8 +33,8 @@ lens_material = optargs{:};
 %% Lens phase calculation
 [Nt,Nx,Ny,Nz] = size(Ef);
 
-x = (-Nx/2:Nx/2-1)*dx;
-y = permute((-Ny/2:Ny/2-1)*dy,[1,3,2]);
+x = (-floor(Nx/2):floor((Nx-1)/2))*dx;
+y = permute((-floor(Ny/2):floor((Ny-1)/2))*dy,[1,3,2]);
 
 h2 = x.^2+y.^2;
 dr = abs(radius_of_curvature) - sqrt(radius_of_curvature^2 - h2);

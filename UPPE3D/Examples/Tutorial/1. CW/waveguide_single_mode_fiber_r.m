@@ -7,6 +7,8 @@
 % focuses only on the evolution of its spatial profile through the
 % waveguide and diffraction effect.
 %
+% To run with CW, make Nt = 1.
+%
 % This code loads a mode profile generated from the FEM mode solver.
 % However, in transforming it into the field to be computed in 3D-UPPE with
 % an approach based on effective mode-field area, small deviation happens.
@@ -53,15 +55,19 @@ sim.save_period = fiber.L0/num_save;
 %% Information for the Hankel transform
 Nr = 2^10; % the number of radial sampling points
 r_max = 25e-6; % the maximum radius; half of the spatial window
-kr_max = 100e5; % the maximum kr vector
+kr_max = 30e5; % the maximum kr vector
 
 [r,kr,...
  l0,exp_prefactor,...
  Q] = Hankel_info(Nr,r_max,kr_max);
 
+dr = diff(r,1,2);
+dkr = diff(kr,1,2);
 % Arrange required Hankel information into "sim" for radially-symmetric
 % UPPE to use later.
-sim.Hankel = struct('r',r,'kr',kr,'l0',l0,'exp_prefactor',exp_prefactor,'Q',Q);
+sim.Hankel = struct('r',r,'kr',kr,...
+                    'dr',dr,'dkr',dkr,...
+                    'l0',l0,'exp_prefactor',exp_prefactor,'Q',Q);
 
 %% Setup general parameters
 Nt = 1; % the number of time points
@@ -85,8 +91,12 @@ Aeff = (2*pi*trapz(r,abs(phi).^2.*r)).^2./(2*pi*trapz(r,abs(phi).^4.*r)); % effe
 MFR = sqrt(Aeff/pi)*1e6; % um
 
 % input pulse
-tfwhm = 0.03; % ps
-total_energy = 10; % nJ
+% Pulse duration and energy itself have no meaning here. Only the peak
+% power is retained as the CW power in building the initial profile.
+% However, still ensure that pulse duration is around 5-10x smaller than
+% the time window for correct generation of the CW profile.
+tfwhm = 1; % ps
+total_energy = 1e-3; % nJ
 initial_condition = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
 initial_condition.field = initial_condition.fields.*phi; initial_condition = rmfield(initial_condition,'fields');
 initial_condition.r = r;
@@ -94,23 +104,25 @@ initial_condition.r = r;
 %% Show initial spaces
 % Show initial real space
 figure;
-plot(r*1e6,abs(squeeze(initial_condition.field(ceil(Nt/2),:))).^2,'linewidth',2,'Color','b');
+plot(r*1e6,abs(squeeze(initial_condition.field(floor(Nt/2)+1,:))).^2,'linewidth',2,'Color','b');
 xlabel('r (\mum)');
 set(gca,'fontsize',20);
 title('Initial real space');
 % Plot the 2D field with pcolor
 % However, the Hankel transform doesn't sample at the origin r=0, so we
 % need to find it first. This can be done with Hankel_f_at_0().
-A0 = Hankel_f_at_0(initial_condition.field(ceil(Nt/2),:,end),l0);
-radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(initial_condition.field(ceil(Nt/2),:,end))).^2));
+A0 = Hankel_f_at_0(initial_condition.field(floor(Nt/2)+1,:,end),l0);
+radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(initial_condition.field(floor(Nt/2)+1,:,end))).^2));
 xlabel('x (\mum)');
 ylabel('y (\mum)');
 set(gca,'fontsize',20);
 daspect([1 1 1]); % make aspect ratio = 1
 title('Initial real space');
 
-A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(ceil(Nt/2),:)),...
-                   r_max,kr,...
+A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(floor(Nt/2)+1,:)),...
+                   r_max,...
+                   r,kr,...
+                   dr,dkr,...
                    l0,exp_prefactor,...
                    Q);
 
@@ -133,29 +145,31 @@ title('Initial k space');
 prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
 
 %% Results
-MFD = calcMFD_r(squeeze(prop_output.field(ceil(Nt/2),:,:)),r)'*1e3; % mm
-energy = squeeze(2*pi*trapz(r,abs(prop_output.field).^2.*r,2)); % W
+MFD = calcMFD_r(squeeze(prop_output.field(floor(Nt/2)+1,:,:)),r)'*1e3; % mm
+optical_power = squeeze(2*pi*trapz(r,abs(prop_output.field).^2.*r,2)); % W
 
 %% Plot
 % Show final real space
 figure;
-plot(r*1e6,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2,'linewidth',2,'Color','b');
+plot(r*1e6,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,end))).^2,'linewidth',2,'Color','b');
 xlabel('r (\mum)');
 set(gca,'fontsize',20);
 title('Final real space');
 % Plot the 2D field with pcolor
 % However, the Hankel transform doesn't sample at the origin r=0, so we
 % need to find it first. This can be done with Hankel_f_at_0().
-A0 = Hankel_f_at_0(prop_output.field(ceil(Nt/2),:,end),l0);
-radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2));
+A0 = Hankel_f_at_0(prop_output.field(floor(Nt/2)+1,:,end),l0);
+radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,end))).^2));
 xlabel('x (\mum)');
 ylabel('y (\mum)');
 set(gca,'fontsize',20);
 daspect([1 1 1]); % make aspect ratio = 1
 title('Final real space');
 % Show final k space
-A_H = 2*pi*FHATHA(squeeze(prop_output.field(ceil(Nt/2),:,end)),...
-                  r_max,kr,...
+A_H = 2*pi*FHATHA(squeeze(prop_output.field(floor(Nt/2)+1,:,end)),...
+                  r_max,...
+                   r,kr,...
+                   dr,dkr,...
                   l0,exp_prefactor,...
                   Q);
 figure;
@@ -179,9 +193,10 @@ xlabel('Propagation distance (m)');
 ylabel('MFD (mm)');
 set(gca,'fontsize',20);
 
-% Energy
+% Power
+% Check that whether it's conserved
 figure;
-plot(prop_output.z,energy,'linewidth',2,'Color','b');
+plot(prop_output.z,optical_power,'linewidth',2,'Color','b');
 xlabel('Propagation distance (m)');
 ylabel('Power (W)');
 set(gca,'fontsize',20);

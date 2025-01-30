@@ -7,6 +7,8 @@
 % In addition, this script simulates with continuous-wave (CW) light, which
 % focuses only on the evolution of its spatial profile through the
 % diffraction effect.
+%
+% To run with CW, make Nt = 1.
 
 close all; clearvars;
 
@@ -39,6 +41,10 @@ num_save = 100;
 sim.save_period = fiber.L0/num_save;
 
 %% Initial condition
+% Pulse duration and energy itself have no meaning here. Only the peak
+% power is retained as the CW power in building the initial profile.
+% However, still ensure that pulse duration is around 5-10x smaller than
+% the time window for correct generation of the CW profile.
 MFD0 = 500e-6; % m
 spatial_window = 10e-3; % m
 tfwhm = 1; % ps; it is meaningless in this code since Nt = 1 (CW case)
@@ -46,7 +52,8 @@ time_window = 10; % ps; it is meaningless in this code since Nt = 1 (CW case)
 energy = 1e-3; % nJ
 Nt = 1; % the number of time points
 Nx = 2^7; % the number of spatial points
-x = (-Nx/2:Nx/2-1)*spatial_window/Nx*1e3; % mm
+dx = spatial_window/Nx;
+x = (-Nx/2:Nx/2-1)*dx*1e3; % mm
 kx = 2*pi*(-Nx/2:Nx/2-1)/spatial_window*1e-3; % 2*pi/mm
 initial_condition = build_3Dgaussian_xy(MFD0, spatial_window, tfwhm, time_window, energy, Nt, Nx);
 
@@ -56,7 +63,7 @@ fiber.n2 = 0; % no nonlinearity
 %% Show initial spaces
 % Show initial real space
 figure;
-pcolor(x,x,abs(squeeze(initial_condition.field(ceil(Nt/2),:,:))).^2); colormap(jet);
+pcolor(x,x,abs(squeeze(initial_condition.field(floor(Nt/2)+1,:,:))).^2); colormap(jet);
 shading interp;colormap(jet);colorbar;
 xlabel('x (mm)');
 ylabel('y (mm)');
@@ -65,7 +72,7 @@ set(gca,'fontsize',20);
 title('Initial real space');
 % Show initial k space
 figure;
-pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(initial_condition.field(ceil(Nt/2),:,:)),[],1),[],2))).^2); colormap(jet);
+pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(initial_condition.field(floor(Nt/2)+1,:,:)),[],1),[],2))).^2); colormap(jet);
 shading interp;colormap(jet);colorbar;
 xlabel('k_x (2\pi/mm)');
 ylabel('k_y (2\pi/mm)');
@@ -84,8 +91,8 @@ lambda = c./(f*1e12)*1e9; % nm
 prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
 
 %% Results
-MFD = squeeze(calcMFD_xy(squeeze(prop_output.field(ceil(Nt/2),:,:,:)),spatial_window))*1e3;
-energy3D = squeeze(sum(abs(prop_output.field).^2,[1,2,3]));
+MFD = squeeze(calcMFD_xy(squeeze(prop_output.field(floor(Nt/2)+1,:,:,:)),spatial_window))*1e3; % mm
+optical_power = squeeze(sum(abs(prop_output.field).^2,[1,2,3]))*dx^2; % W
 
 %% Theoretical Gaussian propagation
 w0 = MFD0/2;
@@ -95,7 +102,7 @@ MFD_theory = MFD0*sqrt(1+(squeeze(prop_output.z)/zR).^2)*1e3; % mm
 %% Plot
 % Show final real space
 figure;
-pcolor(x,x,abs(squeeze(prop_output.field(ceil(Nt/2),:,:,end))).^2); colormap(jet);
+pcolor(x,x,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,:,end))).^2); colormap(jet);
 shading interp;colormap(jet);colorbar;
 xlabel('x (mm)');
 ylabel('y (mm)');
@@ -104,7 +111,7 @@ set(gca,'fontsize',20);
 title('Final real space');
 % Show final k space
 figure;
-pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(prop_output.field(ceil(Nt/2),:,:,end)),[],1),[],2))).^2); colormap(jet);
+pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(prop_output.field(floor(Nt/2)+1,:,:,end)),[],1),[],2))).^2); colormap(jet);
 shading interp;colormap(jet);colorbar;
 xlabel('x (2\pi/mm)');
 ylabel('y (2\pi/mm)');
@@ -120,3 +127,11 @@ set(gca,'fontsize',20);
 xlabel('Propagation distance (m)');
 ylabel('MFD (mm)');
 l = legend('Simulated','Calculated'); set(l,'location','northwest');
+
+% Power
+% Check that whether it's conserved
+figure;
+plot(prop_output.z,optical_power,'linewidth',2,'Color','b');
+xlabel('Propagation distance (m)');
+ylabel('Power (W)');
+set(gca,'fontsize',20);

@@ -11,6 +11,14 @@
 % sampling strategy such that the field is sampled more finely around the
 % center. This creates benefit when the field becomes smaller, compared to
 % uniform sampling in the current full-field scheme.
+%
+% The user can change the time_window below and see that the output center
+% spectrum varies with it. The best way is to increase the number of
+% sampling points in a larger window so that both domains, spatial and
+% k-space, can be sampled correctly. However, it overwhelms our Nvidia
+% Titan XP GPU ith over 2^9 spatial sampling points.
+% This shows the importance of employing the radial-symmetric scheme if
+% possible for accuracy and numerical reliability.
 
 close all; clearvars;
 
@@ -40,15 +48,15 @@ sim.gpuDevice.Index = 1;
 [fiber,sim] = load_default_UPPE3D_propagate([],sim); % load default parameters
 
 fiber.L0 = 1e-2;
-num_save = 100;
+num_save = 10;%100
 sim.save_period = fiber.L0/num_save;
 
 %% Initial condition
 MFD0 = 100e-6; % m
-spatial_window = 1e-3; % m
+spatial_window = 0.7e-3; % m
 tfwhm = 1; % ps
 time_window = 10; % ps
-energy = 8e3; % nJ
+energy = 9e3; % nJ
 Nt = 2^8; % the number of time points
 Nx = 2^8; % the number of spatial points
 initial_condition = build_3Dgaussian_xy(MFD0, spatial_window, tfwhm, time_window, energy, Nt, Nx);
@@ -99,7 +107,7 @@ prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
 
 %% Results
 MFD = squeeze(calcMFD_xy(squeeze(prop_output.field(Nt/2,:,:,:)),spatial_window))*1e6; % um
-energy3D = squeeze(sum(abs(prop_output.field).^2,[1,2,3]));
+optical_energy = squeeze(sum(abs(prop_output.field).^2,[1,2,3]))*dx^2*dt/1e3; % nJ
 
 %% Plot
 % Show final real space
@@ -130,16 +138,23 @@ xlabel('Propagation distance (cm)');
 ylabel('MFD (\mum)');
 set(gca,'fontsize',20);
 
+% Energy
+figure;
+plot(prop_output.z,optical_energy,'linewidth',2,'Color','b');
+xlabel('Propagation distance (m)');
+ylabel('Power (nJ)');
+set(gca,'fontsize',20);
+
 % Movie
 Frame = animator_xy(prop_output.field,...
                     prop_output.z,MFD,...
                     Nt,dt,Nx,dx,lambda,...
                     fiber.L0);
 implay(Frame(:),20);
-exportVideo = VideoWriter('self-focusing');
+exportVideo = VideoWriter('self-focusing_xy');
 exportVideo.FrameRate = 20;
 open(exportVideo);
 writeVideo(exportVideo, Frame(:));
 close(exportVideo);
 
-save('self_focusing_xy.mat','-v7.3');
+%save('self_focusing_xy.mat','-v7.3');

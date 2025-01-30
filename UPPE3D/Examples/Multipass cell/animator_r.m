@@ -30,7 +30,7 @@ for j = 1:size(A,3)-1
     A_spatial = A(Nt/2,:,j+1);
     plot(r,abs(A_spatial.').^2/max(abs(A0(Nt/2,:,j+1).').^2),'linewidth',2,'Color','b');
     xlabel('x (\mum)');
-    xlim([0,600]);
+    xlim([0,2000]);
 
     subplot(2,2,2);
     plot_plate_MFD = [70;1000];
@@ -54,12 +54,22 @@ for j = 1:size(A,3)-1
     ylim(plot_plate_MFD);
 
     subplot(2,2,[3,4]);
-    spectrum = sum(abs(fftshift(ifft(A(:,1,j+1),[],1),1)).^2,[2,3])*factor_correct_unit.*factor; % in wavelength domain
-    plot(lambda,spectrum,'Color','b','linewidth',2);
+    spectrum = abs(fftshift(ifft(A(:,:,j+1),[],1),1)).^2*factor_correct_unit.*factor; % nJ/nm/m^2
+    % remove the weak spectral signal from spatial integration
+    multiplication_ratio = 3;
+    max_spectrum = max(spectrum(:));
+    spectrum = spectrum./max_spectrum; % make spectrum from 0-1
+    spectrum = spectrum.^multiplication_ratio*max_spectrum;
+    avg_spectrum = 2*pi*trapz(r,spectrum.*r,2); % nJ/nm
+    plot(lambda,avg_spectrum,'Color','b','linewidth',2);
+    hold on;
+    plot(lambda,spectrum(:,1)/max(spectrum(:,1))*max(avg_spectrum),'Color','r','linewidth',2);
+    hold off;
     xlabel('Wavelength (nm)');
-    ylabel('PSD (nJ/nm/m^2)');
+    ylabel('PSD (nJ/nm)');
     xlim([950,1100]);
-    ylim([0,max(spectrum)]);
+    ylim([0,max(avg_spectrum)]);
+    legend('Avg spectrum','Center spectrum (norm.)');
 
     set(fig,'Color',[1,1,1]);
 

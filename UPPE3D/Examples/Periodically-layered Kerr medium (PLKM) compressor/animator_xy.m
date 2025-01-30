@@ -8,7 +8,7 @@ function Frame = animator_xy(Frame,...
 z = z(:);
 MFD = MFD(:);
 
-x = (-Nx/2:Nx/2-1)*dx*1e6; % spatial vector
+x = (-floor(Nx/2):floor((Nx-1)/2))*dx*1e6; % spatial vector
 
 c = 299792.458; % nm/ps
 factor_correct_unit = (Nt*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
@@ -27,11 +27,11 @@ for j = 1:size(A,4)-1
     pcolor(x,x,abs(squeeze(A_spatial)).^2);
     shading interp; colormap(jet);
     xlabel('x (\mum)');
-    xlim([-160,160]);
-    ylim([-160,160]);
+    xlim([-220,220]);
+    ylim([-220,220]);
 
     subplot(2,2,2);
-    plot_plate_MFD = [70;180];
+    plot_plate_MFD = [120;185];
     for i = 1:length(plate_z)-1
         plot(plate_z(i)*1e2*[1;1],plot_plate_MFD,'Color','r','linewidth',1);
         hold on;
@@ -44,12 +44,22 @@ for j = 1:size(A,4)-1
     ylim(plot_plate_MFD);
 
     subplot(2,2,[3,4]);
-    spectrum = abs(fftshift(ifft(A(:,Nx/2,Nx/2,j+1),[],1),1)).^2*factor_correct_unit.*factor; % in wavelength domain
-    plot(lambda,spectrum,'Color','b','linewidth',2);
+    spectrum = abs(fftshift(ifft(A(:,:,:,j+1),[],1),1)).^2*factor_correct_unit.*factor; % nJ/nm/m^2
+    % remove the weak spectral signal from spatial integration
+    multiplication_ratio = 3;
+    max_spectrum = max(spectrum(:));
+    spectrum = spectrum./max_spectrum; % make spectrum from 0-1
+    spectrum = spectrum.^multiplication_ratio*max_spectrum;
+    avg_spectrum = sum(spectrum,[2,3])*dx^2; % nJ/nm
+    plot(lambda,avg_spectrum,'Color','b','linewidth',2);
+    hold on;
+    plot(lambda,spectrum(:,floor(Nx/2)+1,floor(Nx/2)+1)/max(spectrum(:,floor(Nx/2)+1,floor(Nx/2)+1))*max(avg_spectrum),'Color','r','linewidth',2);
+    hold off;
     xlabel('Wavelength (nm)');
-    ylabel('PSD (nJ/nm/m^2)');
+    ylabel('PSD (nJ/nm)');
     xlim([950,1100]);
-    ylim([0,max(spectrum)]);
+    ylim([0,max(avg_spectrum)]);
+    legend('Avg spectrum','Center spectrum (norm.)');
 
     set(fig,'Color',[1,1,1]);
 

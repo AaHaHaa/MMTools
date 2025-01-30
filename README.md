@@ -34,7 +34,7 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 
 ### Non-waveguide 3D-UPPE:
 1. It solves the pulse propagation with a nested [RK4IP](http://www.sciencedirect.com/science/article/pii/S0010465512004262) (Runge-Kutta under the interaction picture). Please find details in the 3D-UPPE's readme.
-2. Adaptive step-size control are implemented (for the nested RK4IP).
+2. Adaptive step-size control is implemented (for the nested RK4IP).
 3. Support broadband scenarios by having $\beta_p(\omega)$.
 4. Support both scalar and polarized scenarios, controlled with `sim.scalar=true/false`.
 7. Support noise-seeded processes, such as spontaneous Raman scattering, with [the newly-developed noise model](https://doi.org/10.48550/arXiv.2410.20567).

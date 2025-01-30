@@ -45,15 +45,19 @@ end
 %% Information for the Hankel transform
 Nr = 2^11; % the number of radial sampling points
 r_max = 4e-3; % the maximum radius; half of the spatial window
-kr_max = 5e5; % the maximum kr vector
+kr_max = 4e4; % the maximum kr vector
 
 [r,kr,...
  l0,exp_prefactor,...
  Q] = Hankel_info(Nr,r_max,kr_max);
 
+dr = diff(r,1,2);
+dkr = diff(kr,1,2);
 % Arrange required Hankel information into "sim" for radially-symmetric
 % UPPE to use later.
-sim.Hankel = struct('r',r,'kr',kr,'l0',l0,'exp_prefactor',exp_prefactor,'Q',Q);
+sim.Hankel = struct('r',r,'kr',kr,...
+                    'dr',dr,'dkr',dkr,...
+                    'l0',l0,'exp_prefactor',exp_prefactor,'Q',Q);
 
 %% Initial condition
 tfwhm = 0.85; % ps
@@ -87,7 +91,7 @@ n2_air = 0; % no nonlinearity
 % =========================================================================
 % Start the simulation of MPC
 % =========================================================================
-num_save = 50;
+num_save = 10;
 z_all = zeros(num_save,6*num_roundtrip+2);
 MFD_all = zeros(num_save,6*num_roundtrip+2);
 
@@ -174,6 +178,30 @@ for i = 2+(1:num_roundtrip*6)
     end
     
     sim.save_period = fiber.L0/num_save;
+
+    % Show initial k space
+    A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(floor(Nt/2)+1,:,end)),...
+                   r_max,...
+                   r,kr,...
+                   dr,dkr,...
+                   l0,exp_prefactor,...
+                   Q);
+    if exist('fig_k','var')
+        close(fig_k); close(fig_k2);
+    end
+    fig_k = figure;
+    plot(kr/1e3,abs(A0_H).^2,'linewidth',2,'Color','r');
+    xlabel('k_r (2\pi/mm)');
+    set(gca,'fontsize',20);
+    title('Initial k space');
+    % Plot the 2D field with pcolor
+    A0_H0 = Hankel_f_at_0(A0_H,l0);
+    fig_k2 = radialPcolor([0,kr]/1e3,cat(2,abs(A0_H0).^2,abs(A0_H).^2));
+    xlabel('k_r (2\pi/mm)');
+    ylabel('k_r (2\pi/mm)');
+    set(gca,'fontsize',20);
+    daspect([1 1 1]); % make aspect ratio = 1
+    title('Initial k space');
     
     % Simulate the propagation
     prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
@@ -204,7 +232,7 @@ end
 
 % Movie
 implay(Frame(:),30);
-exportVideo = VideoWriter('MPC');
+exportVideo = VideoWriter('MPC_r');
 exportVideo.FrameRate = 30;
 open(exportVideo);
 writeVideo(exportVideo, Frame(:));

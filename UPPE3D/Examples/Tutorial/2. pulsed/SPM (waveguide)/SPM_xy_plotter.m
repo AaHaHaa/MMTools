@@ -25,8 +25,8 @@ set(gca,'fontsize',14);
 
 % Comparison of time
 figure;
-[x,y] = meshgrid(t,prop_output.z);
-pcolor(x,y,permute(abs(output_field(:,1,:)).^2,[3 1 2]));
+[x_t,y_z] = meshgrid(t,prop_output.z);
+pcolor(x_t,y_z,permute(abs(output_field(:,1,:)).^2,[3 1 2]));
 shading interp; colormap(jet);
 xlim([-0.2,0.2]);
 xlabel('t');
@@ -44,6 +44,20 @@ xlabel('\nu-\nu_0');
 ylabel('z');
 title('Spectrum during propagation');
 set(gca,'fontsize',14);
+
+% MFD evolution
+figure;
+plot(prop_output.z,MFD,'linewidth',2,'Color','b');
+xlabel('Propagation distance (m)');
+ylabel('MFD (\mum)');
+set(gca,'fontsize',20);
+
+% Energy
+figure;
+plot(prop_output.z,energy,'linewidth',2,'Color','b');
+xlabel('Propagation distance (m)');
+ylabel('Power (nJ)');
+set(gca,'fontsize',20);
 
 % Show final real space
 figure;

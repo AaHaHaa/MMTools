@@ -6,19 +6,19 @@ function damped_window = create_damped_window_xy(Nt,Nx,Ny)
 
 gexpo = 2*20; % 20 is to make it a sharp window
 
-x = ifftshift(1:Nx,2);
+x = 1:Nx;
 xc = floor(Nx/2)+1;
-xfwhm = Nx*0.9;
+xfwhm = Nx*0.82;
 x0 = xfwhm/(2*sqrt(log(2))); % 2*sqrt(log(2))=1.665
 
-y = permute(ifftshift(1:Ny,2),[1,3,2]);
+y = permute(1:Ny,[1,3,2]);
 yc = floor(Ny/2)+1;
-yfwhm = Ny*0.9;
+yfwhm = Ny*0.82;
 y0 = yfwhm/(2*sqrt(log(2))); % 2*sqrt(log(2))=1.665
 
 f = ifftshift((1:Nt)',1);
 fc = floor(Nt/2)+1;
-ffwhm = Nt*0.9;
+ffwhm = Nt*0.82;
 f0 = ffwhm/(2*sqrt(log(2))); % 2*sqrt(log(2))=1.665
 
 % A much sharper damped window is used only for the low-frequency side;

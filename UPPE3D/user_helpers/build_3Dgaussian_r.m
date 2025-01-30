@@ -1,5 +1,7 @@
 function output = build_3Dgaussian_r(MFD, tfwhm, time_window, energy, Nt, r, varargin)
-%BUILD_3DGAUSSIAN_R Build a 3D temporally-superGaussian and radially-symmetric pulse with a Gaussian spatial profile using the following parameters:
+%BUILD_3DGAUSSIAN_R Build a 3D temporally-superGaussian pulse with a 
+%radially-symmetric Gaussian spatial profile using the following 
+%parameters:
 %
 % MFD - mode-field diameter (m)
 % spatial_window - width of the spatial domain (m)
@@ -28,7 +30,7 @@ function output = build_3Dgaussian_r(MFD, tfwhm, time_window, energy, Nt, r, var
 numvarargs = length(varargin);
 if numvarargs > 3
     error('build_3Dgaussian:TooManyInputs', ...
-        'It takes only at most 3 optional inputs');
+          'It takes only at most 3 optional inputs');
 end
 
 % Set defaults for optional inputs

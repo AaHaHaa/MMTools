@@ -28,11 +28,11 @@ fiber.material = 'N-SF11'; % for finding the refractive index in UPPE3D_propagat
 %% Setup PLKM parameters
 num_plates = 12;
 Plate_thickness = 0.5e-3; % m
-Plate_spacing = 9e-3; % m
-D = 9e-3; % m; distance between the focal point and the first plate
+Plate_spacing = 10.3e-3; % m
+D = 12e-3; % m; distance between the focal point and the first plate
 MFD0 = 120e-6; % m; mode-field diameter
 
-plate_z = Plate_spacing;
+plate_z = D;
 for i = 2:num_plates*2+1
     if mod(i,2) == 0
         zi = Plate_thickness;
@@ -155,7 +155,7 @@ end
 
 % Movie
 implay(Frame(:),20);
-exportVideo = VideoWriter('PLKM');
+exportVideo = VideoWriter('PLKM_xy');
 exportVideo.FrameRate = 20;
 open(exportVideo);
 writeVideo(exportVideo, Frame(:));

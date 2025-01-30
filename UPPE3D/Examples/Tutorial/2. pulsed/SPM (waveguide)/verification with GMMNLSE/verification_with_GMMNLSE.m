@@ -56,8 +56,8 @@ fiber.L0 = 0.01;
 sim.save_period = fiber.L0/num_save;
 
 %% Setup general parameters
-Nt = 2^8; % the number of time points
-time_window = 0.8; % ps
+Nt = 2^9; % the number of time points
+time_window = 1; % ps
 dt = time_window/Nt;
 f = sim.f0+(-Nt/2:Nt/2-1)'/(Nt*dt); % THz
 t = (-Nt/2:Nt/2-1)'*dt; % ps

@@ -1,4 +1,4 @@
-function [D_op,W_op,...
+function [D_op,W_op,loss_op,...
           kc,k0,kxy2,...
           n,...
           sim] = calc_D_op_xy(sim,...
@@ -19,14 +19,21 @@ ky = permute(ky,[1,3,2]);
 n = ifftshift(n,1); % (Nt,Nx,Ny,1,Np); in the order that the fft gives
 c = 299792458e-12; % m/ps
 k0 = omegas_real/c; % 1/m
-k = n.*k0;
+k = real(n).*k0;
 % Refractive index is separated into the space-invariant and variant parts.
 % The invariant part is taken at where the highest refractive index is.
 % For example, for graded-index fibers, it's at the fiber center.
 % The space-variant part becomes the waveguide term.
 [~,max_n_idx] = max(feval(@(x)x(:),sum(real(n),[1,5]))); [max_n_idx1,max_n_idx2] = ind2sub([Nx,Ny],max_n_idx);
 nc = n(:,max_n_idx1,max_n_idx2,:,:);% max(max(max(real(n),[],2),[],3),[],5);
-kc = nc.*k0;
+kc = real(nc).*k0;
+
+% Below I set all indices smaller than 1 to 1.
+% This is because in solid, refractive index drops around the loss peak,
+% down to zero. Both the waveguide operator and Kz_correction (applied
+% later) will perform weird, such as having NaN. It is important to neglect
+% these indices.
+kc(real(nc)<1) = k0(real(nc)<1);
 
 kW2 = k.^2 - kc.^2; % waveguide contribution
 W_op = 1i*kW2/2./kc;
@@ -35,17 +42,6 @@ W_op = 1i*kW2/2./kc;
 fftshift_omegas = fftshift(omegas,1);
 spectrum = sum(abs(fftshift(F_op.Ff(fields),1)).^2,[2,3,5]);
 omega0 = sum(fftshift_omegas.*spectrum)/sum(spectrum); % 2*pi*THz; the pulse center frequency (under shifted omega)
-%{
-idx0 = find(fftshift_omegas > omega0,1);
-if idx0 >= Nt/2
-    idx0 = idx0 - Nt/2 +1;
-else
-    idx0 = idx0 + Nt/2 -1;
-end
-
-% Get the waveguide term only near the pulse frequency
-W_op = W_op(idx0,:,:,:,:);
-%}
 
 if ~isfield(sim,'betas')
     if Nt == 1 || ~any(fields(:)) % CW case
@@ -76,5 +72,11 @@ D_op = 1i*(Kz-(sim.betas(1)+sim.betas(2)*omegas));
 % It's lossy (negative real part) here, so making it zero is equivalent but
 % it makes the adaptive step-size control simpler and faster.
 D_op(repmat(kc,1,length(kx),length(ky),1,1) < sqrt(kxy2)) = 0;
+
+% In this 3D-UPPE, it is crucial to maintain energy conservation during the
+% internal RK4IP for dispersion and waveguide operations. Therefore, the
+% operation of loss should be separately computed.
+D_op = 1i*imag(D_op);
+loss_op = -imag(nc).*k0;
 
 end

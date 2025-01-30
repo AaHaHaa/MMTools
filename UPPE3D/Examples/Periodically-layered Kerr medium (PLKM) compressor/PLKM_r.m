@@ -28,11 +28,11 @@ fiber.material = 'N-SF11'; % for finding the refractive index in UPPE3D_propagat
 %% Setup PLKM parameters
 num_plates = 12;
 Plate_thickness = 0.5e-3; % m
-Plate_spacing = 9e-3; % m
-D = 9e-3; % m; distance between the focal point and the first plate
+Plate_spacing = 10.3e-3; % m
+D = 12e-3; % m; distance between the focal point and the first plate
 MFD0 = 120e-6; % m; mode-field diameter
 
-plate_z = Plate_spacing;
+plate_z = D;
 for i = 2:num_plates*2+1
     if mod(i,2) == 0
         zi = Plate_thickness;
@@ -43,17 +43,21 @@ for i = 2:num_plates*2+1
 end
 
 %% Information for the Hankel transform
-Nr = 2^11; % the number of radial sampling points
-r_max = 2e-3; % the maximum radius; half of the spatial window
-kr_max = 5e5; % the maximum kr vector
+Nr = 2^10; % the number of radial sampling points
+r_max = 0.9e-3; % the maximum radius; half of the spatial window
+kr_max = 1.5e5; % the maximum kr vector
 
 [r,kr,...
  l0,exp_prefactor,...
  Q] = Hankel_info(Nr,r_max,kr_max);
 
+dr = diff(r,1,2);
+dkr = diff(kr,1,2);
 % Arrange required Hankel information into "sim" for radially-symmetric
 % UPPE to use later.
-sim.Hankel = struct('r',r,'kr',kr,'l0',l0,'exp_prefactor',exp_prefactor,'Q',Q);
+sim.Hankel = struct('r',r,'kr',kr,...
+                    'dr',dr,'dkr',dkr,...
+                    'l0',l0,'exp_prefactor',exp_prefactor,'Q',Q);
 
 %% Initial condition
 tfwhm = 0.31; % ps
@@ -137,6 +141,30 @@ for i = 1+(1:num_plates*2)
     end
     
     sim.save_period = fiber.L0/num_save;
+
+    % Show initial k space
+    A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(floor(Nt/2)+1,:)),...
+                   r_max,...
+                   r,kr,...
+                   dr,dkr,...
+                   l0,exp_prefactor,...
+                   Q);
+    if exist('fig_k','var')
+        close(fig_k); close(fig_k2);
+    end
+    fig_k = figure;
+    plot(kr/1e3,abs(A0_H).^2,'linewidth',2,'Color','r');
+    xlabel('k_r (2\pi/mm)');
+    set(gca,'fontsize',20);
+    title('Initial k space');
+    % Plot the 2D field with pcolor
+    A0_H0 = Hankel_f_at_0(A0_H,l0);
+    fig_k2 = radialPcolor([0,kr]/1e3,cat(2,abs(A0_H0).^2,abs(A0_H).^2));
+    xlabel('k_r (2\pi/mm)');
+    ylabel('k_r (2\pi/mm)');
+    set(gca,'fontsize',20);
+    daspect([1 1 1]); % make aspect ratio = 1
+    title('Initial k space');
     
     % Simulate the propagation
     prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
@@ -166,7 +194,7 @@ end
 
 % Movie
 implay(Frame(:),20);
-exportVideo = VideoWriter('PLKM');
+exportVideo = VideoWriter('PLKM_r');
 exportVideo.FrameRate = 20;
 open(exportVideo);
 writeVideo(exportVideo, Frame(:));

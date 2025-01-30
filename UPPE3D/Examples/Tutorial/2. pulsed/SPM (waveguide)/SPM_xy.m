@@ -2,6 +2,16 @@
 %
 % This script employs the 3D-UPPE that uses full x-y dimension. For
 % more-efficient modeling, pelase see its radially-symmetric version.
+%
+% Compared to the radially-symmetric script, the spectrum generated with 
+% this script is more-distorted, if we use the GNLSE result as a reference
+% point. This is due to the coarse k-space sampling in this example. To
+% resolve this, spatial_window needs to be increase, as well as the spatial
+% sampling point to maintain the spatial sampling density. However, this 
+% overwhelms our 12-GB Nvidia Titan XP GPU. As a result, this example
+% demonstrates the general difficulty in running a full-field simulation.
+% CPU computations with RAM can increase the memory limit but the 
+% simulation is order-of-magnitude slower than with GPU computations.
 
 close all; clearvars;
 
@@ -15,6 +25,7 @@ lambda0 = 1030e-9; % m
 %% Setup fiber parameters
 sim.lambda0 = lambda0; % the center wavelength
 %im.gpu_yes = false;
+sim.include_Raman = false;
 
 % Load default parameters like
 %
@@ -100,15 +111,14 @@ title('Initial k space');
 %% Propagate
 prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
 
-spectrum3D = abs(fftshift(ifft(prop_output.field,[],1))).^2;
-
 output_field = zeros(Nt,1,num_save+1);
 for i = 1:num_save+1
     output_field(:,:,i) = decompose_into_modes(sim.gpu_yes,phi,prop_output.field(:,:,:,i), prop_output.dx, sim.cuda_dir_path);
 end
 
-energy = squeeze(sum(abs(output_field).^2,1))*dt/1e3;
-energy3D = squeeze(sum(abs(prop_output.field).^2,[1,2,3]));
+%% Results
+MFD = squeeze(calcMFD_xy(squeeze(prop_output.field(floor(Nt/2)+1,:,:,:)),spatial_window*1e-6))*1e6; % um
+energy = squeeze(sum(abs(prop_output.field).^2,[1,2,3]))*(dx^2*1e-12)*dt/1e3; % nJ
 
 %% Plot
 % Time
@@ -133,8 +143,8 @@ set(gca,'fontsize',14);
 
 % Comparison of time
 figure;
-[x,y] = meshgrid(t,prop_output.z);
-pcolor(x,y,permute(abs(output_field(:,1,:)).^2,[3 1 2]));
+[x_t,y_z] = meshgrid(t,prop_output.z);
+pcolor(x_t,y_z,permute(abs(output_field(:,1,:)).^2,[3 1 2]));
 shading interp; colormap(jet);
 xlim([-0.2,0.2]);
 xlabel('t');
@@ -152,6 +162,20 @@ xlabel('\nu-\nu_0');
 ylabel('z');
 title('Spectrum during propagation');
 set(gca,'fontsize',14);
+
+% MFD evolution
+figure;
+plot(prop_output.z,MFD,'linewidth',2,'Color','b');
+xlabel('Propagation distance (m)');
+ylabel('MFD (\mum)');
+set(gca,'fontsize',20);
+
+% Energy
+figure;
+plot(prop_output.z,energy,'linewidth',2,'Color','b');
+xlabel('Propagation distance (m)');
+ylabel('Power (nJ)');
+set(gca,'fontsize',20);
 
 % Show final real space
 figure;

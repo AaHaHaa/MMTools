@@ -3,10 +3,16 @@
 %
 % This script employs the 3D-UPPE that uses full x-y dimension. For
 % more-efficient modeling, pelase see its radially-symmetric version.
+%
+% In addition, this script simulates with continuous-wave (CW) light, which
+% focuses only on the evolution of its spatial profile through the
+% diffraction effect.
+%
+% To run with CW, make Nt = 1.
 
 close all; clearvars;
 
-addpath('../../../UPPE3D algorithm/','../../../user_helpers/');
+addpath('../../UPPE3D algorithm/','../../user_helpers/');
 
 %% Setup fiber parameters
 sim.lambda0 = 1030e-9; % the center wavelength
@@ -34,27 +40,39 @@ num_save = 20;
 
 %% Initial condition
 MFD0 = 1e-3; % m
-spatial_window = 10e-3; % m
+spatial_window = 30e-3; % m
 tfwhm = 1; % ps
 time_window = 10; % ps
 energy = 1e-3; % nJ
 Nt = 1; % the number of time points
 Nx = 2^10; % the number of spatial points
+dx = spatial_window/Nx; % m
+x = (-Nx/2:Nx/2-1)*dx*1e3; % mm
+kx = 2*pi*(-Nx/2:Nx/2-1)/spatial_window*1e-3; % 2*pi/mm
 initial_condition = build_3Dgaussian_xy(MFD0, spatial_window, tfwhm, time_window, energy, Nt, Nx);
-
-% Show initial real space
-figure;
-pcolor(abs(squeeze(initial_condition.field(ceil(Nt/2),:,:))).^2); colormap(jet);colorbar;
-shading interp;colormap(jet);colorbar;
-title('initial real space');
-% Show initial k space
-figure;
-pcolor(abs(fftshift(fft(fft(squeeze(initial_condition.field(ceil(Nt/2),:,:)),[],1),[],2))).^2); colormap(jet);colorbar;
-shading interp;colormap(jet);colorbar;
-title('initial k space');
 
 fiber.n = ones(1,Nx,Nx); % air
 fiber.n2 = 0; % no nonlinearity
+
+%% Show initial spaces
+% Show initial real space
+figure;
+pcolor(x,x,abs(squeeze(initial_condition.field(floor(Nt/2)+1,:,:))).^2); colormap(jet);
+shading interp;colormap(jet);colorbar;
+xlabel('x (mm)');
+ylabel('y (mm)');
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
+title('Initial real space');
+% Show initial k space
+figure;
+pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(initial_condition.field(floor(Nt/2)+1,:,:)),[],1),[],2))).^2); colormap(jet);
+shading interp;colormap(jet);colorbar;
+xlabel('k_x (2\pi/mm)');
+ylabel('k_y (2\pi/mm)');
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
+title('Initial k space');
 
 %% Setup general parameters
 dt = time_window/Nt;
@@ -74,8 +92,8 @@ prop_output1 = UPPE3D_propagate(fiber1,initial_condition,sim1);
 % -------------------------------------------------------------------------
 % Telescope
 % -------------------------------------------------------------------------
-convex_focal_length = 0.9;
-concave_focal_length = -0.3;
+convex_focal_length = 0.9; % m
+concave_focal_length = -0.3; % m
 
 % convex lens 1
 convex_radius_of_curvature = convex_focal_length/2;
@@ -95,23 +113,30 @@ concave_radius_of_curvature = concave_focal_length/2;
 Ef_out = add_thin_lens_phase_xy(ifft(prop_output2.field,[],1),prop_output2.dx,prop_output2.dy,fftshift(lambda,1)/1e9,concave_focal_length);
 % free space after the convex lens 2
 fiber3 = fiber;
-fiber3.L0 = 0.5;
+fiber3.L0 = 0.5; % m
 sim3 = sim;
 sim3.save_period = fiber3.L0/num_save;
 initial_condition3 = prop_output1; initial_condition3.field = fft(Ef_out(:,:,:,end),[],1);
 prop_output3 = UPPE3D_propagate(fiber3,initial_condition3,sim3);
 
 %% Results
-MFD1 = squeeze(calcMFD_xy(squeeze(sum(prop_output1.field,1)),spatial_window))*1e3;
-MFD2 = squeeze(calcMFD_xy(squeeze(sum(prop_output2.field,1)),spatial_window))*1e3;
-MFD3 = squeeze(calcMFD_xy(squeeze(sum(prop_output3.field,1)),spatial_window))*1e3;
+% mode-field diameter
+MFD1 = squeeze(calcMFD_xy(squeeze(sum(prop_output1.field,1)),spatial_window))*1e3; % mm
+MFD2 = squeeze(calcMFD_xy(squeeze(sum(prop_output2.field,1)),spatial_window))*1e3; % mm
+MFD3 = squeeze(calcMFD_xy(squeeze(sum(prop_output3.field,1)),spatial_window))*1e3; % mm
 
-z = [prop_output1.z; prop_output2.z(2:end)+prop_output1.z(end); prop_output3.z(2:end)+prop_output1.z(end)+prop_output2.z(end)];
-MFD = [MFD1;MFD2(2:end);MFD3(2:end)];
+% power
+optical_power1 = squeeze(sum(abs(prop_output1.field).^2,[1,2,3]))*dx^2; % W 
+optical_power2 = squeeze(sum(abs(prop_output2.field).^2,[1,2,3]))*dx^2; % W
+optical_power3 = squeeze(sum(abs(prop_output3.field).^2,[1,2,3]))*dx^2; % W
+
+z = [prop_output1.z; prop_output2.z(2:end)+prop_output1.z(end); prop_output3.z(2:end)+prop_output1.z(end)+prop_output2.z(end)]; % m
+MFD = [MFD1;MFD2(2:end);MFD3(2:end)]; % mm
+optical_power = [optical_power1;optical_power2(2:end);optical_power3(2:end)]; % W
 
 %% Theoretical Gaussian propagation
-w0 = MFD0/2;
-zR0 = pi*w0^2/sim.lambda0; % initial Raylength length
+w0 = MFD0/2; % m
+zR0 = pi*w0^2/sim.lambda0; % initial Raylength length (m)
 MFD1_theory = MFD0*sqrt(1+(squeeze(prop_output1.z)/zR0).^2)*1e3; % mm
 
 lens_ABCD = @(q,f) q./(1-q/f);
@@ -137,14 +162,22 @@ MFD_theory = [MFD1_theory; MFD2_theory(2:end); MFD3_theory(2:end)];
 %% Plot
 % Show final real space
 figure;
-pcolor(abs(squeeze(prop_output3.field(ceil(Nt/2),:,:,end))).^2); colormap(jet);colorbar;
+pcolor(x,x,abs(squeeze(prop_output3.field(floor(Nt/2)+1,:,:,end))).^2); colormap(jet);
 shading interp;colormap(jet);colorbar;
-title('final real space');
+xlabel('x (mm)');
+ylabel('y (mm)');
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
+title('Final real space');
 % Show final k space
 figure;
-pcolor(abs(fftshift(fft(fft(squeeze(prop_output3.field(ceil(Nt/2),:,:,end)),[],1),[],2))).^2); colormap(jet);colorbar;
+pcolor(kx,kx,abs(fftshift(fft(fft(squeeze(prop_output3.field(floor(Nt/2)+1,:,:,end)),[],1),[],2))).^2); colormap(jet);
 shading interp;colormap(jet);colorbar;
-title('final k space');
+xlabel('x (2\pi/mm)');
+ylabel('y (2\pi/mm)');
+daspect([1 1 1]); % make aspect ratio = 1
+set(gca,'fontsize',20);
+title('Final k space');
 
 % Plot MFD
 figure;
@@ -157,4 +190,16 @@ ylim([0,3.5]);
 xlabel('Propagation distance (m)');
 ylabel('MFD (mm)');
 l = legend('Simulated','Calculated'); set(l,'location','northwest');
+set(gca,'fontsize',20);
+
+% Power
+% Check that whether it's conserved
+figure;
+plot(z,optical_power,'linewidth',2,'Color','b');
+hold on;
+plot(prop_output1.z(end)*[1,1],[0.9,1],'linewidth',2,'LineStyle','--','Color','k');
+plot((prop_output1.z(end)+prop_output2.z(end))*[1,1],[0.9,1],'linewidth',2,'LineStyle','--','Color','k');
+hold off
+xlabel('Propagation distance (m)');
+ylabel('Power (W)');
 set(gca,'fontsize',20);

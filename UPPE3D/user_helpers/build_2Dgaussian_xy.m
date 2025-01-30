@@ -15,7 +15,7 @@ function output = build_2Dgaussian_xy(MFD, spatial_window, Nx, varargin)
 numvarargs = length(varargin);
 if numvarargs > 3
     error('build_2Dgaussian:TooManyInputs', ...
-        'It takes only at most 3 optional inputs');
+          'It takes only at most 3 optional inputs');
 end
 
 % Set defaults for optional inputs

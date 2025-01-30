@@ -80,7 +80,7 @@ if sim.gpu_yes
     dy = gpuArray(dy);
 end
 
-[D_op,W_op,...
+[D_op,W_op,loss_op,...
  kc,k0,kxy2,...
  fiber.n,...
  sim] = calc_D_op_xy(sim,...
@@ -92,12 +92,19 @@ end
                      initial_condition.field,...
                      F_op);
 
+%% Create a damped frequency window to prevent aliasing
+sim.damped_window = create_damped_window_xy(Nt,Nx,Ny);
+
 %% Pre-calculate the factor used in 3D-UPPE
 if Nt == 1 % ignore nonlinearity under CW cases
     fiber.n2 = 0;
 end
 prefactor = {1 + kxy2/2./kc.^2,... % correction factor for using kc as the denominator in nonlinear computations (in k-space)
              (1i/2./kc).*(k0.^2*2.*fiber.n*fiber.n2/3)}; % nonlinear prefactor (in real-xy space)
+
+% Incorporate the damped window to the n2 term to remove generation of
+% frequency component near the window edge.
+prefactor{2} = prefactor{2}.*sim.damped_window;
 
 %% Pre-compute the Raman response in frequency space
 if Nt == 1 % ignore Raman scattering under CW cases
@@ -113,9 +120,6 @@ if ~sim.include_Raman % no Raman
 else
     fr = fiber.fr;
 end
-
-%% Create a damped frequency window to prevent aliasing
-sim.damped_window = create_damped_window_xy(Nt,Nx,Ny);
 
 %% Setup the exact save points
 % We will always save the initial condition as well
@@ -141,7 +145,7 @@ run_start = tic;
                                            initial_condition,...
                                            prefactor,...
                                            F_op,...
-                                           D_op, W_op,...
+                                           D_op, W_op, loss_op,...
                                            fr, haw, hbw,...
                                            E_tr_noise);
 

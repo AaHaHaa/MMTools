@@ -13,7 +13,7 @@ function [n, x, dx] = build_GRIN_xy(Nx, spatial_window, core_radius, clad_radius
 
 dx = spatial_window/Nx; % um
 
-x = (-Nx/2:Nx/2-1)*dx;
+x = (-floor(Nx/2):floor((Nx-1)/2))*dx;
 [X, Y] = meshgrid(x, x);
 
 %% GRIN index profile

@@ -45,9 +45,23 @@ ylabel('z');
 title('Spectrum during propagation');
 set(gca,'fontsize',14);
 
+% MFD evolution
+figure;
+plot(prop_output.z,MFD,'linewidth',2,'Color','b');
+xlabel('Propagation distance (m)');
+ylabel('MFD (\mum)');
+set(gca,'fontsize',20);
+
+% Energy
+figure;
+plot(prop_output.z,energy,'linewidth',2,'Color','b');
+xlabel('Propagation distance (m)');
+ylabel('Energy (nJ)');
+set(gca,'fontsize',20);
+
 % Show final real space
 figure;
-plot(r*1e6,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2,'linewidth',2,'Color','b');
+plot(r*1e6,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,end))).^2,'linewidth',2,'Color','b');
 xlabel('r (\mum)');
 xlim([0,10]);
 set(gca,'fontsize',20);
@@ -55,8 +69,8 @@ title('Final real space');
 % Plot the 2D field with pcolor
 % However, the Hankel transform doesn't sample at the origin r=0, so we
 % need to find it first. This can be done with Hankel_f_at_0().
-A0 = Hankel_f_at_0(prop_output.field(ceil(Nt/2),:,end),l0);
-radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2));
+A0 = Hankel_f_at_0(prop_output.field(floor(Nt/2)+1,:,end),l0);
+radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,end))).^2));
 xlabel('x (\mum)');
 ylabel('y (\mum)');
 xlim([-10,10]);
@@ -65,8 +79,10 @@ set(gca,'fontsize',20);
 daspect([1 1 1]); % make aspect ratio = 1
 title('Final real space');
 % Show final k space
-A_H = 2*pi*FHATHA(squeeze(prop_output.field(ceil(Nt/2),:,end)),...
-                  r_max,kr,...
+A_H = 2*pi*FHATHA(squeeze(prop_output.field(floor(Nt/2)+1,:,end)),...
+                  r_max,...
+                  r,kr,...
+                  dr,dkr,...
                   l0,exp_prefactor,...
                   Q);
 figure;
@@ -82,3 +98,9 @@ ylabel('k_y (2\pi/\mum)');
 set(gca,'fontsize',20);
 daspect([1 1 1]); % make aspect ratio = 1
 title('Final k space');
+
+figure;
+plot(r*1e6,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,:))).^2,'linewidth',2);
+xlabel('r (\mum)');
+xlim([0,10]);
+set(gca,'fontsize',20);

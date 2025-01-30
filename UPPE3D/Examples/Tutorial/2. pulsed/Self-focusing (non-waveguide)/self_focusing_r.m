@@ -31,27 +31,31 @@ sim.gpuDevice.Index = 1;
 [fiber,sim] = load_default_UPPE3D_propagate([],sim); % load default parameters
 
 fiber.L0 = 1e-2;
-num_save = 100;
+num_save = 10;
 sim.save_period = fiber.L0/num_save;
 
 %% Information for the Hankel transform
-Nr = 2^10; % the number of radial sampling points
+Nr = 2^11; % the number of radial sampling points
 r_max = 5e-4; % the maximum radius; half of the spatial window
-kr_max = 6e5; % the maximum kr vector
+kr_max = 2e5; % the maximum kr vector
 
 [r,kr,...
  l0,exp_prefactor,...
  Q] = Hankel_info(Nr,r_max,kr_max);
 
+dr = diff(r,1,2);
+dkr = diff(kr,1,2);
 % Arrange required Hankel information into "sim" for radially-symmetric
 % UPPE to use later.
-sim.Hankel = struct('r',r,'kr',kr,'l0',l0,'exp_prefactor',exp_prefactor,'Q',Q);
+sim.Hankel = struct('r',r,'kr',kr,...
+                    'dr',dr,'dkr',dkr,...
+                    'l0',l0,'exp_prefactor',exp_prefactor,'Q',Q);
 
 %% Initial condition
 MFD0 = 100e-6; % m
 tfwhm = 1; % ps
 time_window = 10; % ps
-energy = 8e3; % nJ
+energy = 9e3; % nJ
 Nt = 2^8; % the number of time points
 initial_condition = build_3Dgaussian_r(MFD0, tfwhm, time_window, energy, Nt, r);
 
@@ -74,7 +78,7 @@ fiber.n = n_from_Sellmeier(lambda/1e3).*ones(1,Nr);
 %% Show initial spaces
 % Show initial real space
 figure;
-plot(r*1e6,abs(squeeze(initial_condition.field(ceil(Nt/2),:))).^2,'linewidth',2,'Color','b');
+plot(r*1e6,abs(squeeze(initial_condition.field(floor(Nt/2)+1,:))).^2,'linewidth',2,'Color','b');
 xlabel('r (\mum)');
 xlim([0,100]);
 set(gca,'fontsize',20);
@@ -82,8 +86,8 @@ title('Initial real space');
 % Plot the 2D field with pcolor
 % However, the Hankel transform doesn't sample at the origin r=0, so we
 % need to find it first. This can be done with Hankel_f_at_0().
-A0 = Hankel_f_at_0(initial_condition.field(ceil(Nt/2),:,end),l0);
-radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(initial_condition.field(ceil(Nt/2),:,end))).^2));
+A0 = Hankel_f_at_0(initial_condition.field(floor(Nt/2)+1,:,end),l0);
+radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(initial_condition.field(floor(Nt/2)+1,:,end))).^2));
 xlabel('x (\mum)');
 ylabel('y (\mum)');
 xlim([-100,100]);
@@ -92,8 +96,10 @@ set(gca,'fontsize',20);
 daspect([1 1 1]); % make aspect ratio = 1
 title('Initial real space');
 
-A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(ceil(Nt/2),:)),...
-                   r_max,kr,...
+A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(floor(Nt/2)+1,:)),...
+                   r_max,...
+                   r,kr,...
+                   dr,dkr,...
                    l0,exp_prefactor,...
                    Q);
 
@@ -116,13 +122,13 @@ title('Initial k space');
 prop_output = UPPE3D_propagate(fiber,initial_condition,sim);
 
 %% Results
-MFD = calcMFD_r(squeeze(prop_output.field(Nt/2,:,:)),r)'*1e6; % um
-energy3D = squeeze(sum(abs(prop_output.field).^2,[1,2]));
+MFD = calcMFD_r(squeeze(prop_output.field(floor(Nt/2)+1,:,:)),r)'*1e6; % um
+optical_energy = squeeze(sum(2*pi*trapz(r,abs(prop_output.field).^2.*r,2),1)*dt/1e3); % nJ
 
 %% Plot
 % Show final real space
 figure;
-plot(r*1e6,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2,'linewidth',2,'Color','b');
+plot(r*1e6,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,end))).^2,'linewidth',2,'Color','b');
 xlabel('r (\mum)');
 xlim([0,100]);
 set(gca,'fontsize',20);
@@ -130,8 +136,8 @@ title('Final real space');
 % Plot the 2D field with pcolor
 % However, the Hankel transform doesn't sample at the origin r=0, so we
 % need to find it first. This can be done with Hankel_f_at_0().
-A0 = Hankel_f_at_0(prop_output.field(ceil(Nt/2),:,end),l0);
-radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(prop_output.field(ceil(Nt/2),:,end))).^2));
+A0 = Hankel_f_at_0(prop_output.field(floor(Nt/2)+1,:,end),l0);
+radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,end))).^2));
 xlabel('x (\mum)');
 ylabel('y (\mum)');
 xlim([-100,100]);
@@ -140,8 +146,10 @@ set(gca,'fontsize',20);
 daspect([1 1 1]); % make aspect ratio = 1
 title('Final real space');
 % Show final k space
-A_H = 2*pi*FHATHA(squeeze(prop_output.field(ceil(Nt/2),:,end)),...
-                  r_max,kr,...
+A_H = 2*pi*FHATHA(squeeze(prop_output.field(floor(Nt/2)+1,:,end)),...
+                  r_max,...
+                  r,kr,...
+                  dr,dkr,...
                   l0,exp_prefactor,...
                   Q);
 figure;
@@ -165,6 +173,13 @@ xlabel('Propagation distance (cm)');
 ylabel('MFD (\mum)');
 set(gca,'fontsize',20);
 
+% Energy
+figure;
+plot(prop_output.z,optical_energy,'linewidth',2,'Color','b');
+xlabel('Propagation distance (m)');
+ylabel('Power (nJ)');
+set(gca,'fontsize',20);
+
 % Movie
 Frame = animator_r(prop_output.field,l0,....
                    prop_output.z,MFD,...
@@ -177,4 +192,4 @@ open(exportVideo);
 writeVideo(exportVideo, Frame(:));
 close(exportVideo);
 
-save('self_focusing_r.mat');
+%save('self_focusing_r.mat');

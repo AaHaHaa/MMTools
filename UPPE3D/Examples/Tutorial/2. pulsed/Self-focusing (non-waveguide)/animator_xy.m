@@ -7,7 +7,7 @@ function Frame = animator_xy(A,...
 z = z(:);
 MFD = MFD(:);
 
-x = (-Nx/2:Nx/2-1)*dx*1e6; % spatial vector
+x = (-floor(Nx/2):floor((Nx-1)/2))*dx*1e6; % um; spatial vector
 
 c = 299792.458; % nm/ps
 factor_correct_unit = (Nt*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
@@ -35,15 +35,20 @@ for j = 1:size(A,4)
     xlabel('z (cm)');
     ylabel('MFD (\mum)');
     xlim([0,L0*1e2]); % cm
-    ylim([60,105]); % um
+    ylim([40,105]); % um
 
     subplot(2,2,[3,4]);
-    spectrum = abs(fftshift(ifft(A(:,Nx/2,Nx/2,j),[],1),1)).^2*factor_correct_unit.*factor; % in wavelength domain
-    plot(lambda,spectrum,'Color','b','linewidth',2);
+    spectrum = abs(fftshift(ifft(A(:,:,:,j),[],1),1)).^2*factor_correct_unit.*factor; % nJ/nm/m^2
+    avg_spectrum = sum(spectrum,[2,3])*dx^2; % nJ/nm
+    plot(lambda,avg_spectrum,'Color','b','linewidth',2);
+    hold on;
+    plot(lambda,spectrum(:,floor(Nx/2)+1,floor(Nx/2)+1)/max(spectrum(:,floor(Nx/2)+1,floor(Nx/2)+1))*max(avg_spectrum),'Color','r','linewidth',2);
+    hold off;
     xlabel('Wavelength (nm)');
-    ylabel('PSD (nJ/nm/m^2)');
+    ylabel('PSD (nJ/nm)');
     xlim([1020,1040]);
-    ylim([0,max(spectrum)]);
+    ylim([0,max(avg_spectrum)]);
+    legend('Avg spectrum','Center spectrum (norm.)');
 
     set(fig,'Color',[1,1,1]);
 
