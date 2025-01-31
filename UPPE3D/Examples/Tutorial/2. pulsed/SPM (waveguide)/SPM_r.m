@@ -15,7 +15,7 @@ lambda0 = 1030e-9; % m
 %% Setup fiber parameters
 sim.lambda0 = lambda0; % the center wavelength
 %sim.gpu_yes = false;
-sim.include_Raman = false;
+%sim.include_Raman = false;
 
 % Load default parameters like
 %
@@ -62,7 +62,7 @@ sim.Hankel = struct('r',r,'kr',kr,...
 
 %% Setup general parameters
 Nt = 2^8; % the number of time points
-time_window = 0.8; % ps
+time_window = 5; % ps
 dt = time_window/Nt;
 f = sim.f0+(-Nt/2:Nt/2-1)'/(Nt*dt); % THz
 t = (-Nt/2:Nt/2-1)'*dt; % ps
@@ -75,15 +75,15 @@ fiber.n = calc_index_profile_r(fiber,r,f);
 loaded_data = load('mode1wavelength10300.mat','phi','x','epsilon');
 
 % take only the central part
-phi = interp1(loaded_data.x*1e-6,loaded_data.phi(:,ceil(length(loaded_data.x)/2)),r,'linear',0);
-phi = phi/sqrt(2*pi*trapz(r,abs(phi).^2.*r));
+loaded_data.phi = loaded_data.phi/sqrt(sum(abs(loaded_data.phi(:)).^2)*mean(diff(loaded_data.x*1e-6))^2);
+phi = sqrt(interp1(loaded_data.x*1e-6,abs(loaded_data.phi(:,floor(length(loaded_data.x)/2)+1)).^2,r,'linear',0));
 
 Aeff = (2*pi*trapz(r,abs(phi).^2.*r)).^2./(2*pi*trapz(r,abs(phi).^4.*r)); % effective mode-field area (m^2)
 MFR = sqrt(Aeff/pi)*1e6; % um
 
 % input pulse
-tfwhm = 0.03; % ps
-total_energy = 10; % nJ
+tfwhm = 0.5; % ps
+total_energy = 100; % nJ
 initial_condition = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
 initial_condition.field = initial_condition.fields.*phi; initial_condition = rmfield(initial_condition,'fields');
 initial_condition.r = r;
@@ -147,7 +147,7 @@ energy = squeeze(sum(2*pi*trapz(r,abs(prop_output.field).^2.*r,2),1)*dt/1e3); % 
 % Time
 figure;
 h = plot(t,abs(output_field(:,:,end)).^2);
-xlim([-0.2,0.2]);
+xlim([-2,2]);
 xlabel('t');
 ylabel('Power');
 title('Field');
@@ -157,7 +157,7 @@ set(gca,'fontsize',14);
 % Spectrum
 figure;
 h = plot(f-sim.f0,abs(fftshift(ifft(output_field(:,:,end)),1)).^2);
-xlim([-100,100]);
+xlim([-20,20]);
 xlabel('\nu-\nu_0');
 ylabel('PSD');
 title('Spectrum');
@@ -169,7 +169,7 @@ figure;
 [x,y] = meshgrid(t,prop_output.z);
 pcolor(x,y,permute(abs(output_field(:,1,:)).^2,[3 1 2]));
 shading interp; colormap(jet);
-xlim([-0.2,0.2]);
+xlim([-2,2]);
 xlabel('t');
 ylabel('z');
 title('Field during propagation');
@@ -179,7 +179,7 @@ set(gca,'fontsize',14);
 figure;
 [x_f,y_z] = meshgrid(f-sim.f0,prop_output.z(2:end));
 pcolor(x_f,y_z,permute(abs(fftshift(ifft(output_field(:,1,2:end)),1)).^2,[3 1 2]));
-xlim([-100,100]);
+xlim([-20,20]);
 shading interp; colormap(jet);
 xlabel('\nu-\nu_0');
 ylabel('z');
