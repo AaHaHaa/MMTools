@@ -1,5 +1,5 @@
 function Frame = animator_r(Frame,...
-                            A,l0,...
+                            A,...
                             z,MFD,start_idx,...
                             Nt,dt,r,lambda,...
                             plate_z)
@@ -9,10 +9,6 @@ z = z(:);
 MFD = MFD(:);
 
 r = r*1e6; % um
-
-% The field maximum should be at the spatial center, which requires special
-% calculation for the FHATHA, Hankel transform with high accuracy.
-A0 = Hankel_f_at_0(A,l0);
 
 c = 299792.458; % nm/ps
 factor_correct_unit = (Nt*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
@@ -28,7 +24,7 @@ for j = 1:size(A,3)-1
 
     subplot(2,2,1);
     A_spatial = A(Nt/2,:,j+1);
-    plot(r,abs(A_spatial.').^2/max(abs(A0(Nt/2,:,j+1).').^2),'linewidth',2,'Color','b');
+    plot(r,abs(A_spatial.').^2/max(abs(A_spatial).^2),'linewidth',2,'Color','b');
     xlabel('x (\mum)');
     xlim([0,220]);
 

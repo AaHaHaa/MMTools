@@ -2,7 +2,7 @@
 
 close all; clearvars;
 
-load('verification_GMMNLSE.mat');
+load('SPM.mat');
 %% Plot
 % Time
 figure;

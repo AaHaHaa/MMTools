@@ -8,7 +8,7 @@ addpath('../../../../../../GMMNLSE/GMMNLSE algorithm/','../../../../../../GMMNLS
 sim.lambda0 = 1030e-9; % the center wavelength
 sim.include_Raman = false; % no Raman
 sim.gpu_yes = false; % don't use GPU
-fiber.MFD = 3.0941*2;
+fiber.MFD = 3.2*2;
 sim.pulse_centering = false;
 
 % Load default parameters like 

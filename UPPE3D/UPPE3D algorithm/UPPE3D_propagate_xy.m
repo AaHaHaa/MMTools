@@ -49,8 +49,8 @@ end
 % The convention of k space doesn't matter, so I pick the one that match the mathematics to be consistent with kz
 F_op = struct( 'Ff', @(x) ifft(x,[],1),...
               'iFf', @(x) fft(x,[],1),...
-               'Fk', @(x) fft(fft(x,[],2),[],3),...
-              'iFk', @(x) ifft(ifft(x,[],2),[],3));
+               'Fk', @(x,E) fft(fft(x,[],2),[],3),... % E is used only in the radially-symmetric scheme but just a dummy variable here in the xy scheme
+              'iFk', @(x,E) ifft(ifft(x,[],2),[],3)); % E is used only in the radially-symmetric scheme but just a dummy variable here in the xy scheme
 
 %% Pre-calculate the dispersion term
 % The "omegas" here is actually (omega - omega0), omega: true angular frequency

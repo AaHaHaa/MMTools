@@ -41,24 +41,22 @@ fiber.L0 = 0.01;
 num_save = 10;%100;
 sim.save_period = fiber.L0/num_save;
 
-%fiber.n2 = 0;
-
 %% Information for the Hankel transform
 Nr = 2^10; % the number of radial sampling points
 r_max = 25e-6; % the maximum radius; half of the spatial window
 kr_max = 20e5; % the maximum kr vector
 
 [r,kr,...
- l0,exp_prefactor,...
- Q] = Hankel_info(Nr,r_max,kr_max);
+ dr,dkr,...
+ l0,exp_prefactor,n2_prefactor,...
+ ifftQ] = Hankel_info(Nr,r_max,kr_max);
 
-dr = diff(r,1,2);
-dkr = diff(kr,1,2);
 % Arrange required Hankel information into "sim" for radially-symmetric
 % UPPE to use later.
 sim.Hankel = struct('r',r,'kr',kr,...
                     'dr',dr,'dkr',dkr,...
-                    'l0',l0,'exp_prefactor',exp_prefactor,'Q',Q);
+                    'l0',l0,'exp_prefactor',exp_prefactor,'n2_prefactor',n2_prefactor,...
+                    'ifftQ',ifftQ);
 
 %% Setup general parameters
 Nt = 2^8; % the number of time points
@@ -77,6 +75,7 @@ loaded_data = load('mode1wavelength10300.mat','phi','x','epsilon');
 % take only the central part
 loaded_data.phi = loaded_data.phi/sqrt(sum(abs(loaded_data.phi(:)).^2)*mean(diff(loaded_data.x*1e-6))^2);
 phi = sqrt(interp1(loaded_data.x*1e-6,abs(loaded_data.phi(:,floor(length(loaded_data.x)/2)+1)).^2,r,'linear',0));
+phi = phi/sqrt(2*pi*trapz(r,abs(phi).^2.*r));
 
 Aeff = (2*pi*trapz(r,abs(phi).^2.*r)).^2./(2*pi*trapz(r,abs(phi).^4.*r)); % effective mode-field area (m^2)
 MFR = sqrt(Aeff/pi)*1e6; % um
@@ -97,10 +96,7 @@ xlim([0,10]);
 set(gca,'fontsize',20);
 title('Initial real space');
 % Plot the 2D field with pcolor
-% However, the Hankel transform doesn't sample at the origin r=0, so we
-% need to find it first. This can be done with Hankel_f_at_0().
-A0 = Hankel_f_at_0(initial_condition.field(floor(Nt/2)+1,:,end),l0);
-radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(initial_condition.field(floor(Nt/2)+1,:,end))).^2));
+radialPcolor(r*1e6,abs(squeeze(initial_condition.field(floor(Nt/2)+1,:,end))).^2);
 xlabel('x (\mum)');
 ylabel('y (\mum)');
 xlim([-10,10]);
@@ -113,8 +109,8 @@ A0_H = 2*pi*FHATHA(squeeze(initial_condition.field(floor(Nt/2)+1,:)),...
                    r_max,...
                    r,kr,...
                    dr,dkr,...
-                   l0,exp_prefactor,...
-                   Q);
+                   l0,exp_prefactor,n2_prefactor,...
+                   ifftQ);
 
 % Show initial k space
 figure;
@@ -123,8 +119,7 @@ xlabel('k_r (2\pi/\mum)');
 set(gca,'fontsize',20);
 title('Initial k space');
 % Plot the 2D field with pcolor
-A0_H0 = Hankel_f_at_0(A0_H,l0);
-radialPcolor([0,kr]/1e6,cat(2,abs(A0_H0).^2,abs(A0_H).^2));
+radialPcolor(kr/1e6,abs(A0_H).^2);
 xlabel('k_x (2\pi/\mum)');
 ylabel('k_y (2\pi/\mum)');
 set(gca,'fontsize',20);
@@ -208,10 +203,7 @@ xlim([0,10]);
 set(gca,'fontsize',20);
 title('Final real space');
 % Plot the 2D field with pcolor
-% However, the Hankel transform doesn't sample at the origin r=0, so we
-% need to find it first. This can be done with Hankel_f_at_0().
-A0 = Hankel_f_at_0(prop_output.field(floor(Nt/2)+1,:,end),l0);
-radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,end))).^2));
+radialPcolor(r*1e6,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,end))).^2);
 xlabel('x (\mum)');
 ylabel('y (\mum)');
 xlim([-10,10]);
@@ -224,16 +216,15 @@ A_H = 2*pi*FHATHA(squeeze(prop_output.field(floor(Nt/2)+1,:,end)),...
                   r_max,...
                   r,kr,...
                   dr,dkr,...
-                  l0,exp_prefactor,...
-                  Q);
+                  l0,exp_prefactor,n2_prefactor,...
+                  ifftQ);
 figure;
 plot(kr/1e6,abs(A_H).^2,'linewidth',2,'Color','r');
 xlabel('k_r (2\pi/\mum)');
 set(gca,'fontsize',20);
 title('Final k space');
 % Plot the 2D field with pcolor
-A_H0 = Hankel_f_at_0(A_H,l0);
-radialPcolor([0,kr]/1e6,cat(2,abs(A_H0).^2,abs(A_H).^2));
+radialPcolor(kr/1e6,abs(A_H).^2);
 xlabel('k_x (2\pi/\mum)');
 ylabel('k_y (2\pi/\mum)');
 set(gca,'fontsize',20);

@@ -67,10 +67,7 @@ xlim([0,10]);
 set(gca,'fontsize',20);
 title('Final real space');
 % Plot the 2D field with pcolor
-% However, the Hankel transform doesn't sample at the origin r=0, so we
-% need to find it first. This can be done with Hankel_f_at_0().
-A0 = Hankel_f_at_0(prop_output.field(floor(Nt/2)+1,:,end),l0);
-radialPcolor([0,r]*1e6,cat(2,abs(A0).^2,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,end))).^2));
+radialPcolor(r*1e6,abs(squeeze(prop_output.field(floor(Nt/2)+1,:,end))).^2);
 xlabel('x (\mum)');
 ylabel('y (\mum)');
 xlim([-10,10]);
@@ -83,16 +80,15 @@ A_H = 2*pi*FHATHA(squeeze(prop_output.field(floor(Nt/2)+1,:,end)),...
                   r_max,...
                   r,kr,...
                   dr,dkr,...
-                  l0,exp_prefactor,...
-                  Q);
+                  exp_prefactor,n2_prefactor,...
+                  ifftQ);
 figure;
 plot(kr/1e6,abs(A_H).^2,'linewidth',2,'Color','r');
 xlabel('k_r (2\pi/\mum)');
 set(gca,'fontsize',20);
 title('Final k space');
 % Plot the 2D field with pcolor
-A_H0 = Hankel_f_at_0(A_H,l0);
-radialPcolor([0,kr]/1e6,cat(2,abs(A_H0).^2,abs(A_H).^2));
+radialPcolor(kr/1e6,abs(A_H).^2);
 xlabel('k_x (2\pi/\mum)');
 ylabel('k_y (2\pi/\mum)');
 set(gca,'fontsize',20);

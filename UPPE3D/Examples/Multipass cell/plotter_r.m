@@ -1,5 +1,5 @@
 function fig = plotter_r(fig,...
-                         A,l0,...
+                         A,...
                          z,MFD,...
                          Nt,r,lambda)
 
@@ -9,10 +9,6 @@ MFD = MFD(:);
 
 r = r*1e6; % um
 
-% The field maximum should be at the spatial center, which requires special
-% calculation for the FHATHA, Hankel transform with high accuracy.
-A0 = Hankel_f_at_0(A,l0);
-
 if isempty(fig)
     fig = figure;
 else
@@ -20,14 +16,14 @@ else
 end
 subplot(2,2,1)
 input_A = A(Nt/2,:,1);
-plot(r,abs(input_A.').^2/max(abs(A0(Nt/2,:,1).').^2),'linewidth',2,'Color','b');
+plot(r,abs(input_A.').^2/max(abs(input_A).^2),'linewidth',2,'Color','b');
 xlabel('x (\mum)');
 xlim([0,2000]);
 title('Beam profile input');
 
 subplot(2,2,2)
 output_A = A(Nt/2,:,end);
-plot(r,abs(output_A.').^2/max(abs(A0(Nt/2,:,end).').^2),'linewidth',2,'Color','b');
+plot(r,abs(output_A.').^2/max(abs(output_A).^2),'linewidth',2,'Color','b');
 xlabel('x (\mum)');
 xlim([0,2000]);
 title('Beam profile output');

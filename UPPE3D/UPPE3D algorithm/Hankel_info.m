@@ -1,6 +1,7 @@
 function [r,kr,...
-          l0,exp_prefactor,...
-          Q] = Hankel_info(Nr,r_max,varargin)
+          dr,dkr,...
+          l0,exp_prefactor,r2_prefactor,...
+          ifftQ] = Hankel_info(Nr,r_max,varargin)
 %HANKEL_INFO This is the precomputation for the FHATHA, fast Hankel
 %transform of high accuracy
 %   This numerical scheme for Hankel transform follows
@@ -18,12 +19,25 @@ function [r,kr,...
 % Optional input argument:
 %   k_max: the maximum k-radius;
 %          If it's not supplied, it's automatically determined by the largest radial sampling spacing in this code.
+%
+% Output arguments:
+%   r: sampling radius (m); (1,Nr)
+%   kr: sampling k-vector radius (2*pi/m); (1,Nr)
+%   dr: samppling radius spacing (m); (1,Nr);
+%       dr includes the effect from r=0, so it is computed from
+%           dr = diff([0,r]);
+%   dkr: samppling k-vector radius (2*pi/m); (1,Nr);
+%       dr includes the effect from kr=0, so it is computed from
+%           dkr = diff([0,kr]);
+%   exp_prefactor: exponential prefactor used in computing R in FHATHA prepared for cross correlation
+%   r2_prefactor: (=r^2/2) prefactor used in computing the Hankel-transformed signal at kr=0
+%   ifftQ: the inverse-Fourier-transformed Q in FHATHA prepared for cross correlation
 
 n = 0:(Nr-1);
 
 % Finding alpha requires MATLAB's symbolic toolbox
 syms a;
-alpha = double(vpasolve(exp(-a*(Nr-1))==1-exp(-a),a,0.01)); % I pick 0.01 as initial guess
+alpha = double(vpasolve(exp(-a*(Nr-1))==(1-exp(-a)),a,0.01)); % I pick 0.01 as initial guess
 
 %% Function-evaluation points
 zeta0 = (1+exp(alpha))/2*exp(-alpha*Nr); % the parameter that makes normalized function-evaluation point at the center of each sampling interval
@@ -39,17 +53,24 @@ else
     kr_max = varargin{1};
 end
 
-r = r_max*zeta; % sampling radius
-kr = kr_max*zeta; % sampling k-radius
+ r = [0, r_max*zeta]; % sampling radius
+kr = [0,kr_max*zeta]; % sampling k-radius
+
+ dr = diff(r);
+dkr = diff(kr);
 
 %% Precompute Q = J1(...)
 n = 0:(2*Nr-1);
 Q = besselj(1,kr_max*r_max*zeta0*exp(alpha*(n+1-Nr)));
+ifftQ = ifft(Q,[],2);
 
 %% R's prefactor
-l0 = exp(alpha)*(2+exp(alpha))/(1+exp(alpha))^2/(1-exp(-2*alpha));
-
 n = 0:(Nr-1);
 exp_prefactor = exp(alpha*(n+1-Nr));
+
+l0 = exp(alpha)*(2+exp(alpha))/(1+exp(alpha))^2/(1-exp(-2*alpha));
+
+%% prefactor in A_H(k=0)'s computation
+r2_prefactor = exp_prefactor.^2/2;
 
 end

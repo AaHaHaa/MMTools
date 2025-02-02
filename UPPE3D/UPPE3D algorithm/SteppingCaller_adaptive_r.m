@@ -51,7 +51,7 @@ else
     E_out(:,:,1,:) = initial_condition.field;
 end
 
-last_E = F_op.Fk(F_op.Ff(initial_condition.field)); % in k- and frequency space
+last_E = F_op.Fk(F_op.Ff(initial_condition.field),true); % in k- and frequency space
 
 % Create a progress bar first
 if sim.progress_bar
@@ -173,7 +173,7 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
     % If it's time to save, get the result from the GPU if necessary,
     % transform to the time domain, and save it
     if z >= save_z(save_i)-eps(z)
-        E_out_ii = F_op.iFk(F_op.iFf(last_E));
+        E_out_ii = F_op.iFk(F_op.iFf(last_E),true);
         if sim.gpu_yes
             save_dz(save_i) = gather(sim.last_dz);
             save_z(save_i) = gather(z);

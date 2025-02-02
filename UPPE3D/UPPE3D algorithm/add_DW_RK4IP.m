@@ -10,7 +10,7 @@ function [last_E,...
 %ADD_DW_RK4IP This computes the exp(D_op+W_op)*E0 with the adaptive-step RK4IP
 
 if any(W_op(:))
-    apply_W = @(x) Kz_correction.*F_op.Fk(W_op.*F_op.iFk(x)); % apply waveguide effect in position space
+    apply_W = @(x) Kz_correction.*F_op.Fk(W_op.*F_op.iFk(x,false),false); % apply waveguide effect in position space
 else
     apply_W = @(x) 0; % no waveguide effect
 end
