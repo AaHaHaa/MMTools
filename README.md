@@ -5,6 +5,9 @@ This is the shared package to simulate, with MATLAB, pulse propagation in <br>
 
 It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA). The non-waveguide code is useful for simulating multipass cell or multiplate compressor, etc.
 
+> [!NOTE]
+> Due to recent intense investigation and implementation of the 3D-UPPE, I plan to separate it out from this package as another independent Github shared project. I'm currently implementing the gas-filled version for gas-filled multipass cell. Current goal is to implement the gas Raman response (which most works ignore due to complicated gas Raman response) and the photoionization. As I described in my gas_UPPE Github project, I am the first who developed a full theory for the Raman in gases (of course based on others' works). I'll implement it in the future 3D-UPPE. Future 3D-UPPE should include complete bulk solid and gas capabilities.
+
 ## Capabilities:
 
 ### Waveguide MM-UPPE:
