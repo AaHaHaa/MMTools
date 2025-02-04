@@ -9,7 +9,7 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 > Due to recent intense investigation and implementation of the 3D-UPPE, I plan to separate it out from this package as another independent Github shared project. I'm currently implementing the gas-filled version for gas-filled multipass cell. Current goal is to implement the gas Raman response (which most works ignore due to complicated gas Raman response) and the photoionization. As I described in my gas_UPPE Github project, I am the first who developed a full theory for the Raman in gases (of course based on others' works) [see my published paper [[2]](#references-our-papers)]. I'll implement it in the future 3D-UPPE. Future 3D-UPPE should include complete bulk solid and gas capabilities.
 
 > [!NOTE]
-> I should probably write some introduction on arXiv for people to cite, and to gain some attention from others. This code started as sharing my multimode gain model, but it has become too comprehensive since it was shared. For example, I don't think there is any super-fast counterpumping pulsed model with gain's rate equations; I came up with a modified binary search algorithm for that, which is too small for publication but is super useful in real-life amplifiers.
+> I should probably write some introduction on arXiv for people to cite, and to gain some attention from others. This code started as sharing my multimode gain model, but it has become too comprehensive since it was shared. For example, I don't think there is any super-fast counterpumping pulsed model with gain's rate equations; I came up with a modified binary search algorithm for that, which is too small as novelty for publication but is super useful in real-life amplifiers.
 
 ## Capabilities:
 
