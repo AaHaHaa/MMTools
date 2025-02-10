@@ -1,19 +1,12 @@
 # MMTools
-This is the shared package to simulate, with MATLAB, pulse propagation in <br>
-1. waveguide: a solid-core fiber with GMMNLSE/MM-UPPE
-2. non-waveguide: bulk crystal/free space with 3D-UPPE
+This is the shared package to simulate, with MATLAB, pulse propagation in a waveguide (e.g. a solid-core fiber) with GMMNLSE/MM-UPPE.
 
-It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA). The non-waveguide code is useful for simulating multipass cell or multiplate compressor, etc.
-
-> [!NOTE]
-> Due to recent intense investigation and implementation of the 3D-UPPE, I plan to separate it out from this package as another independent Github shared project. I'm currently implementing the gas-filled version for gas-filled multipass cell. Current goal is to implement the gas Raman response (which most works ignore due to complicated gas Raman response) and the photoionization. As I described in my gas_UPPE Github project, I am the first who developed a full theory for the Raman in gases (of course based on others' works) [see my published paper [[2]](#references-our-papers)]. I'll implement it in the future 3D-UPPE. Future 3D-UPPE should include complete bulk solid and gas capabilities.
+It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA).
 
 > [!NOTE]
 > I should probably write some introduction on arXiv for people to cite, and to gain some attention from others. This code started as sharing my multimode gain model, but it has become too comprehensive since it was shared. For example, I don't think there is any super-fast counterpumping pulsed model with gain's rate equations; I came up with a modified binary search algorithm for that, which is too small as novelty for publication but is super useful in real-life amplifiers.
 
 ## Capabilities:
-
-### Waveguide MM-UPPE:
 1. It solves the pulse propagation with
    - [RK4IP](http://www.sciencedirect.com/science/article/pii/S0010465512004262) (Runge-Kutta under the interaction picture) if single-mode.
    - [MPA](https://ieeexplore.ieee.org/document/8141863) (massively parallel algorithm) if multimode.
@@ -38,15 +31,6 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
 7. Support noise-seeded processes, such as spontaneous Raman scattering, with [the newly-developed noise model](https://doi.org/10.48550/arXiv.2410.20567).
 8. For multimode, GPU computation (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
 
-### Non-waveguide 3D-UPPE:
-1. It solves the pulse propagation with a nested [RK4IP](http://www.sciencedirect.com/science/article/pii/S0010465512004262) (Runge-Kutta under the interaction picture). Please find details in the 3D-UPPE's readme.
-2. Adaptive step-size control is implemented (for the nested RK4IP).
-3. Support broadband scenarios by having $\beta_p(\omega)$.
-4. Support both scalar and polarized scenarios, controlled with `sim.scalar=true/false`.
-7. Support noise-seeded processes, such as spontaneous Raman scattering, with [the newly-developed noise model](https://doi.org/10.48550/arXiv.2410.20567).
-8. Efficient GPU computation (with Nvidia CUDA) is implemented. It is controlled by `sim.gpu_yes=true/false`.
-9. Support radially-symmetric scheme with the Hankel transform for efficient modeling.
-
 ## Fourier-Transform tutorial
 Since I've seen many misuse of Fourier Transform, I wrote [this tutorial](https://doi.org/10.48550/arXiv.2412.20698). Please take a look. Briefly speaking for one misuse, it's necessary to use MATLAB's `ifft` for Fourier Transform into the spectral domain.
 
@@ -67,43 +51,32 @@ Typically MATLAB deals with this, but there are still come steps to follow befor
 3. [Noise modeling](https://doi.org/10.48550/arXiv.2410.20567)
 
 ## Demonstrations:
-- **Self-steepening (waveguide)**  
+- **Self-steepening**  
 The pulse's peak shifts in time, creating a sharp temporal edge.   
 Source: "GMMNLSE/Examples/Some tutorials/10. Self-steepening_Shock wave"  
 <img src="Readme_images/Self_steepening.gif" width=50%>
 
-- **Soliton self-frequency shift (SSFS) (waveguide)**  
+- **Soliton self-frequency shift (SSFS)**  
 The soliton redshifts due to intrapulse Raman scattering.  
 In the animation, it shifts in time because redshifting makes the pulse slows down (in an anomalous-dispersion environment), slower than the user-defined moving window.  
 Source: "GMMNLSE/Examples/Some tutorials/6. Soliton self-frequency shift"  
 <img src="Readme_images/SSFS.gif" width=45%>
 
-- **Orthogonally-polarized Raman coupling (waveguide)**  
+- **Orthogonally-polarized Raman coupling**  
 The soliton couples its energy from one polarization mode to the other, while redshifting due to SSFS.  
 Source: "GMMNLSE/Examples/Orthogonally-polarized Raman scattering"  
 <img src="Readme_images/vector_Raman.gif" width=45%>
 
-- **Gain-managed nonlinear amplification (GMNA) (waveguide)**  
+- **Gain-managed nonlinear amplification (GMNA)**  
 The pulse is amplified in an Yb-doped fiber amplifier, along with the gain management of a spectrally-shifting gain spectrum as the pulse is amplified. This is a new recently-discovered amplification, called [GMNA](http://www.osapublishing.org/optica/abstract.cfm?URI=optica-6-10-1328).  
 Source: "GMMNLSE/Examples/Gain-rate-equation model/GMNA/Yb GMNA"  
 <img src="Readme_images/GMNA.gif" width=45%>
 
-- **Loss-enhanced (spatiotemporal-dissipation-enhanced) Kerr beam cleaning (waveguide)**  
+- **Loss-enhanced (spatiotemporal-dissipation-enhanced) Kerr beam cleaning**  
 The multimode pulse experiences Kerr-induced beam cleaning into the fundamental Gaussian mode during amplification. Because the fundamental mode experiences less absorption from the gain fiber, gain/loss effect facilitates beam cleaning. See [[1]](#references-our-papers) for details.  
 The animation shows the evolutions of the (left) optical spatial profile and the (right) upper-state population (related to inversion).  
 Source: "GMMNLSE/Examples/Loss-enhanced beam cleaning"  
 <img src="Readme_images/BC_ns.jpg" width=45%><img src="Readme_images/Field_N1.gif" width=45%>
-
-- **Periodically-layered Kerr medium (non-waveguide)**  
-[Periodically-layered medium](https://doi.org/10.1364/OL.539381) in air can be a waveguide in nonlinear conditions.  
-It acts as a discrete "nonlinear" waveguide with interleaving media of low (e.g., air) and high (e.g., thin glass) nonlinear refractive indices. Thin glass induces nonlinear self-focusing and air introduces diffraction. This artificially-contructed waveguide nonlinearly broadens the pulse, introducing self-phase modulation that can be compensated with a dechirper. This results in a temporally-compressed pulse. Typical compression factor is around 5.  
-Source: "UPPE3D/Examples/OL Paper data - PLKM compressor (N-SF11_12plates_20uJ_300fs)"  
-<img src="Readme_images/PLKM.gif" width=45%>
-
-- **Self focusing (non-waveguide)**  
-Pulse with high peak power will experience self-focusing in a Kerr medium with a positive nonlinear refractive index. The medium effectively acts as a lens, reducing the propagating beam size.  
-Source: "UPPE3D/Examples/Tutorial/3. Self-focusing"  
-<img src="Readme_images/self_focusing.gif" width=45%>
 
 ## Self-steepening/shock-wave effect
 Since I've received many questions about whether this code includes the self-steepening/shock-wave term, I will explain it here.  
@@ -114,7 +87,7 @@ Please see the supplement of [[2]](#references-our-papers) for the derivation of
 Shock-wave effect cannot be turned off in this package. I specifically created another code privately for the animation demonstration in this section.
 
 ## Notes:
-There is two `readme.pdf` in the `Documentations/` folders of **GMMNLSE** and **UPPE3D**. Please find details of how to use this package in them. However, the fastest way to learn how to use this package is to learn from the examples in their `Examples/` folders.
+There is a `readme.pdf` in the `Documentations/` folder of **GMMNLSE**. Please find details of how to use this package in it. However, the fastest way to learn how to use this package is to learn from the examples in the `Examples/` folder.
 
 I'm Yi-Hao Chen, the author of the code and from Frank Wise's group at Cornell Applied Physics. This code is basically an upgraded and highly-optimized version of our [WiseLabAEP/GMMNLSE-Solver-FINAL](https://github.com/WiseLabAEP/GMMNLSE-Solver-FINAL) with much more functionalities, which however might overwhelm users and thus require more fiber-optic background. It can run order-of-magnitude faster than our old code due to optimizing with CUDA+shared memory, as well as reducing the usage of for-loops. Although our old one claims to be fast with GPU, its CUDA implementation is not optimized, let alone its CPU implementation with a lot of slow for-loops. Besides, this package includes adaptive step-size control, which improves the performance significantly and allows users to be free from worrying the reliability of a simulation. For optimization details, please see the supplement of our paper [[1]](#references-our-papers). 
 
@@ -136,5 +109,5 @@ Update the code with the newly-developed noise model with [the finally-published
 Fix the bug of the Raman computation in 3D-UPPE. Thanks to Su-cc for finding this nontrivial bug.
 * 1/1/2025:<br>
 Add documentations for 3D-UPPE and Fourier Transform. I realized that the convention of spatial Fourier Transform does not affect the result due to second-order derivative, unlike the spectral/temporal dimension. Finish adding documentation for BuildFiber which I should have done a year ago.
-* 1/25/2025:<br>
-Implement the fast radially-symmetric scheme for the 3D-UPPE with the Hankel transform.
+* 2/9/2025:<br>
+Separate out the 3D-UPPE to another Github repository.
