@@ -168,7 +168,6 @@ output_field = zeros(Nt,num_modes_OM4,max_rt); % the output pulse
 
 %% Load gain parameters
 L_air = 1; % 1 is the free-space length
-c = 299792458; % m/s
 v = 1/fiber_OM4.betas(2)*1e12; % velocity in the fiber
 
 % Approximate roundtrip time for the cavity
@@ -385,3 +384,29 @@ shading interp; colormap(jet);
 xlabel('x (\mum)');
 ylabel('y (\mum)');
 title('Output spatial profile');
+
+factor_correct_unit = (Nt*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
+                                     % "/1e3" is to make pJ into nJ
+factor = (c*1e-3)./lambda.^2; % change the spectrum from frequency domain into wavelength domain
+
+save_point = size(output_field,3);
+Frame(save_point) = struct('cdata',[],'colormap',[]);
+for Fi = 1:save_point
+    figs = figure;
+    subplot(2,2,[1,2]);
+    plot(t,abs(output_field(:,:,Fi)).^2,'linewidth',2);
+    xlabel('Time (ps)');
+    ylabel('Power (W)');
+    subplot(2,2,[3,4]);
+    plot(lambda,abs(fftshift(ifft(output_field(:,:,Fi)))).^2*factor_correct_unit.*factor,'linewidth',2);
+    xlabel('Wavelength (nm)');
+    ylabel('PSD (nJ/nm)');
+    xlim([1530,1570]);
+
+    set(figs,'Color',[1,1,1]);
+
+    Frame(Fi) = getframe(figs);
+    close(figs);
+end
+% Movie
+implay(Frame,10);

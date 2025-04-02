@@ -11,8 +11,9 @@ function calc_dispersion(modes_used,folder_name,Nf,lambda0,freq_range,bandwidth,
     dir_prefix = ['Fibers/', folder_name]; % folder containing the calculated modes
 
     %% Load in the calculated effective n values
-    if freq_range == 0
+    if Nf == 1 || freq_range == 0
         Nf = 1;
+        freq_range = 0;
     end
 
     % Set the range in frequency space, which is more objective
@@ -33,11 +34,11 @@ function calc_dispersion(modes_used,folder_name,Nf,lambda0,freq_range,bandwidth,
     for kk = 1:Nf
         lambda_kk = lambda(kk);
         for ii = 1:num_modes
-            fname = [dir_prefix '/mode' num2str(modes_used(ii)) 'wavelength' num2str(round(lambda_kk*10000))];
-            load([fname '.mat'])
-            n_calc(kk, ii) = neff;
+            fname = [dir_prefix,'/mode',sprintf('%u',modes_used(ii)),'wavelength',sprintf('%u',round(lambda_kk*10000))];
+            loaded_n = load([fname '.mat'],'neff');
+            n_calc(kk, ii) = loaded_n.neff;
         end
-        fprintf('Loading lambda = %d um\n', round(lambda_kk*1000));
+        fprintf('Loading lambda = %u um\n', uint16(lambda_kk*1000));
     end
 
     %% Calculate the propagation constants

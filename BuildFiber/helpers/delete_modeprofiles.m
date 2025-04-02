@@ -15,8 +15,9 @@ function delete_modeprofiles(modes_used,folder_name,Nf,lambda0,freq_range)
     %%
     num_modes = length(modes_used); % number of modes for which the tensors should be calculated
 
-    if freq_range == 0
+    if Nf == 1 || freq_range == 0
         Nf = 1;
+        freq_range = 0;
     end
 
     % Set the range in frequency space, which is more objective

@@ -8,7 +8,7 @@ function [a,b] = Sellmeier_coefficients(material)
 %       n = n_from_Sellmeier(lambda); % lambda: um
 
 switch material
-    case 'fused silica' % From "https://www.osapublishing.org/josa/abstract.cfm?uri=josa-55-10-1205",
+    case {'silica','fused silica'} % From "https://www.osapublishing.org/josa/abstract.cfm?uri=josa-55-10-1205",
                         % I. H. Malitson, "Interspecimen Comparison of the Refractive Index of Fused Silica"
                         % n^2 - 1 = ...
         a = [0.6961663, 0.4079426, 0.8974794];
@@ -32,10 +32,12 @@ switch material
                % n - 1 = ...
         a =      [0.05792105/238.0185, 0.00167917/57.362];
         b = sqrt([         1/238.0185,          1/57.362]);
-    case 'N2' % Check "refractiveindex.info"
+    case {'N2','N2O'} % Check "refractiveindex.info"
               % From E. R. Peck and B. N. Khanna. Dispersion of nitrogen, J. Opt. Soc. Am. 56, 1059-1063 (1966)
               % n - 1 = ...
               % At 0 degree Celsius temperature and 101325 Pa
+              %
+              % There is no N2O refractive index out there, so N2's is used instead.
         a =      [6.8552e-5, 3.243157e-2/144];
         b = sqrt([        0,           1/144]);
     %{
@@ -52,7 +54,7 @@ switch material
               %      Petr Křen. Comment on "Precision refractive index measurements of air, N2, O2, Ar, and CO2 with a frequency comb", Appl. Opt. 50, 6484-6485 (2011)
               % n - 1 = ...
               % The paper measured with 20 degree Celsius temperature and 101325 Pa, I recovered it back to 0 degree.
-        a =      [1.181494e-4, 9.708931e-3/75.4]*293.15/273.15;
+        a =      [1.181494e-4, 9.708931e-3/75.4]*293.15/273.15; % delta_n = delta_permittivity_r/2 (because n is close to 1) which scales inversely with temperature
         b = sqrt([        0,             1/75.4]);
     case 'Ar' % From EDSON R. PECK AND DONALD J. FIISIER, "dispersion of Argon" (1964)
               % n-1 = ...
@@ -83,6 +85,11 @@ switch material
                % I realized that the paper is wrong such that it forgot a factor of 2 in the resonance contributions. Its given values are for n-1; for n^2-1, they should be approximately twice as large.
         a = [871.9e-6, 2*16.50e-8/(3019.6e-4)^2, 2*7.5e-8./(1304e-4)^2];
         b = [        0,            1/3019.6e-4,           1/1304e-4];
+    case 'CO2' % From A. Bideau-Mehu, Y. Guern, R. Abjean and A. Johannin-Gilles, "Interferometric determination of the refractive index of carbon dioxide in the ultraviolet region" (1973)
+               % n-1 = ...
+               % At 0 degree temperature and 101325 Pa
+        a =      [6.99100e-2/166.175, 1.44720e-3/79.609, 6.42941e-5/56.3064, 5.21306e-5/46.0196, 1.46847e-6/0.0584738];
+        b = sqrt([         1/166.175,          1/79.609,          1/56.3064,          1/46.0196,          1/0.0584738]);
     case 'sapphire' % From https://refractiveindex.info/?shelf=3d&book=crystals&page=sapphire
                     % n^2 - 1 = ...
                     % At 20 degree Celsius

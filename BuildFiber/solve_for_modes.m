@@ -11,10 +11,10 @@ clearvars; close all;
 
 %% Set parameters (users modify only this block)
 % Frequency window
-Nf = 1; % number of frequency points at which the modes will be calculated; usually 20
+Nf = 10; % number of frequency points at which the modes will be calculated; usually 20
 wavelength0 = 1060e-9; % center wavelength, in m
 freq_range = 50; % THz; frequency range, in THz. If 0, only the center wavelength will be used. Usually 100 THz.
-num_modes = 2; % number of modes to compute; you can use a large number, since this code can find the maximum supported modes itself
+num_modes = 1; % number of modes to compute; you can use a large number, since this code can find the maximum supported modes itself
 include_cladding_modes = true;
 
 % Spatial profile
@@ -61,8 +61,9 @@ if ~exist(folder_name,'dir')
     mkdir(folder_name);
 end
 
-if freq_range == 0
+if Nf == 1 || freq_range == 0
     Nf = 1;
+    freq_range = 0;
 end
 
 % Set the range in frequency space, which is more objective
