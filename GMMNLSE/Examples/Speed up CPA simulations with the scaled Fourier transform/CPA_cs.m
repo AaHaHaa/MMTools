@@ -49,7 +49,7 @@ fiber_Gain.L0 = 1.5; % m; fiber length
 fiber_Gain.MFD = 35; % um; mode-field diameter
 
 % Passive fiber
-fiber_passive.L0 = 1000; % m; fiber length
+fiber_passive.L0 = 0.1; % m; fiber length
 
 % Load default parameters like 
 %
@@ -204,7 +204,7 @@ legend('Scaled-FT','Recovered');
 title({'After transformation and then recovered','(Recovered one should be the same as that without transformation)'},'FontSize',12);
 
 %% Run the simulation: pulse amplification
-prop_output = GMMNLSE_propagate(fiber_Gain, prop_stretch, sim_Gain, gain_rate_eqn); 
+prop_output = GMMNLSE_propagate(fiber_Gain, prop_stretch, sim_Gain, gain_rate_eqn);
 
 %% Finish the simulation and save the data
 % Energy of the output field

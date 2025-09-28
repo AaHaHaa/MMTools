@@ -27,7 +27,7 @@ if ~sim.include_Raman
     return;
 end
 
-t_shifted = dt*(0:Nt-1)'; % time starting at 0
+t_shifted = dt/sim.cs.cs*(0:Nt-1)'; % time starting at 0
 if sim.gpu_yes
     t_shifted = gather(t_shifted);
 end
@@ -107,6 +107,11 @@ switch fiber.material
         error('Raman_model:fiberMaterialError',...
               'Raman model is implemented only for silica, chalcogenide, and ZBLAN for now.');
 end
+
+% Correction factor for the narrowband transformation based on scaled
+% Fourier transform
+ha = ha/sim.cs.cs;
+hb = hb/sim.cs.cs;
 
 % For scalar fields, anisotropic Raman is incorporated into ha to faciliate computations.
 if include_anisotropic_Raman
