@@ -66,7 +66,7 @@ input_field.Power.ASE.backward = zeros(size(input_field.fields));
 %% Gain parameters
 % Precompute some parameters related to the gain to save the computational time
 % Check "gain_info.m" for details.
-f = ifftshift( (-Nt/2:Nt/2-1)'/Nt/dt + sim.f0 ); % in the order of "omegas" in the "GMMNLSE_propagate.m"
+f = ifftshift( (-Nt/2:Nt/2-1)'/Nt/dt + sim.f0 ); % in the order of "Omega" in the "GMMNLSE_propagate.m"
 c = 299792.458; % nm/ps;
 lambda = c./f; % nm
 gain_rate_eqn_with_ASE = gain_info( fiber,sim,gain_rate_eqn,lambda );
@@ -149,4 +149,4 @@ compressor_type = 'Treacy-t'; % transmissive grating dechirper
 grating_spacing = 1e-3/1000; % 1000 line/mm
 grating_incident_angle = 30*pi/180; % rad
 ASE = struct('t_rep',gain_rate_eqn.t_rep,'spectrum',output_with_ASE.Power.ASE.forward(:,:,end)); % ASE container for plotting
-analyze_field( t,f,output_without_ASE.fields(:,:,end),'Treacy-t',1e-3/1000,30*pi/180,true,false,ASE );
+analyze_field( t,f,output_with_ASE.fields(:,:,end),'Treacy-t',1e-3/1000,30*pi/180,true,false,ASE );

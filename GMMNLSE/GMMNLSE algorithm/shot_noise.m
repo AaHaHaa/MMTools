@@ -4,7 +4,7 @@ function At_noise = shot_noise(Nt,dt,sim,num_modes)
 h = 6.62607015e-34; % J*s
 
 time_window = Nt*dt; % ps
-f = ifftshift((-Nt/2:Nt/2-1)'/time_window,1); % THz
+f = ifftshift((-floor(Nt/2):floor((Nt-1)/2))'/time_window,1); % THz
 real_f = (f+sim.f0)*1e12; % Hz
 
 % I use analytical-signal representation for solving GMMNLSE, so the field

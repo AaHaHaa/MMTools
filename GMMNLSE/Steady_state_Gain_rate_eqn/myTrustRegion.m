@@ -187,7 +187,7 @@ mk = zeros(1,         1,num_x,num_y,1,1,1,M); % model function value at x=x+dx
 %   Warning: Matrix is close to singular or badly scaled. Results may be inaccurate.
 % To resolve this (not really an) issue, it's better to scale the Hessian
 % first when computing pB and then scale/recover it back.
-% This is achievable because, in general, for a invertible matrix H,
+% This is achievable because, in general, for an invertible matrix H,
 %   (H*A)^(-1) = A^(-1)*H^(-1),
 % where A = [c1  0  0  0 ...
 %             0 c2  0  0 ...

@@ -6,8 +6,7 @@ function [A_out,T_delay_out] = SteppingCaller_rmc(sim,...
                                                   SK_info, SRa_info, SRb_info,...
                                                   D,...
                                                   haw, hbw)
-%STEPPINGCALLER_RMC Summary of this function goes here
-%   Detailed explanation goes here
+%STEPPINGCALLER_RMC It starts the pulse propagation.
 
 Nt = size(initial_condition.fields,1);
 num_modes = size(initial_condition.fields,2);
@@ -58,8 +57,8 @@ if sim.progress_bar
     if ~isfield(sim,'progress_bar_name')
         sim.progress_bar_name = '';
     elseif ~ischar(sim.progress_bar_name)
-        error('GMMNLSE_propagate:ProgressBarNameError',...
-            '"sim.progress_bar_name" should be a string.');
+        error('SteppingCaller_rmc:ProgressBarNameError',...
+              '"sim.progress_bar_name" should be a string.');
     end
     h_progress_bar = waitbar(0,sprintf('%s   0.0%%',sim.progress_bar_name),...
         'Name',sprintf('Running GMMNLSE: %s...',sim.progress_bar_name),...
@@ -87,7 +86,7 @@ GMMNLSE_func = str2func(['stepping_' sim.step_method '_', gain_str '_rmc']);
 for ii = 2:num_zPoints
     % Check for Cancel button press
     if sim.progress_bar && getappdata(h_progress_bar,'canceling')
-        error('GMMNLSE_propagate:ProgressBarBreak',...
+        error('SteppingCaller_rmc:ProgressBarBreak',...
               'The "cancel" button of the progress bar has been clicked.');
     end
 
@@ -97,9 +96,6 @@ for ii = 2:num_zPoints
                           D, sim.rmc.D(ii-1),...
                           haw, hbw,...
                           G, saturation_parameter);
-                      
-    % Apply the damped frequency window
-    last_A = last_A.*sim.damped_freq_window;
 
     % Check for any NaN elements, if desired
     if any(any(isnan(last_A))) %any(isnan(last_A),'all')

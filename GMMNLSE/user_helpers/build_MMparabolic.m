@@ -11,12 +11,12 @@ function output = build_MMparabolic(tfwhm, time_window, total_energy, num_modes,
 %   frequency_shift - a cell with two elements:
 %                     the amount of shifted frequency (THz) (default is 0)
 %                     and
-%                     Fourier Transform type: 'fft' or 'ifft' (default is 'ifft')
+%                     Fourier-transform type: 'fft' or 'ifft' (default is 'ifft')
 %	coeffs - the normalized complex amplitude coefficients of the different modes (default is equal across all modes)
 %   t_center - temporal position of the pulse in the time window (default is 0)
 %
 % Note:
-%   Nonlinear Fiber Optics by Agrawal defines 'ifft' for Fourier Transform.
+%   Nonlinear Fiber Optics by Agrawal defines 'ifft' for Fourier transform.
 %   This convention is used as a default here.
 
 %% Default optional input arguments
@@ -45,19 +45,42 @@ if size(coeffs,2) == 1
 end
 coeffs = coeffs./sqrt(sum(abs(coeffs).^2)); % normalization
 
+%% Gaussian fields
+t0 = tfwhm/(2*sqrt(log(2)));    % ps; 2*sqrt(log(2))=1.665
+dt = time_window/Nt;  % ps
+t = (-floor(Nt/2):floor((Nt-1)/2))'*dt; % ps
+
+gaussexpo = 1;
+gexpo = 2*gaussexpo;
+
+% Construct a single gaussian electric field envelope, in W^0.5
+time_profile_Gaussian = sqrt(total_energy/(t0*sqrt(pi))*10^3)...
+    *exp(-(t-t_center).^gexpo/(2*t0^gexpo));
+
 %% Parabolic fields
 % pulse power = B - A(t-t_center)^2
 C = tfwhm/sqrt(2); % C = sqrt(B/A)
 B = (total_energy*1e3)/(4/3*C); % "*1e3" is make it into pJ
 A = B/C^2;
 
-dt = time_window/Nt;  % ps
-t = (-Nt/2:Nt/2-1)'*dt; % ps
+%dt = time_window/Nt;  % ps
+%t = (-floor(Nt/2):floor((Nt-1)/2))'*dt; % ps
 
 % Construct a single parabolic electric field envelope, in W^0.5
-time_profile = sqrt(B - A*(t-t_center).^2);
-time_profile(t<t_center-C | t>t_center+C) = 0;
+time_profile_parabolic = sqrt(B - A*(t-t_center).^2);
+time_profile_parabolic(t<t_center-C | t>t_center+C) = 0;
 
+%% Combine both
+% Parabola within tfwhm but Gaussian on both edges
+time_profile_Gaussian = time_profile_Gaussian/max(time_profile_Gaussian);
+time_profile_parabolic = time_profile_parabolic/max(time_profile_parabolic);
+
+time_profile = time_profile_Gaussian;
+time_profile(t>=t_center-tfwhm/2 & t<=t_center+tfwhm/2) = time_profile_parabolic(t>=t_center-tfwhm/2 & t<=t_center+tfwhm/2);
+
+time_profile = time_profile/sqrt(trapz(t,abs(time_profile).^2)/1e3)*sqrt(total_energy);
+
+%% Finishing
 % Apply the frequency shift
 switch frequency_shift{1}
     case 'ifft'
@@ -66,7 +89,7 @@ switch frequency_shift{1}
         time_profile = time_profile.*exp(1i*(2*pi*frequency_shift{2}).*t);
     otherwise
         error('build_MMparabolic:frequency_shiftError',...
-              'The type of the Fourier Transform can only be ''ifft'' or ''fft''.');
+              'The type of the Fourier transform can only be ''ifft'' or ''fft''.');
 end
 
 % Apply this time profile to each mode using the coefficients

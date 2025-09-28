@@ -19,7 +19,7 @@ separation = 1e-4;
 %% Dechirped by a prism compressor
 alpha = pi/3;
 dechirped_field_prism = pulse_compressor_single( 'prism',separation,[],wavelength0,t,pulse.fields,alpha,'N-SF11' );
-[quardratic_phase_prism,cubic_phase_prism,~,quintic_phase_prism] = characterize_spectral_phase( f,fftshift(ifft(ifftshift(dechirped_field_prism,1)),1),7 );
+[quardratic_phase_prism,cubic_phase_prism,~,quintic_phase_prism] = characterize_spectral_phase( f,dechirped_field_prism,7 );
 GDD_prism = quardratic_phase_prism/separation*1e-3;
 TOD_prism = cubic_phase_prism/separation*1e-3;
 FOD_prism = quintic_phase_prism/separation*1e-3;
@@ -34,7 +34,7 @@ alpha1 = 45*pi/180;
 incident_angle = 35; % deg
 grating_spacing = 1e-3/1000; % m
 dechirped_field_grism1 = pulse_compressor_single( 'grism1',separation,incident_angle*pi/180,wavelength0,t,pulse.fields,grating_spacing,alpha1,'N-SF11' );
-[quardratic_phase_grism1,cubic_phase_grism1,~,quintic_phase_grism1] = characterize_spectral_phase( f,fftshift(ifft(ifftshift(dechirped_field_grism1,1)),1),7 );
+[quardratic_phase_grism1,cubic_phase_grism1,~,quintic_phase_grism1] = characterize_spectral_phase( f,dechirped_field_grism1,7 );
 GDD_grism1 = quardratic_phase_grism1/separation*1e-3;
 TOD_grism1 = cubic_phase_grism1/separation*1e-3;
 FOD_grism1 = quintic_phase_grism1/separation*1e-3;
@@ -48,8 +48,8 @@ fprintf('------------------------------\n');
 alpha2 = 69.1*pi/180;
 incident_angle = 30; % deg
 grating_spacing = 1e-3/1000; % m
-dechirped_field_grism2 = pulse_compressor_single( 'grism2',separation,incident_angle*pi/180,wavelength0,t,pulse.fields,grating_spacing,alpha2,'fused silica' );
-[quardratic_phase_grism2,cubic_phase_grism2,~,quintic_phase_grism2] = characterize_spectral_phase( f,fftshift(ifft(ifftshift(dechirped_field_grism2,1)),1),7 );
+dechirped_field_grism2 = pulse_compressor_single( 'grism2',separation,incident_angle*pi/180,wavelength0,t,pulse.fields,grating_spacing,alpha2,'silica' );
+[quardratic_phase_grism2,cubic_phase_grism2,~,quintic_phase_grism2] = characterize_spectral_phase( f,dechirped_field_grism2,7 );
 GDD_grism2 = quardratic_phase_grism2/separation*1e-3;
 TOD_grism2 = cubic_phase_grism2/separation*1e-3;
 FOD_grism2 = quintic_phase_grism2/separation*1e-3;
@@ -63,7 +63,7 @@ fprintf('------------------------------\n');
 incident_angle = 60; % deg
 grating_spacing = 1e-3/1000; % m
 dechirped_field_Treacy = pulse_compressor_single( 'Treacy-t',separation,incident_angle*pi/180,wavelength0,t,pulse.fields,grating_spacing );
-[quardratic_phase_Treacy,cubic_phase_Treacy,~,quintic_phase_Treacy] = characterize_spectral_phase( f,fftshift(ifft(ifftshift(dechirped_field_Treacy,1)),1),7 );
+[quardratic_phase_Treacy,cubic_phase_Treacy,~,quintic_phase_Treacy] = characterize_spectral_phase( f,dechirped_field_Treacy,7 );
 GDD_Treacy = quardratic_phase_Treacy/separation*1e-3;
 TOD_Treacy = cubic_phase_Treacy/separation*1e-3;
 FOD_Treacy = quintic_phase_Treacy/separation*1e-3;

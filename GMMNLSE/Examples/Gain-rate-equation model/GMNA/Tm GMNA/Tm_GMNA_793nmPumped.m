@@ -103,6 +103,6 @@ figure;
 h = plot(lambda,10*log10(exp(1))*g2); set(h,'linewidth',2); clear h;
 set(gca,'fontsize',20);
 xlabel('Wavelength (nm)');
-ylabel('Gain (1/m)');
+ylabel('Gain (dB/m)');
 %xlim([1000,1200]);
 title('Gain spectrum');

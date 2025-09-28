@@ -48,11 +48,11 @@ end
 %% Extract Aeff and field/"last_field(->field)" from the input arguments
 save_num = length(z);
 each_save_num = zeros(1,num_segments);
-each_save_num(1) = sum(z<=L0(1));
+each_save_num(1) = sum(z<=L0(1)+eps(L0(1))); % eps() is crucial due to numerical precision error
 extend_idx_Aeff = cell(1,save_num);
 extend_idx_Aeff{1} = ones(1,each_save_num(1));
 for i = 2:num_segments
-    each_save_num(i) = sum(z>L0(i-1) & z<=L0(i));
+    each_save_num(i) = sum(z>L0(i-1) & z<=L0(i)+eps(L0(1))); % eps() is crucial due to numerical precision error
     extend_idx_Aeff{i} = i*ones(1,each_save_num(i));
 end
 extend_idx_Aeff = cell2mat(extend_idx_Aeff);

@@ -112,7 +112,7 @@ input_field = [MM_field SM_field MM_field];
 
 %% Gain parameters
 % We need some parameters of gain before computations.
-f = ifftshift( (-N/2:N/2-1)'/N/dt + sim{1}.f0 ); % in the order of "omegas" in the "GMMNLSE_propagate.m"
+f = ifftshift( (-N/2:N/2-1)'/N/dt + sim{1}.f0 ); % in the order of "Omega" in the "GMMNLSE_propagate.m"
 c = 299792.458; % nm/ps;
 lambda = c./f; % nm
 

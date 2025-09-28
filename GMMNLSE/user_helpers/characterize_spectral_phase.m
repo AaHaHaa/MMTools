@@ -1,4 +1,4 @@
-function [quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characterize_spectral_phase( f,At,fitted_order,verbose )
+function [quardratic_phase,cubic_phase,fitted_param,quintic_phase,pulse_inst_freq] = characterize_spectral_phase( f,At,fitted_order,verbose )
 %CHARATERIZE_SPECTRAL_PHASE It fits a polynomial to the spectral phase and
 %finds the GVD and TOD.
 %
@@ -16,6 +16,8 @@ function [quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characteriz
 %   quardratic_phase
 %   cubic_phase
 %   fitted_param - {p,s,mu}, the fitted parameters for the phase
+%   quintic_phase
+%   pulse_inst_freq - (Nt,1); pulse's instantaneous frequency in time
 %
 %   Please check "p.248, Ch.6.2.1, Applications of Nonlinear Fiber Optics"
 %   for details of the convention of phase.
@@ -35,6 +37,11 @@ if numel(At) ~= Nt || size(At,2) ~= 1
     error('characterize_spectral_phase:EfSizeError',...
           'At can only be (Nt,1) column vector.');
 end
+
+f0 = feval(@(x)x(1),ifftshift(f,1)); % center frequency; THz
+frequency_window = max(f) - min(f); % THz
+dt = 1/frequency_window; % ps
+t = (-floor(Nt/2):floor((Nt-1)/2))'*dt; % ps
 
 %% First remove the spectral phase due to temporal offset for correct phase unwrapping
 [~,peak_position] = max(sum(abs(At).^2,2),[],1);
@@ -60,6 +67,14 @@ phase_shift = ifftshift(2*pi*(1:Nt)'/Nt*pulse_center,1); % phase shift due to te
 
 Aw_noTOffset = fftshift(ifft(At,[],1).*exp(-1i*phase_shift),1);
 
+% At centered at the time window
+At = fftshift(fft(ifftshift(Aw_noTOffset,1),[],1),1); % for temporal computation later to show the instantaneous frequency
+At_phase = unwrap(angle(At));
+
+% instantaneous frequency
+pulse_inst_freq = -(At_phase(3:end)-At_phase(1:end-2))/(2*dt)/(2*pi)+f0;
+pulse_inst_freq = interp1(t(2:end-1),pulse_inst_freq,t,'linear');
+
 %% Consider only the central (non-zero) part of the spectrum
 % Remove the weak spectral signal for correct bandwidth computation with the RMS scheme
 spectrum = abs(Aw_noTOffset).^2;
@@ -80,8 +95,8 @@ omega = 2*pi*f;
 Aw_noTOffset = Aw_noTOffset(left_idx:right_idx);
 
 % Phase calculation region should be small, only around the center frequency
-left_bandwidth_idx = max(1,ceil(length(f)/2) - bandwidth_idx);
-right_bandwidth_idx = min(length(f),ceil(length(f)/2) + bandwidth_idx);
+left_bandwidth_idx = max(1,ceil(length(f)/2) - floor(bandwidth_idx*0.7));
+right_bandwidth_idx = min(length(f),ceil(length(f)/2) + floor(bandwidth_idx*0.7));
 phase_calculation_region = left_bandwidth_idx:right_bandwidth_idx;
 
 %% Phase fitting with a polynomial
@@ -111,16 +126,17 @@ if verbose
     spectrum = abs(Aw_noTOffset).^2;
     spectrum = spectrum/max(spectrum);
     % Don't show phases when the spectrum is too weak
-    weak_idx = spectrum < 1/threshold_factor;
+    weak_idx = spectrum < 1/threshold_factor/5; % avoid strong clipping in visualization (by adding an extra factor of 5) when spectrum contains weak parts
     Aw_phase(weak_idx) = NaN;
     fitted_phase(weak_idx) = NaN;
 
-    % Plot
+    % Plot spectrum and phases
     figure;
     yyaxis left
     hI = plot(f,spectrum,'b');
-    ylim([0 max(spectrum)*1.5]);
+    ylim([0,max(spectrum)*1.5]);
     ylabel('PSD (norm.)');
+    set(gca,'YColor','b');
     yyaxis right
     hp = plot(f,Aw_phase,'k');
     hold on;
@@ -135,10 +151,40 @@ if verbose
         min_f = f(1);
         max_f = f(end);
     end
-    xlim([min_f max_f]);
+    xlim([min_f,max_f]);
     xlabel('Frequency (THz)');
     legend('PSD','Phase','Fitted Phase','95% Prediction Interval');
     set(hI,'linewidth',2);set(hp,'linewidth',2);set(hpf,'linewidth',2);set(hpfr,'linewidth',2);
+    set(gca,'fontsize',14);
+
+    % Find temporal plot range for later use
+    intensity = abs(At).^2;
+    intensity_plot = intensity;
+    threshold_factor = 100;
+    intensity_plot(intensity<max(intensity)/threshold_factor) = 0;
+    left = find(intensity_plot~=0,1);
+    right = find(intensity_plot~=0,1,'last');
+    center = floor((left+right)/2);
+    span_factor = 2;
+    span = floor((right-left)/2)*span_factor;
+    left = floor(center-span);
+    right = ceil(center+span);
+    if left < 1, left = 1; end
+    if right > Nt, right = Nt; end
+
+    % Plot instantaneous frequency
+    figure;
+    yyaxis left
+    hI = plot(t,abs(At).^2/max(abs(At).^2),'b');
+    ylim([0,1.5]);
+    ylabel('Power (norm.)');
+    set(gca,'YColor','b');
+    yyaxis right
+    hc = plot(t,pulse_inst_freq,'Color',[0.8510,0.3255,0.0980]);
+    ylabel('\Delta\nu (THz)');
+    xlim([min(t(left:right)),max(t(left:right))]);
+    xlabel('Time (ps)');
+    set(hI,'linewidth',2);set(hc,'linewidth',2);
     set(gca,'fontsize',14);
     
     c = 299792.458; % nm/ps

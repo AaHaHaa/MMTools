@@ -39,9 +39,9 @@ num_modes = num_spatial_modes*2; % consider polarization modes
 tau = 30; % ps
 tfwhm = tau*asech(1/sqrt(2))*2; % fwhm of the two solitons
 T = 300; % separation between two solitons initially
-delta_omega = 0.005; % THz*2*pi; the frequency difference between two solitons
+delta_Omega = 0.005; % THz*2*pi; the frequency difference between two solitons
                      % If it's too large, the time for coupling between two pulses will be too short. I've tried 0.7/tau.
-delta_f = delta_omega/2/pi;
+delta_f = delta_Omega/2/pi;
 
 c = 299792458;
 N = 2^10; % the number of time grid points

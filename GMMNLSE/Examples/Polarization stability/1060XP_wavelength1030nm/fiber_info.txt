@@ -1,4 +1,4 @@
-Material: fused silica
+Material: silica
 Fiber type: step
 NA: 0.14000
 diameter:   5.80um

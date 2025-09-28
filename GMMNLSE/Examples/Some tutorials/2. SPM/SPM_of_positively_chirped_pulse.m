@@ -1,4 +1,18 @@
-% This code demonstrates the self-phase modulation of a chirped pulse.
+% This code demonstrates the self-phase modulation of a (highly-)positively-chirped pulse.
+%
+% Initial chirp affects the spectral feature after SPM.
+% Spectral structure results from the temporal interference of one color
+% appearing at different temporal positions, which I refer to as frequency
+% wrapping.
+% A initially positively-chirped pulse creates a frequency wrapping only at
+% the spectral edges, leading to clean flat spectrum at the center
+% frequency.
+% See Fig. 9 in the reference below.
+% 
+%
+% Reference:
+% Finot et al., "Simple guidelines to predict self-phase modulation
+% patterns," J. Opt. Soc. Am. B 35 (12), 3143-3152 (2018).
 %
 % This code uses adaptive-step RK4IP for the passive-fiber propagation.
 
@@ -51,14 +65,15 @@ lambda = c./(f*1e12)*1e9; % nm
 
 %% Initial condition
 tfwhm = 0.1; % ps
-total_energy = 5; % nJ
+total_energy = 3; % nJ
 initial_pulse = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
 
 % Chirp the pulse to 1 ps
 chirped_tfwhm = 1; % ps
 func = calc_chirp;
 omega = ifftshift(2*pi*f,1); % 2*pi*THz
-[~,chirped_pulse] = func.General( chirped_tfwhm,omega,ifft(initial_pulse.fields),1 );
+chirp_sign = 1; % positively-chirped
+[~,chirped_pulse] = func.General( chirped_tfwhm,omega,ifft(initial_pulse.fields),chirp_sign );
 initial_pulse.fields = chirped_pulse;
 
 %% Propagate
@@ -108,10 +123,9 @@ title('Spectrum during propagation');
 set(gca,'fontsize',14);
 
 %% Visualize the nonlinear phase
-Ef = fftshift(ifft(ifftshift(prop_output.fields(:,:,end),1)),1);
 fitted_order = 3;
 verbose = true;
-[quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characterize_spectral_phase( f,Ef,fitted_order,verbose );
+[quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characterize_spectral_phase( f,prop_output.fields(:,:,end),fitted_order,verbose );
 
 %% Save the data
-save('SPM_of_chirped_pulse.mat');
+save('SPM_of_positively_chirped_pulse.mat');

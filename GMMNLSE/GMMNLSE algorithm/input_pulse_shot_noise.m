@@ -1,4 +1,4 @@
-function fields = input_pulse_shot_noise(sim,omegas,Nt,dt,fields)
+function fields = input_pulse_shot_noise(sim,Omega,Nt,dt,fields)
 %INPUT_PULSE_SHOT_NOISE It adds shot noise to the fields
 %
 % *This is used only for simulations with random mode coupling.
@@ -6,9 +6,9 @@ function fields = input_pulse_shot_noise(sim,omegas,Nt,dt,fields)
 % Input arguments:
 %   sim.num_photon_noise_per_bin: the number of photon noise per spectral discretization bin
 %   sim.f0: center frequency of the numerical frequency window (THz);
-%           This is used to compute the "real_omegas" for the photon noise.
+%           This is used to compute the "omega" for the photon noise.
 %   sim.gpu_yes: whether to use GPU or not
-%   omegas: relative omegas of the frequency window (THz)
+%   Omega: offset angular frequency of the frequency window (THz)
 %   Nt: the number of numerical sampling points
 %   dt: the temporal spacing (ps)
 %   fields: the electric field (sqrt(W))
@@ -44,20 +44,20 @@ function fields = input_pulse_shot_noise(sim,omegas,Nt,dt,fields)
 %   "hbar*omega/(N*dt)," whose field amplitude is
 %   "sqrt(hbar*omega/(N*dt))."
 %
-%   If the frequency window is small, assume that all omegas=omegas0,
-%   adding photon noise adds N*hbar*omegas0 to the total energy,
+%   If the frequency window is small, assume that all omega=omega0,
+%   adding photon noise adds N*hbar*omega0 to the total energy,
 %   proportional to the number of number of numerical sampling points.
 % -------------------------------------------------------------------------
 %   Note that the implementation of having photon noise being
-%   hbar*omegas/(N*dt) relies on having "ifft" as Fourier Transform. The
-%   relation might be different when Fourier Transform becomes "fft"
+%   hbar*omega/(N*dt) relies on having "ifft" as Fourier transform. The
+%   relation might be different when Fourier transform becomes "fft"
 %   because they have different constants to divide in the integral
 %   relations.
 % -------------------------------------------------------------------------
 
 if sim.num_photon_noise_per_bin ~= 0
     hbar = 6.62607015e-34/2/pi*1e24; % pJ*ps
-    photon_noise_intensity = hbar*(omegas+2*pi*sim.f0)/(Nt*dt)*sim.num_photon_noise_per_bin;
+    photon_noise_intensity = hbar*(Omega+2*pi*sim.f0)/(Nt*dt)*sim.num_photon_noise_per_bin;
     % I use analytical-signal representation for solving GMMNLSE, so the field covers only the positive frequencies.
     photon_noise_intensity(photon_noise_intensity<0) = 0; % no noise at negative frequencies
     photon_noise_amplitude = sqrt(photon_noise_intensity);

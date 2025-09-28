@@ -1,10 +1,10 @@
-function [psd,t_spectrogram,f_spectrogram,fig,ax,cb] = calc_spectrogram(t,f,field,varargin)
+function varargout = calc_spectrogram(t,f,field,varargin)
 %CALC_SPECTROGRAM 
 % This code computes the spectrogram with fine resolution in both the time 
 % and frequency domain of the input field with the convention of Fourier 
 % Transform being "ifft". If people try to use it with the other convention
-% of having "fft" as Fourier Transform, they need to modify this code 
-% accordingly by considering complex conjugate and Fourier Transform 
+% of having "fft" as Fourier transform, they need to modify this code 
+% accordingly by considering complex conjugate and Fourier transform 
 % constant.
 %
 % *This code works only for a pulse.
@@ -181,7 +181,7 @@ window_size_for_t = max(8,floor(duration/t_feature));
 %   window_size_for_f < appropiate window size < window_size_for_t
 if window_size_for_f <= window_size_for_t
     enough_resolution = true;
-    window_size = round((window_size_for_f+window_size_for_t)/2); % the window for the common short-time-Fourier-Transform
+    window_size = round((window_size_for_f+window_size_for_t)/2); % the window for the common short-time-Fourier-transform
 else % start with the minimum window size; a multiresolution stft will be applied below
     enough_resolution = false;
     window_size = window_size_for_t;
@@ -372,7 +372,7 @@ if plot_yes
     shading interp; colormap(jet);
     cb = colorbar('location','south','Color','[1 1 1]');
     if log_yes
-        caxis([min_colormap_psd,0]);
+        clim([min_colormap_psd,0]);
     end
     %{
     if lambda_or_f
@@ -429,6 +429,16 @@ if plot_yes
     end
     
     ax = [ax;ax2;ax3];
+end
+
+if nargout ~= 0
+    if plot_yes % export figure-related variables too
+        varargout = {psd,t_spectrogram,f_spectrogram,fig,ax,cb};
+    else
+        varargout = {psd,t_spectrogram,f_spectrogram};
+    end
+else
+    varargout = {};
 end
 
 end

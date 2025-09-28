@@ -8,9 +8,9 @@ function [a,b] = Sellmeier_coefficients(material)
 %       n = n_from_Sellmeier(lambda); % lambda: um
 
 switch material
-    case {'silica','fused silica'} % From "https://www.osapublishing.org/josa/abstract.cfm?uri=josa-55-10-1205",
-                        % I. H. Malitson, "Interspecimen Comparison of the Refractive Index of Fused Silica"
-                        % n^2 - 1 = ...
+    case 'silica' % From "https://www.osapublishing.org/josa/abstract.cfm?uri=josa-55-10-1205",
+                  % I. H. Malitson, "Interspecimen Comparison of the Refractive Index of Fused Silica"
+                  % n^2 - 1 = ...
         a = [0.6961663, 0.4079426, 0.8974794];
         b = [0.0684043, 0.1162414, 9.896161];
     case 'As2S3' % From "Supercontinuum generation in photonic crystal fibers made from highly nonlinear glasses" by A.V. Husakou

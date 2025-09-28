@@ -1,4 +1,4 @@
-Material: fused silica
+Material: silica
 Fiber type: GRIN
 core NA: 0.20000
 clad NA: 0.22000

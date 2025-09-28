@@ -131,8 +131,7 @@ intensity = abs(fields).^2; % W
 energy = permute(trapz(intensity),[3 2 1])*dt/1e3; % nJ
 factor_correct_unit = (Nt*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
                                      % "/1e3" is to make pJ into nJ
-Ef = fftshift(ifft(ifftshift(fields,1)),1);
-spectrum = abs(Ef).^2*factor_correct_unit; % in frequency domain
+spectrum = abs(fftshift(ifft(fields,[],1),1)).^2*factor_correct_unit; % in frequency domain
 
 %1.  "real" is just to suppress the warning if calc_RMS gives a warning about
 %    its imaginary output.
@@ -159,7 +158,7 @@ num_interp = 5;
 dechirped_field = zeros(sf);
 for i = 1:sf(3)
     [~,~,dechirped_field(:,1,i)] = pulse_compressor('t',grating_incident_angle,wavelength0,t,fields(:,midx,i),grating_spacing,false);
-    [quardratic_phase(i),cubic_phase(i)] = characterize_spectral_phase( f,Ef(:,midx,i));
+    [quardratic_phase(i),cubic_phase(i)] = characterize_spectral_phase( f,fields(:,midx,i));
 end
 transform_limited_field = calc_transform_limited(fields(:,midx,:),num_interp,t);
 Strehl_ratio = squeeze(max(abs(dechirped_field).^2)./max(abs(transform_limited_field).^2));

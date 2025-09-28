@@ -105,7 +105,7 @@ GMMNLSE_func = str2func(['stepping_' sim.step_method '_', gain_str, '_adaptive']
 while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical error
     % Check for Cancel button press
     if sim.progress_bar && getappdata(h_progress_bar,'canceling')
-        error('GMMNLSE_propagate:ProgressBarBreak',...
+        error('SteppingCaller_adaptive:ProgressBarBreak',...
               'The "cancel" button of the progress bar has been clicked.');
     end
 
@@ -131,15 +131,17 @@ while z+eps(z) < save_z(end) % eps(z) here is necessary due to the numerical err
                                          G, saturation_parameter);
 
         if ~success
+            if opt_dz < 1e-10
+                error('SteppingCaller_adaptive:adaptiveRK4IPError',...
+                      'Adaptive RK4IP continues to fail.\nCheck simulation parameters.');
+            end
+
             ever_fail = true;
 
             sim.dz = opt_dz;
         end
     end
     sim.last_dz = sim.dz; % previous dz
-    
-    % Apply the damped frequency window
-    last_A = last_A.*sim.damped_freq_window;
     
     % Check for any NaN elements
     if any(any(isnan(last_A))) %any(isnan(last_A),'all')

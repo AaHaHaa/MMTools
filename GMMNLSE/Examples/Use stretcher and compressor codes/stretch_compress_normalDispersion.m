@@ -59,17 +59,17 @@ fprintf('\n');
 
 % compressed by a Treacy-type transmissive grating compressor
 fprintf('Start compressing with a Treacy grating compressor...... \n');
-[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Treacy-t',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,true,true,-1 );
+[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Treacy-t',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,true,true,false,-1 );
 title('Dechirped pulse (Treacy dechirper)');
 fprintf('\n');
 % compressed by an Offner-type single-grating compressor
 fprintf('Start compressing with an Offner single-grating compressor...... \n');
-[dechirped_offcenter,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner1',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,-1 );
+[dechirped_offcenter,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner1',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,false,-1 );
 title('Dechirped pulse (single-grating Offner dechirper)');
 fprintf('\n');
 % compressed by an Offner-type double-grating compressor
 fprintf('Start compressing with an Offner double-grating compressor...... \n');
-[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner2',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,-stretched_offcenter,true,true,-1 );
+[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner2',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,-stretched_offcenter,true,true,false,-1 );
 title('Dechirped pulse (double-grating Offner dechirper)');
 fprintf('\n');
 
@@ -99,25 +99,25 @@ title('Stretched pulse (double-grating Offner stretcher)');
 fprintf('Finish stretching.\n\n');
 
 fprintf('----------\n');
-characterize_spectral_phase( f,fftshift(ifft(ifftshift(stretched_field))),5,true );
+characterize_spectral_phase( f,stretched_field,5,true );
 fprintf('----------\n');
 
 % compressed by a Treacy-type transmissive grating compressor
 fprintf('Start compressing with a Treacy grating compressor...... \n');
-[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Treacy-t',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,true,true,-1 );
+[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Treacy-t',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,true,true,false,-1 );
 title('Dechirped pulse (double-grating Offner stretcher)');
 fprintf('\n');
 fprintf('----------\n');
-characterize_spectral_phase( f,fftshift(ifft(ifftshift(dechirped_field))),5,true );
+characterize_spectral_phase( f,dechirped_field,5,true );
 fprintf('----------\n');
 % compressed by an Offner-type single-grating compressor
 %fprintf('Start compressing with an Offner single-grating compressor...... \n');
-%[dechirped_offcenter,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner1',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,-1 );
+%[dechirped_offcenter,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner1',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,false,-1 );
 %title('Dechirped pulse (double-grating Offner stretcher)');
 %fprintf('\n');
 % compressed by an Offner-type double-grating compressor
 %fprintf('Start compressing with an Offner double-grating compressor...... \n');
-%[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner2',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,-stretched_offcenter,true,true,-1 );
+%[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner2',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,-stretched_offcenter,true,true,false,-1 );
 %title('Dechirped pulse (double-grating Offner stretcher)');
 %fprintf('\n');
 
@@ -131,25 +131,25 @@ title('Stretched pulse (single-grating Offner stretcher)');
 fprintf('Finish stretching.\n\n');
 
 fprintf('----------\n');
-characterize_spectral_phase( f,fftshift(ifft(ifftshift(stretched_field))),5,true );
+characterize_spectral_phase( f,stretched_field,5,true );
 fprintf('----------\n');
 
 % compressed by a Treacy-type transmissive grating compressor
 fprintf('Start compressing with a Treacy grating compressor...... \n');
-[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Treacy-t',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,true,true,-1 );
+[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Treacy-t',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,true,true,false,-1 );
 title('Dechirped pulse (single-grating Offner stretcher)');
 fprintf('\n');
 fprintf('----------\n');
-characterize_spectral_phase( f,fftshift(ifft(ifftshift(dechirped_field))),5,true );
+characterize_spectral_phase( f,dechirped_field,5,true );
 fprintf('----------\n');
 % compressed by an Offner-type single-grating compressor
 %fprintf('Start compressing with an Offner single-grating compressor...... \n');
-%[dechirped_offcenter,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner1',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,-1 );
+%[dechirped_offcenter,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner1',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,false,-1 );
 %title('Dechirped pulse (single-grating Offner stretcher)');
 %fprintf('\n');
 % compressed by an Offner-type double-grating compressor
 %fprintf('Start compressing with an Offner double-grating compressor...... \n');
-%[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner2',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,-stretched_offcenter,true,true,-1 );
+%[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner2',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,-stretched_offcenter,true,true,false,-1 );
 %title('Dechirped pulse (single-grating Offner stretcher)');
 %fprintf('\n');
 
@@ -175,12 +175,12 @@ fprintf('Finish stretching.\n\n');
 
 % compressed by a Treacy-type transmissive grating compressor
 fprintf('Start compressing with a Treacy grating compressor...... \n');
-[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Treacy-t',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,true,true,-1 );
+[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Treacy-t',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,true,true,false,-1 );
 title('Dechirped pulse (Treacy dechirper)');
 fprintf('\n');
 % compressed by a Martinez stretcher when grating-to-lens separation is
 % larger than the focal length of the lens
 %fprintf('Start compressing with a Martinez stretcher...... \n');
-%[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Martinez',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,f,true,true,-1 );
+%[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Martinez',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,f,true,true,false,-1 );
 %title('Dechirped pulse (Martinez dechirper)');
 %fprintf('\n');

@@ -66,7 +66,7 @@ input_field = build_MMgaussian(tfwhm, time_window, total_energy, 1, N);
 
 %% Gain parameters
 % We need some parameters of gain before computations.
-f = ifftshift( (-N/2:N/2-1)'/N/dt + sim{1}.f0 ); % in the order of "omegas" in the "GMMNLSE_propagate.m"
+f = ifftshift( (-N/2:N/2-1)'/N/dt + sim{1}.f0 ); % in the order of "Omega" in the "GMMNLSE_propagate.m"
 c = 299792.458; % nm/ps;
 lambda = c./f; % nm
 gain_rate_eqn = gain_info( fiber{2},sim{2},gain_rate_eqn,lambda );

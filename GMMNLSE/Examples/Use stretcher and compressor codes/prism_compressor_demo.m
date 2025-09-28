@@ -37,6 +37,6 @@ fprintf('\n');
 % compressed by a prism-type compressor
 fprintf('Start compressing with a prism compressor...... \n');
 alpha = pi/3;
-[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'prism',[],wavelength0,t,stretched_field,alpha,'N-SF10',true,true );
+[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'prism',[],wavelength0,t,stretched_field,alpha,'N-SF10',true,true,false );
 title('Dechirped pulse (prism dechirper)');
 fprintf('\n');

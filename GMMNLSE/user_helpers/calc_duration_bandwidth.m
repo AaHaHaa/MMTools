@@ -14,7 +14,7 @@ spectrum(spectrum<max(spectrum)/50) = 0;
 
 if isequal(wavelength_f_type,'lambda')
     c = 299792.458; % nm/ps
-    factor = c./wavelength.^2; % change the spectrum from frequency domain into wavelength domain
+    factor = c./wavelength_f.^2; % change the spectrum from frequency domain into wavelength domain
     spectrum = spectrum.*factor;
 end
 

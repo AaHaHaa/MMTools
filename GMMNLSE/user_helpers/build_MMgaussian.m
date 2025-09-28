@@ -11,13 +11,13 @@ function output = build_MMgaussian(tfwhm, time_window, total_energy, num_modes, 
 %   frequency_shift - a cell with two elements:
 %                     the amount of shifted frequency (THz) (default is 0)
 %                     and
-%                     Fourier Transform type: 'fft' or 'ifft' (default is 'ifft')
+%                     Fourier-transform type: 'fft' or 'ifft' (default is 'ifft')
 %	coeffs - the normalized complex amplitude coefficients of the different modes (default is equal across all modes)
 %   t_center - temporal position of the pulse in the time window (default is 0)
 %   gaussexpo - supergaussian exponent (~exp(-t^(2*gaussexpo))) (default is 1)
 %
 % Note:
-%   Nonlinear Fiber Optics by Agrawal defines 'ifft' for Fourier Transform.
+%   Nonlinear Fiber Optics by Agrawal defines 'ifft' for Fourier transform.
 %   This convention is used as a default here.
 
 %% Default optional input arguments
@@ -49,7 +49,7 @@ coeffs = coeffs./sqrt(sum(abs(coeffs).^2)); % normalization
 %% Gaussian fields
 t0 = tfwhm/(2*sqrt(log(2)));    % ps; 2*sqrt(log(2))=1.665
 dt = time_window/Nt;  % ps
-t = (-Nt/2:Nt/2-1)'*dt; % ps
+t = (-floor(Nt/2):floor((Nt-1)/2))'*dt; % ps
 
 gexpo = 2*gaussexpo;
 
@@ -65,7 +65,7 @@ switch frequency_shift{1}
         time_profile = time_profile.*exp(1i*(2*pi*frequency_shift{2}).*t);
     otherwise
         error('build_MMgaussian:frequency_shiftError',...
-              'The type of the Fourier Transform can only be ''ifft'' or ''fft''.');
+              'The type of the Fourier transform can only be ''ifft'' or ''fft''.');
 end
 
 % Apply this time profile to each mode using the coefficients

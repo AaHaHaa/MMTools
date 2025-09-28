@@ -1,4 +1,5 @@
 % This code finds the mode-locked state of a soliton oscillator.
+% Kelly sidebands are observed.
 %
 % This file uses the rate-equation gain model for the gain fiber.
 %
@@ -82,7 +83,7 @@ tol_convergence = 1e-3; % the tolerance of the convergence of the output ANDi pu
 %% Spectral filter parameters
 gaussexpo = 1;
 plot_filter_yes = true;
-spectral_filter = struct('bw',5, ... % bandwidth (nm)
+spectral_filter = struct('bw',30, ... % bandwidth (nm)
                          'cw',1550); % center wavelength (nm)
 
 %% Setup initial conditions
@@ -251,7 +252,7 @@ end
 implay(Frame,10);
 
 exportVideo = VideoWriter('Er soliton laser');
-exportVideo.FrameRate = 20;
+exportVideo.FrameRate = 10;
 open(exportVideo);
 writeVideo(exportVideo, Frame);
 close(exportVideo);

@@ -24,7 +24,7 @@ optargs(1:numvarargs) = varargin;
 fields = optargs{:};
 
 %% Compute the dispersion w.r.t. frequency
-f = (-Nt/2:Nt/2-1)'/Nt/dt + sim.f0; % THz
+f = (-floor(Nt/2):floor((Nt-1)/2))'/Nt/dt + sim.f0; % THz
 lambda = 299792458*1e-12./f; % m
 idx0 = find(lambda>=sim.rmc.lambda0,1,'last');
 if idx0 > floor(Nt/2)

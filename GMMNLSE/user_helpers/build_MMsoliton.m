@@ -11,7 +11,7 @@ function output = build_MMsoliton(tfwhm, beta2, fiiii, lambda0, time_window, num
 %
 % Optional inputs:
 %   frequency_shift - a cell with two elements:
-%                     Fourier Transform type: 'fft' or 'ifft' (default is 'ifft')
+%                     Fourier-transform type: 'fft' or 'ifft' (default is 'ifft')
 %                     and
 %                     the amount of shifted frequency (THz) (default is 0)
 %                     
@@ -28,7 +28,7 @@ function output = build_MMsoliton(tfwhm, beta2, fiiii, lambda0, time_window, num
 numvarargs = length(varargin);
 if numvarargs > 4
     error('build_MMsoltion:TooManyInputs', ...
-        'It takes only at most 4 optional inputs');
+          'It takes only at most 4 optional inputs');
 end
 
 % Set defaults for optional inputs
@@ -67,7 +67,7 @@ n2 = change_to_row(n2);
 t0 = tfwhm/(asech(1/sqrt(2))*2);    % ps; 2*sqrt(log(2))=1.665 is for Gaussian
                                     %     2*asech(1/sqrt(2))=1.7627 is for fundamental solitons
 dt = time_window/Nt;  % ps
-t = (-Nt/2:Nt/2-1)'*dt; % ps
+t = (-floor(Nt/2):floor((Nt-1)/2))'*dt; % ps
 
 %% Soliton fields
 % Construct a single sech2 electric field envelope, in W^0.5
@@ -90,7 +90,7 @@ switch frequency_shift{1}
         fields = fields.*exp(1i*(2*pi*frequency_shift{2}).*t);
     otherwise
         error('build_MMsoliton:frequency_shiftError',...
-              'The type of the Fourier Transform can only be ''ifft'' or ''fft''.');
+              'The type of the Fourier transform can only be ''ifft'' or ''fft''.');
 end
 
 % Output as a struct

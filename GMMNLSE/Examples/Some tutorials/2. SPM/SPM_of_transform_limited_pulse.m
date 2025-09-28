@@ -1,4 +1,17 @@
-% This code demonstrates the self-phase modulation of a pulse.
+% This code demonstrates the self-phase modulation of a transform-limited pulse.
+%
+% Initial chirp affects the spectral feature after SPM.
+% Spectral structure results from the temporal interference of one color
+% appearing at different temporal positions, which I refer to as frequency
+% wrapping.
+% A transform-limited pulse creates a frequency wrapping covering the
+% spectral range, leading to spectral modulations for the entire spectrum.
+% See Fig. 1 in the reference below.
+% 
+%
+% Reference:
+% Finot et al., "Simple guidelines to predict self-phase modulation
+% patterns," J. Opt. Soc. Am. B 35 (12), 3143-3152 (2018).
 %
 % This code uses adaptive-step RK4IP for the passive-fiber propagation.
 
@@ -48,7 +61,7 @@ lambda = c./(f*1e12)*1e9; % nm
 
 %% Initial condition
 tfwhm = 1; % ps
-total_energy = 5; % nJ
+total_energy = 3; % nJ
 initial_pulse = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
 
 %% Propagate
@@ -98,10 +111,9 @@ title('Spectrum during propagation');
 set(gca,'fontsize',14);
 
 %% Visualize the nonlinear phase
-Ef = fftshift(ifft(ifftshift(prop_output.fields(:,:,end),1)),1);
 fitted_order = 3;
 verbose = true;
-[quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characterize_spectral_phase( f,Ef,fitted_order,verbose );
+[quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characterize_spectral_phase( f,prop_output.fields(:,:,end),fitted_order,verbose );
 
 %% Save the data
-save('SPM.mat');
+save('SPM_of_transform_limited_pulse.mat');

@@ -46,6 +46,8 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %       sim.include_Raman = true;
 %       sim.gain_model = 0;
 %
+%       sim.cs.cs = 1;
+%
 %       sim.pulse_centering = true;
 %       sim.gpuDevice.Index = 1;
 %       sim.progress_bar = true;
@@ -58,12 +60,15 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %
 %       sim.midx = [] (not used)
 %
-%       Assume 1030 nm for positive dispersion if lambda0 < 1300 nm (~ZDW for a silica fiber),
+%       Assume 920 nm for positive dispersion if lambda0 < 1000 nm,
+%           fiber.betas = [9.8810e6; 4.8872e3; 0.0315; 2.0457e-5; 1.2737e-9];
+%           fiber.MFD = 4; % um; from IXblue's IXF-2CF-PAS-PM-4-80-0.16-P
+%       Assume 1030 nm for positive dispersion if 1000 nm < lambda0 < 1300 nm (~ZDW for a silica fiber),
 %           fiber.betas = [8.867e6; 4.903e3; 0.0208; 33.3e-6; -27.7e-9];
 %           fiber.MFD = 6.2; % um; 1030nm from Thorlabs 1060XP
 %       Assume 1550 nm for negative dispersion if lambda0 > 1300 nm (~ZDW for a silica fiber),
 %           fiber.betas = [5.87e6; 4.91e3; -0.0167; 1.04e-6; -324e-9];
-%           fiber.MFD = 9.5; % um; 1030nm from Thorlabs 1060XP
+%           fiber.MFD = 9.5; % um; 1550nm from Thorlabs 1060XP
 %
 %       fiber.SR = (1) input SR, if there's input SR (input SR precedes over input MFD)
 %                  (2) 1/Aeff, if (a) there's input MFD
@@ -182,9 +187,10 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %
 %           SR - SR tensor, in m^-2
 %           L0 - length of fiber, in m
-%           fiber_type - 'silica', 'chalcogenide', or 'ZBLAN' (default: 'silica')
+%           material - 'silica', 'chalcogenide', or 'ZBLAN' (default: 'silica')
+%                      This is used to determine the Raman parameters to use.
 %
-%       Gain properties (for gain model 1,2,3; for rate-eqn gain model, see "gain_info.m") -->
+%       Gain properties (for Gaussian-gain model; for rate-eqn gain model, see "gain_info.m") -->
 %
 %           dB_gain - the small-signal gain amplification of the pulse energy in dB;
 %                     This is used to calculate the gain_coeff  (default to 30)
@@ -200,20 +206,20 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %                   t_rep - the repetition rate of the pulse
 %                   gain_cross_section - the absorption+emission cross sections
 %
-%               saturation_intensity - for Taylor or new gain model, the scale intensity in J/m^2
+%               saturation_intensity - for multimode Gaussian gain model (J/m^2)
 %                                      This is defined by h*f/(sigma*tau)*t_rep, where f is the center frequency,
 %                                                                                sigma is the sum of the emission and absorption cross sections,
 %                                                                                tau is the lifetime of the higher energy level for population inversion,
 %                                                                                t_rep is the repetition rate of the pulse or laser
 %                   OR
-%               saturation_energy - for SM gain model, the scale energy in nJ
+%               saturation_energy - for single-mode Gaussian gain model (nJ)
 %                                   This is defined by "saturation_intensity*Aeff"
 %
 % -------------------------------------------------------------------------
 %
 %   "initial_condition" is a structure with the fields:
 %
-%       dt - time step
+%       dt - time step, in ps
 %       fields - initial field, in W^1/2, (N-by-num_modes).
 %                If the size is (N-by-num_modes-by-S), then it will take the last S.
 %
@@ -284,6 +290,13 @@ function [fiber,sim] = load_default_GMMNLSE_propagate( input_fiber,input_sim,typ
 %           gain_model - 0 = no gain
 %                        1 = Gaussian-gain model
 %                        2 = Gain-rate-equation model: see "gain_info.m" for details
+%
+%       Scaled Fourier transform -->
+%
+%           cs.cs - scaled ratio (an integer) for narrowband transformation.
+%                   It must be a divisor of Nt.
+%           cs.model - 1 = correct nonlinear phase modulation (for nonlinear phase accumulation in CPA, Raman gain suppression, etc.)
+%                      2 = correct nonlinear amplitude modulation (for Raman gain, etc.)
 %
 %       Others -->
 %
@@ -563,6 +576,10 @@ default_sim.rmc.varn = 0; % variance of the refractive index
 default_sim.rmc.stdQ_polarizedmode = 0; % coupling strength between polarized modes
 default_sim.rmc.lambda0 = default_sim.lambda0; % the wavelength of the eigenmode fields
 default_sim.rmc.downsampling_factor = 1; % downsamplig factor of the eigenmode fields
+
+% Narrowband transformation (scaled Fourier transform)
+default_sim.cs.cs = 1; % scaled factor
+default_sim.cs.model = 1; % correct phase accumulation
 
 % Others
 default_sim.pulse_centering = true; % center the pulse according to the time window

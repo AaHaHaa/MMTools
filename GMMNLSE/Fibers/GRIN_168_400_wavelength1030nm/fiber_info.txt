@@ -1,4 +1,4 @@
-Material: fused silica
+Material: silica
 Fiber type: GRIN
 NA: 0.12000
 diameter: 168.00um

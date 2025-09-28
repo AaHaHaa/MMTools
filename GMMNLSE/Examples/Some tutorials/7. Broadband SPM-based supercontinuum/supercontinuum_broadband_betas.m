@@ -58,7 +58,7 @@ lambda = c./(f*1e12)*1e9; % nm
 % Taylor-series coefficients is only good in narrowband situations.
 
 % Sellmeier coefficients
-material = 'fused silica';
+material = 'silica';
 [a,b] = Sellmeier_coefficients(material);
 Sellmeier_terms = @(lambda,a,b) a.*lambda.^2./(lambda.^2 - b.^2);
 n_from_Sellmeier = @(lambda) sqrt(1+sum(Sellmeier_terms(lambda,a,b),2));

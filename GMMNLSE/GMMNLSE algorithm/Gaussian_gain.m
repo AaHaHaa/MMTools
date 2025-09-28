@@ -1,4 +1,4 @@
-function [G,saturation_parameter] = Gaussian_gain(fiber,sim,omegas)
+function [G,saturation_parameter] = Gaussian_gain(fiber,sim,Omega)
 %GAUSSIAN_GAIN It computes the gain parameters for the Gaussian-gain model.
 %
 % Input arguments:
@@ -10,7 +10,7 @@ function [G,saturation_parameter] = Gaussian_gain(fiber,sim,omegas)
 %   sim.gain_model
 %   sim.f0
 %   sim.gpu_yes
-%   omegas = 2*pi*ifftshift(linspace(-floor(Nt/2), floor((Nt-1)/2), Nt))'/(Nt*dt); % in 1/ps, in the order that the fft gives
+%   Omega = 2*pi*ifftshift(linspace(-floor(Nt/2), floor((Nt-1)/2), Nt))'/(Nt*dt); % offset frequency; in 1/ps, in the order that the fft gives
 
 c = 2.99792458e-4; % speed of ligth m/ps
 
@@ -28,7 +28,7 @@ if sim.gain_model == 1
     
     w_fwhm = 2*pi*sim.f0^2/c*fiber.gain_fwhm;
     w_0 = w_fwhm/(2*sqrt(log(2))); % 2*sqrt(log(2))=1.665
-    G = fiber.gain_coeff/2.*exp(-omegas.^2/w_0^2);
+    G = fiber.gain_coeff/2.*exp(-Omega.^2/w_0^2);
     
     if sim.gpu_yes
         G = gpuArray(G);

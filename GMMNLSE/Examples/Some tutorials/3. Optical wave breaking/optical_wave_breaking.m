@@ -4,7 +4,8 @@
 %
 %
 % Highly recommend the user to read the following article to understand how
-% optical wave breaking evolves. It contains detailed and good explanation.
+% optical wave breaking evolves (those around Fig. 6.5).
+% It contains detailed and good explanation.
 % For example, the spectral peaks at nu-nu0 = +-15 result from the 
 % four-wave mixing at the interference. The energy transfers from the pulse
 % central frequency to the exterior part of the spectrum. See this clearly 
@@ -60,7 +61,7 @@ c = 299792458; % m/s
 lambda = c./(f*1e12)*1e9; % nm
 
 %% Initial condition
-tfwhm = 1; % ps
+tfwhm = 0.8; % ps
 total_energy = 20; % nJ
 initial_pulse = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
 

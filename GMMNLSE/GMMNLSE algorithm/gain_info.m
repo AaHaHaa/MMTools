@@ -4,7 +4,7 @@ function gain_rate_eqn = gain_info( fiber,sim,gain_rate_eqn,lambda,mode_profiles
 % =========================================================================
 % =============== Call this function with the following code ==============
 % =========================================================================
-% f = ifftshift( (-N/2:N/2-1)/N/dt + sim.f0 ); % in the order of "omegas" in the GMMNLSE_propagate()
+% f = ifftshift( (-N/2:N/2-1)/N/dt + sim.f0 ); % offset angular frequency; in the order of "Omega" in the GMMNLSE_propagate()
 % c = 299792.458; % nm/ps
 % lambda = c./f; % nm
 %
@@ -68,6 +68,12 @@ function gain_rate_eqn = gain_info( fiber,sim,gain_rate_eqn,lambda,mode_profiles
 %       computational info -->
 %
 %           t_rep - the roundtrip time (1/repetition rate) of the pulse, which is used to calculate the power of the "signal" pulse; in "s"
+%
+%       ASE info -->
+%
+%           sponASE_spatial_modes - the number of ASE's supported spatial modes
+%                                   In LMA fibers, the number of ASE modes can be larger than one as the signal field, so this factor is used to correctly considered ASE.
+%                                   If empty like [], it's length(sim.midx).
 %
 %       rate equation model algorithm info -->
 %
@@ -154,6 +160,13 @@ if do_ifftshift_on_lambda
     lambda = ifftshift(lambda,1);
 end
 
+%% Narrowband transformation due to the scaled Fourier transform
+% lambda needs to be re-defined
+if sim.cs.cs > 1
+    lambda0 = lambda; % save the original lambda for extracting cross sections in the original lambda
+    lambda = lambda(1:sim.cs.cs:end);
+end
+
 %% Function container to read necessary parameters based on the gain medium to use later
 gain_func = gain_medium();
 
@@ -162,6 +175,11 @@ gain_rate_eqn = gain_func.load_medium_parameters(gain_rate_eqn);
 [gain_rate_eqn,...
  cross_sections,cross_sections_pump,...
  GSA_find_Ntotal] = gain_func.load_cross_sections(gain_rate_eqn,lambda);
+
+% Compute the original cross sections without the narrowband transformation (scaled Fourier transform)
+if sim.cs.cs > 1
+    [~,cross_sections0] = gain_func.load_cross_sections(gain_rate_eqn,lambda0);
+end
 
 %% Overlap factor of the field and the doping area
 % Load mode profiles for multimode
@@ -318,6 +336,10 @@ end
 cross_sections_pump = permute(cell2mat(struct2cell(cross_sections_pump)),[8,2,3,4,5,6,7,1]);
 cross_sections = permute(cell2mat(struct2cell(cross_sections)),[8,2,3,4,5,6,7,1]);
 
+if sim.cs.cs > 1
+    cross_sections0 = permute(cell2mat(struct2cell(cross_sections0)),[8,2,3,4,5,6,7,1]);
+end
+
 %% Put all information into "gain_rate_eqn"
 gain_rate_eqn.cross_sections_pump = cross_sections_pump;
 gain_rate_eqn.cross_sections      = cross_sections;
@@ -325,5 +347,10 @@ gain_rate_eqn.overlap_factor      = overlap_factor;
 gain_rate_eqn.N_total             = N_total;
 gain_rate_eqn.FmFnN               = FmFnN;
 gain_rate_eqn.GammaN              = GammaN;
+
+% Save original cross sections without the narrowband transformation (scaled Fourier transform)
+if sim.cs.cs > 1
+    gain_rate_eqn.cross_sections0 = cross_sections0;
+end
 
 end

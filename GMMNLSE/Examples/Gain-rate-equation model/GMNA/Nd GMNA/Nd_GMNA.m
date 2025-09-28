@@ -11,7 +11,7 @@ addpath('../../../../GMMNLSE algorithm/','../../../../user_helpers/');
 sim.lambda0 = 920e-9;
 sim.f0 = 2.99792458e-4/sim.lambda0;
 sim.gpu_yes = false;
-sim.save_period = 0.1;
+sim.save_period = 0.6;
 
 % -------------------------------------------------------------------------
 
@@ -78,7 +78,7 @@ gain_rate_eqn = gain_info( fiber,sim,gain_rate_eqn,ifftshift(lambda,1) );
 % Taylor-series coefficients is only good in narrowband situations.
 
 % Sellmeier coefficients
-material = 'fused silica';
+material = 'silica';
 [a,b] = Sellmeier_coefficients(material);
 Sellmeier_terms = @(lambda,a,b) a.*lambda.^2./(lambda.^2 - b.^2);
 n_from_Sellmeier = @(lambda) sqrt(1+sum(Sellmeier_terms(lambda,a,b),2));
@@ -107,3 +107,24 @@ energy = squeeze(sum(trapz(abs(prop_output.fields).^2,1),2)*prop_output.dt/10^3)
 
 func = analyze_sim;
 fig_gain = func.analyze_gain(prop_output.z,[],prop_output.Power.pump,prop_output.population);
+
+% Assume only two levels participate
+Ntmp = permute(cat(4,1-sum(prop_output.population,4),prop_output.population),[1,2,3,5,6,7,8,4])*gain_rate_eqn.N_total;
+gain = pi*(gain_rate_eqn.core_diameter/2)^2*fftshift(permute(gain_rate_eqn.overlap_factor.signal.*sum(gain_rate_eqn.plusminus.*gain_rate_eqn.cross_sections.*Ntmp(:,:,:,:,:,:,:,gain_rate_eqn.N_idx),8),[5,3,1,2,4]),1)*1e6;
+g2 = gain; %g2(g2<0) = 0;
+figure;
+h = plot(lambda,10*log10(exp(1))*g2); set(h,'linewidth',2);
+hold on;
+plot(lambda,zeros(Nt,1),'linewidth',4,'LineStyle','--','Color','k');
+hold off;
+set(gca,'fontsize',20);
+xlabel('Wavelength (nm)');
+ylabel('Gain (dB/m)');
+xlim([880,1000]);
+%title('Gain spectrum');
+print(gcf,'gain_spectrum.pdf','-dpdf');
+set(h,'linewidth',6);
+set(gca,'fontsize',30);
+ylim([-5,10]);
+xlabel(''); ylabel('');
+print(gcf,'gain_spectrum (inset).pdf','-dpdf');

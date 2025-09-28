@@ -23,8 +23,8 @@ initial_dt = input.dt;
 abs_fields = abs(input.fields);
 phase_fields = unwrap(angle(input.fields));
 
-initial_t = (-floor(initial_Nt/2):ceil(initial_Nt/2-1))'*initial_dt;
-final_t = (-floor(final_Nt/2):ceil(final_Nt/2-1))'*final_dt;
+initial_t = (-floor(initial_Nt/2):floor((initial_Nt-1)/2))'*initial_dt;
+final_t = (-floor(final_Nt/2):floor((final_Nt-1)/2))'*final_dt;
 
 abs_fields = interp1(initial_t,abs_fields,final_t,'pchip',0);
 phase_fields = interp1(initial_t,phase_fields,final_t,'pchip',0);

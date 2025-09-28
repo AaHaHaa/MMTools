@@ -7,7 +7,7 @@ function [A1w, a5,...
                                                 SK_info, SRa_info, SRb_info,...
                                                 haw, hbw,...
                                                 At_noise,...
-                                                n2_prefactor, omegas, D_op,...
+                                                n2_prefactor, Omega, D_op,...
                                                 Power_pump_forward, Power_pump_backward, a5_1,...
                                                 dummy_var)
 %STEPPING_RK4IP_RATEGAIN_ADAPTIVE Take one step with RK4IP with a gain model
@@ -42,7 +42,7 @@ function [A1w, a5,...
 %    SK_info.nonzero_midx1234s - required SK indices in total (unempty if considering polarizaton modes)
 %
 %    n2_prefactor - 1i*n2*omega/c; m/W
-%    omegas - angular frequencies in 1/ps, in the fft ordering
+%    Omega - offset angular frequencies; in 1/ps, in the fft ordering
 %    D_op - dispersion term D (Nt, num_modes)
 %
 %    cross_sections_pump
@@ -95,7 +95,7 @@ if gain_rate_eqn.counterpump_power == 0 % copumping
                                 A0w,dummy_var,...
                                 Power_pump_forward,dummy_var,...
                                 dummy_var,dummy_var,...
-                                omegas,dt,...
+                                Omega,dt,...
                                 false);
     Power_pump_backward = 0;
 else % bi-pumping or counterpumping
@@ -105,7 +105,7 @@ else % bi-pumping or counterpumping
                                                   A0w,dummy_var,...
                                                   Power_pump_forward,Power_pump_backward,...
                                                   dummy_var,dummy_var,...
-                                                  omegas,dt);
+                                                  Omega,dt);
 end
 gz_over_2 = log(G)/2; % E = G*E0 = exp(g*dz)*E0. The gz_over_2 here has already been multiplied by "dz/2" (symmetrized SS).
 expDG = exp(Dz + gz_over_2);
@@ -166,7 +166,10 @@ err = sum(abs((a4-a5)*(sim.dz/10)).^2,1);
 normA = sum(abs(A1w).^2,1);
 err = sqrt(err./normA);
 err = max(err(normA~=0));
-if isnan(err) % the computation is just so wrong, so we reduce the step size and do it again
+if normA == 0 % all-zero field; this will make err empty, so this condition needs to be determined first
+    opt_dz = 2*sim.dz;
+    success = true;
+elseif isnan(err) % the computation is just so wrong, so we reduce the step size and do it again
     opt_dz = 0.5*sim.dz;
     success = false;
 else
@@ -300,7 +303,7 @@ else
 end
 
 % Calculate h*Ra as F-1(h F(Ra))
-% The convolution using Fourier Transform is faster if both arrays are
+% The convolution using Fourier transform is faster if both arrays are
 % large. If one of the array is small, "conv" can be faster.
 % Please refer to
 % "https://blogs.mathworks.com/steve/2009/11/03/the-conv-function-and-implementation-tradeoffs/"

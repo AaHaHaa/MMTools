@@ -17,6 +17,8 @@ function foutput = GMMNLSE_propagate_without_adaptive_rmc(fiber, initial_conditi
 %
 %           SR - SR tensor, in m^-2
 %           L0 - length of fiber, in m
+%           material - 'silica', 'chalcogenide', or 'ZBLAN' (default: 'silica')
+%                      This is used to determine the Raman parameters to use.
 %
 %       Gain properties (for gain model 1,2,3; for rate-eqn gain model, see "gain_info.m") -->
 %
@@ -34,19 +36,20 @@ function foutput = GMMNLSE_propagate_without_adaptive_rmc(fiber, initial_conditi
 %                   t_rep - the repetition rate of the pulse
 %                   gain_cross_section - the absorption+emission cross sections
 %
-%               saturation_intensity - for Taylor or multimode-Gaussian-gain model, the scale intensity in J/m^2
-%                                      This is defined by h*f/(sigma*tau), where f is the center frequency,
+%               saturation_intensity - for multimode Gaussian gain model (J/m^2)
+%                                      This is defined by h*f/(sigma*tau)*t_rep, where f is the center frequency,
 %                                                                                sigma is the sum of the emission and absorption cross sections,
 %                                                                                tau is the lifetime of the higher energy level for population inversion,
+%                                                                                t_rep is the repetition rate of the pulse or laser
 %                   OR
-%               saturation_energy - for SM gain model, the scale energy in nJ
+%               saturation_energy - for single-mode Gaussian gain model (nJ)
 %                                   This is defined by "saturation_intensity*Aeff"
 %
 % -------------------------------------------------------------------------
 %
 %   "initial_condition" is a structure with the fields:
 %
-%       dt - time step
+%       dt - time step, in ps
 %       fields - initial field, in W^1/2, (N-by-num_modes).
 %                If the size is (N-by-num_modes-by-S), then it will take the last S.
 %
@@ -111,6 +114,11 @@ function foutput = GMMNLSE_propagate_without_adaptive_rmc(fiber, initial_conditi
 %                        1 = Gaussian-gain model
 %                        2 = Gain-rate-equation model: see "gain_info.m" for details
 %
+%       Scaled Fourier transform -->
+%
+%           cs - scaled ratio (an integer) for narrowband transformation.
+%                It must be a divisor of Nt.
+%
 %       Others -->
 %
 %           pulse_centering - 1(true) = center the pulse according to the time window, 0(false) = do not
@@ -147,7 +155,7 @@ function foutput = GMMNLSE_propagate_without_adaptive_rmc(fiber, initial_conditi
 %   foutput.dt - time grid point spacing, to fully identify the field
 %   foutput.z - the propagation length of the saved points
 %   foutput.dz - the (small) step size for each saved points
-%   foutput.betas - the [betas0,betas1] used for the moving frame
+%   foutput.betas - the [betas0;betas1] used for the moving frame
 %   foutput.t_delay - the time delay of each pulse which is centered in the time window during propagation
 %   foutput.seconds - time spent in the main loop
 %
@@ -170,6 +178,15 @@ sim.step_method = 'MPA';
 sim.MPA.coeff = permute(MPA_AM_coeff(sim.MPA.M),[1,3,2]);
 
 %% Check the validity of input parameters
+if sim.gpu_yes
+    try
+        gpuDevice;
+    catch
+        error('GMMNLSE_propagate_without_adaptive_rmc:GPUError',...
+              'No GPU is detected. Please set "sim.gpu_yes=false".');
+    end
+end
+
 if sim.save_period == 0
     sim.save_period = fiber.L0;
 end
@@ -224,24 +241,31 @@ if sim.gpu_yes
 end
 
 %% Pre-calculate the dispersion term
-% The "omegas" here is actually (omega - omega0), omega: true angular frequency
-%                                                 omega0: central angular frequency (=2*pi*f0)
+% The "Omega" here is offset angular frequency (omega - omega0), omega: true angular frequency
+%                                                                omega0: central angular frequency (=2*pi*f0)
 if sim.gpu_yes
     dt = gpuArray(initial_condition.dt);
 else
     dt = initial_condition.dt;
 end
-omegas = 2*pi*ifftshift(linspace(-floor(Nt/2), floor((Nt-1)/2), Nt))'/(Nt*dt); % in rad/ps, in the order that the fft gives
+Omega = 2*pi*ifftshift(linspace(-floor(Nt/2), floor((Nt-1)/2), Nt))'/(Nt*dt); % in rad/ps, in the order that the fft gives
 
 % The dispersion term in the GMMNLSE, in frequency space
-[D_op,sim] = calc_D_op(fiber,sim,Nt,dt,omegas,initial_condition.fields);
+[D_op,sim] = calc_D_op(fiber,sim,Nt,dt,Omega,initial_condition.fields);
+
+%% Create a damped frequency window to prevent aliasing
+sim.damped_freq_window = create_damped_freq_window(Nt);
 
 %% Pre-calculate the factor used in GMMNLSE (the nonlinear constant)
 c = 2.99792458e-4; % speed of ligth m/ps
 if ~isfield(fiber,'n2') || isempty(fiber.n2)
     fiber.n2 = 2.3e-20; % m^2/W
 end
-n2_prefactor = 1i*fiber.n2*(omegas+2*pi*sim.f0)/c; % m/W
+n2_prefactor = 1i*fiber.n2*(Omega+2*pi*sim.f0)/c; % m/W
+
+% Incorporate the damped window to the n2 term to remove generation of
+% frequency component near the window edge.
+n2_prefactor = n2_prefactor.*sim.damped_freq_window;
 
 %% Deal with dz
 % After this line, the code starts to use dz in variables important in simulations.
@@ -255,10 +279,10 @@ sim.small_dz = sim.dz/sim.MPA.M;
 
 %% % We can pre-compute exp(D_op*z) and exp(-D_op*z) for all z
 % Variable "z" for the computation of the dispersion operator
-fftshift_omegas = fftshift(omegas,1);
+fftshift_Omega = fftshift(Omega,1);
 spectrum = sum(abs(fftshift(ifft(initial_condition.fields,[],1),1)).^2,2);
-omega0 = sum(fftshift_omegas.*spectrum)/sum(spectrum); % 2*pi*THz; the pulse center frequency (under shifted omega)
-idx0 = find(fftshift_omegas>=omega0,1);
+omega0 = sum(fftshift_Omega.*spectrum)/sum(spectrum); % 2*pi*THz; the pulse center frequency (under shifted Omega)
+idx0 = find(fftshift_Omega>=omega0,1);
 if idx0 > floor(Nt/2)
     idx0 = idx0 - floor(Nt/2);
 else
@@ -287,13 +311,10 @@ end
 [fiber,haw,hbw] = Raman_model( fiber,sim,Nt,dt);
 
 %% Pre-calculate the Gaussian gain term if necessary
-[G,saturation_parameter] = Gaussian_gain(fiber,sim,omegas);
+[G,saturation_parameter] = Gaussian_gain(fiber,sim,Omega);
 
 %% Work out the overlap tensor details
 [SK_info, SRa_info, SRb_info] = calc_SRSK(fiber,sim,num_spatial_modes);
-
-%% Create a damped frequency window to prevent aliasing
-sim.damped_freq_window = create_damped_freq_window(Nt);
 
 %% Setup the exact save points
 % We will always save the initial condition as well
@@ -302,7 +323,7 @@ num_zPoints = num_zSteps + 1;
 
 %% Shot noise for noise modeling
 sim.num_photon_noise_per_bin = 1;
-initial_condition.fields = input_pulse_shot_noise(sim,omegas,Nt,dt,initial_condition.fields);
+initial_condition.fields = input_pulse_shot_noise(sim,Omega,Nt,dt,initial_condition.fields);
 
 %% Run the step function over each step
 run_start = tic;
@@ -369,7 +390,7 @@ if sim.gain_model == 2 % rate-equation-gain model
                                          initial_condition,...
                                          n2_prefactor,...
                                          SK_info, SRa_info, SRb_info,...
-                                         omegas, D,...
+                                         Omega, D,...
                                          haw, hbw,...
                                          gain_rate_eqn.saved_data);
 else % No gain, Gaussian gain

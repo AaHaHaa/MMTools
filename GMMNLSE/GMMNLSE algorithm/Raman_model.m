@@ -1,5 +1,5 @@
 function [fiber,haw,hbw] = Raman_model(fiber,sim,Nt,dt)
-%RAMAN_MODEL It calculates the Raman response of several materials.
+%RAMAN_MODEL It calculates the Raman response of several solid materials.
 %   Input:
 %       fiber.material: a string; the type of the fiber;
 %                         Currently it supports only silica, chalcogenide(As2S3), and ZBLAN(fluoride) fibers
@@ -33,7 +33,7 @@ if sim.gpu_yes
 end
 
 switch fiber.material
-    case {'silica','fused silica'}
+    case 'silica'
         % only the isotropic Raman
         % Ch. 2.3, p.42, Nonlinear Fiber Optics (5th), Agrawal
         %fiber.fr = 0.18; % 0.18 is standard for silica fibers
@@ -144,4 +144,3 @@ if ~include_anisotropic_Raman
 end
 
 end
-

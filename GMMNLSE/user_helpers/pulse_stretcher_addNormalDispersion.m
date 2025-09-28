@@ -24,6 +24,7 @@ function [optimal_offcenter_l,stretched_field,grating_size,roof_mirror_size,size
 %       global_opt: turn on global optimization to find the optimal compression;
 %                   This is necessary sometimes if the pulse is messy.
 %                   true(1) or false(0) (default: false)
+%       use_gpu: use GPU or not (default: false)
 %       m: a scalar; the diffraction order (default: -1)
 %
 %   Output arguments:
@@ -43,12 +44,14 @@ function [optimal_offcenter_l,stretched_field,grating_size,roof_mirror_size,size
 %      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R )
 %      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R,verbose )
 %      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt )
-%      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt,m )
+%      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt,use_gpu )
+%      [optimal_offcenter,stretched_field,grating_size,roof_mirror_size,concave_size,convex_size,recover_info] = pulse_stretcher( stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R,verbose,global_opt,use_gpu,m )
 %    Martinez type:
 %      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length )
 %      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose )
 %      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt )
-%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt,m )
+%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt,use_gpu )
+%      [optimal_l,stretched_field,grating_size,roof_mirror_size,lens1_size,lens2_size,recover_info] = pulse_stretcher( 'Martinez',desired_duration,theta_in,wavelength0,time,field,grating_spacing,focal_length,verbose,global_opt,use_gpu,m )
 %
 
 if ~ismember(stretcher_type,{'single-Offner','double-Offner','Martinez'})
@@ -56,22 +59,27 @@ if ~ismember(stretcher_type,{'single-Offner','double-Offner','Martinez'})
 end
 
 % Default parameters
-optargs = {false false -1};
+optargs = {false,false,false,-1};
 % Load paramters
 optargs(1:length(varargin)) = varargin;
-[verbose,global_opt,m] = optargs{:};
-[optimal_offcenter_l,stretched_field,grating_size,roof_mirror_size,size1,size2,recover_info] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R_or_f,verbose,m,global_opt);
+[verbose,global_opt,use_gpu,m] = optargs{:};
+[optimal_offcenter_l,stretched_field,grating_size,roof_mirror_size,size1,size2,recover_info] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R_or_f,verbose,m,global_opt,use_gpu);
 
 end
 
 %%
-function [optimal_value,stretched_field,grating_size,roof_mirror_size,size1,size2,recover_info] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R_or_f,verbose,m,global_opt)
+function [optimal_value,stretched_field,grating_size,roof_mirror_size,size1,size2,recover_info] = grating_pair(stretcher_type,desired_duration,theta_in,wavelength0,time,field,grating_spacing,R_or_f,verbose,m,global_opt,use_gpu)
 %GRATING_PAIR
 
-N = length(time); % the number of time points
+% Set up GPU
+if use_gpu
+    field = gpuArray(field);
+end
+
+Nt = length(time); % the number of time points
 dt = abs(time(2)-time(1)); % ps
 c = 299792.458; % nm/ps
-wavelength = c./((-N/2:N/2-1)'/N/dt + c/wavelength0); % nm
+wavelength = c./((-Nt/2:Nt/2-1)'/Nt/dt + c/wavelength0); % nm
 if size(time,1) == 1
     time = time'; % make sure it's a column vector
 end
@@ -86,7 +94,7 @@ wavelength = c./(freq+freq_c-c/wavelength0);
 field = field.*exp(1i*2*pi*(freq_c-c/wavelength0)*time);
 field_w = fftshift(ifft(field),1); % recompute the spectrum
 
-theta_out = asin( m*wavelength/(grating_spacing*1e9) + sin(theta_in) ); % the transmitted angle of the m-th order diffraction
+theta_out = asin( complex(m*wavelength/(grating_spacing*1e9) + sin(theta_in)) ); % the transmitted angle of the m-th order diffraction
 
 find_FWHM = @(s) calc_FWHM(stretcher_type,s,theta_in,theta_out,wavelength,time,field_w,grating_spacing,R_or_f,m);
 find_optimum_stretcher_distance = @(s) abs(find_FWHM(s) - desired_duration);
@@ -233,6 +241,17 @@ end
 % Information to recover the field
 recover_info = {exp(1i*2*pi*(freq_c-c/wavelength0)*time),exp(-1i*added_phase)};
 
+% Gather everything from GPU
+if use_gpu
+    optimal_value = gather(optimal_value);
+    stretched_field = gather(stretched_field);
+    grating_size = gather(grating_size);
+    roof_mirror_size = gather(roof_mirror_size);
+    size1 = gather(size1);
+    size2 = gather(size2);
+    recover_info = gather(recover_info);
+end
+
 end
 
 %%
@@ -278,7 +297,8 @@ if offcenter >0 && offcenter < R
         propagation_phase = 2*pi./wavelength.*propagation_distance*1e9;
 
         total_phase = zeros(size(propagation_phase));
-        total_phase(~rejected_part) = mod(2*(propagation_phase(~rejected_part)+grating_phase(~rejected_part)),2*pi); % "2" accounts for back-and-forth propagation
+        total_phase(~rejected_part) = mod(real(2*(propagation_phase(~rejected_part)+grating_phase(~rejected_part))),2*pi); % "2" accounts for back-and-forth propagation
+                                                                                                                           % real() is used because theta_out can be complex in numeric type
 
         % Propagate the light through the grating and transform it back to time domain
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
@@ -361,7 +381,8 @@ if separation > 0 && separation < 2*R
         propagation_phase = 2*pi./wavelength.*propagation_distance*1e9;
 
         total_phase = zeros(size(propagation_phase));
-        total_phase(~rejected_part) = mod(2*(propagation_phase(~rejected_part)+grating_phase(~rejected_part)),2*pi); % "2" accounts for back-and-forth propagation
+        total_phase(~rejected_part) = mod(real(2*(propagation_phase(~rejected_part)+grating_phase(~rejected_part))),2*pi); % "2" accounts for back-and-forth propagation
+                                                                                                                           % real() is used because theta_out can be complex in numeric type
 
         % Propagate the light through the grating and transform it back to time domain
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );
@@ -441,7 +462,8 @@ if grating_lens_distance > 0 && grating_lens_distance < focal_length
         propagation_phase = 2*pi./wavelength.*propagation_distance*1e9;
 
         total_phase = zeros(size(propagation_phase));
-        total_phase(~rejected_part) = mod(2*(propagation_phase(~rejected_part)+grating_phase(~rejected_part)),2*pi); % "2" accounts for back-and-forth propagation
+        total_phase(~rejected_part) = mod(real(2*(propagation_phase(~rejected_part)+grating_phase(~rejected_part))),2*pi); % "2" accounts for back-and-forth propagation
+                                                                                                                           % real() is used because theta_out can be complex in numeric type
 
         % Propagate the light through the grating and transform it back to time domain
         field = fft( ifftshift(field_w.*exp(1i*total_phase),1) );

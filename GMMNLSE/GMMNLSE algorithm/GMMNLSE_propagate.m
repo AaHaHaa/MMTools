@@ -49,7 +49,7 @@ end
 
 %% Determine whether to use adaptive-step-size method based on the gain model and the random mode coupling
 adaptive_dz_str = 'with';
-if sim.gain_model == 2 % rate-eqn-gain mdoel
+if sim.gain_model == 2 % rate-eqn-gain model
     if gain_rate_eqn.include_ASE || gain_rate_eqn.reuse_data || gain_rate_eqn.linear_oscillator
         adaptive_dz_str = 'without';
         
@@ -70,7 +70,89 @@ end
 
 GMMNLSE_propgation_func = str2func(['GMMNLSE_propagate_', adaptive_dz_str, '_adaptive', rmc_str]);
 
+%% Apply the narrowband transformation (due to the scaled Fourier transform)
+scaledFT_func = narrowband_scaledFT();
+
+if sim.cs.cs > 1
+    Nt = size(initial_condition.fields,1);
+    num_modes = size(initial_condition.fields,2);
+    transformed_At = zeros(round(Nt/sim.cs.cs),num_modes); % I use round() here to prevent error. The error check for "cs" will be done in scaledFT_func.convert later, so we just let it pass here.
+    for midx = 1:num_modes
+        transformed_At(:,midx) = scaledFT_func.convert(initial_condition.fields(:,midx,end),sim.cs.cs);
+    end
+
+    initial_condition.dt = initial_condition.dt*sim.cs.cs;
+    initial_condition.fields = transformed_At;
+    
+    % Narrowband transformation for the ASE powers
+    if sim.gain_model == 2
+        if gain_rate_eqn.include_ASE
+            transformed_Power_ASE_forward = zeros(Nt/sim.cs.cs,num_modes);
+            transformed_Power_ASE_backward = zeros(Nt/sim.cs.cs,num_modes);
+            for midx = 1:num_modes
+                tmp = fftshift(initial_condition.Power.ASE.forward(:,midx,end),1);
+                transformed_Power_ASE_forward(:,midx) = ifftshift(tmp(1:sim.cs.cs:end)*sim.cs.cs,1);
+    
+                tmp = fftshift(initial_condition.Power.ASE.backward(:,midx,end),1);
+                transformed_Power_ASE_backward(:,midx) = ifftshift(tmp(1:sim.cs.cs:end)*sim.cs.cs,1);
+            end
+            initial_condition.Power.ASE.forward = transformed_Power_ASE_forward;
+            initial_condition.Power.ASE.backward = transformed_Power_ASE_backward;
+        end
+    end
+end
+
 %% Run the pulse propagation
 foutput = GMMNLSE_propgation_func(fiber, initial_condition, sim, gain_rate_eqn);
+
+%% Recover from the narrowband transformation
+if sim.cs.cs > 1
+    foutput.dt = foutput.dt/sim.cs.cs;
+    foutput.fields = scaledFT_recover_field(scaledFT_func,foutput.fields,sim.cs.cs);
+
+    if sim.gain_model == 2
+        if gain_rate_eqn.include_ASE
+            foutput.Power.ASE.forward = scaledFT_recover_power(foutput.Power.ASE.forward,sim.cs.cs);
+            foutput.Power.ASE.backward = scaledFT_recover_power(foutput.Power.ASE.backward,sim.cs.cs);
+        end
+    end
+end
+
+end
+
+%% Helper functions for recovering the field from the narrowband transformation due to the scaled Fourier transform
+function rA = scaledFT_recover_field(scaledFT_func,A,cs)
+
+Nt = size(A,1);
+num_modes = size(A,2);
+Nz = size(A,3);
+
+rA = zeros(Nt*cs,num_modes,Nz);
+for zi = 1:Nz
+    for midx = 1:num_modes
+        rA(:,midx,zi) = scaledFT_func.recover(A(:,midx,zi),cs);
+    end
+end
+
+end
+
+function rP = scaledFT_recover_power(P,cs)
+
+Nt = size(P,1);
+num_modes = size(P,2);
+Nz = size(P,3);
+
+recover_idx = linspace(1,Nt+1,Nt*cs+1)';
+recover_idx = recover_idx(1:end-1); % remove the last "Nt+1" point
+if mod(Nt,2) == 1
+    recover_idx = [recover_idx(end-ceil((cs-1)/2)+1:end)-Nt;recover_idx(1:end-ceil((cs-1)/2))];
+end
+
+rP = zeros(Nt*cs,num_modes,Nz);
+for zi = 1:Nz
+    for midx = 1:num_modes
+        rP(:,midx,zi) = interp1((1:Nt)',P(:,midx,zi),recover_idx,'linear','extrap')/cs;
+    end
+end
 
 end

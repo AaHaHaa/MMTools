@@ -13,21 +13,21 @@ function func = calc_chirp
 %
 %       duration = ?; % ps
 %       time_window = ?; % ps
-%       omega = ifftshift(2*pi*(-N/2:N/2-1)'/time_window,1); % 2*pi*THz
-%       spectrum_amplitude = ifft(E); % E is the electric field
+%       Omega = ifftshift(2*pi*(-N/2:N/2-1)'/time_window,1); % 2*pi*THz
+%       spectrum_amplitude = ifft(E,1); % E is the electric field
 %       
 %       For a Gaussian pulse,
-%       [chirp,chirped_pulse] = func.Gaussian( duration,omega,spectrum_amplitude,chirp_sign );
+%       [chirp,chirped_pulse] = func.Gaussian( duration,Omega,spectrum_amplitude,chirp_sign );
 %       
 %       For a random pulse,
-%       [chirp,chirped_pulse] = func.General( duration,omega,spectrum_amplitude,chirp_sign );
+%       [chirp,chirped_pulse] = func.General( duration,Omega,spectrum_amplitude,chirp_sign );
 
 func.Gaussian = @Gaussian;
 func.General  = @General;
 
 end
 
-function  [chirp,chirped_pulse] = Gaussian( duration,omega,spectrum_amplitude,chirp_sign )
+function  [chirp,chirped_pulse] = Gaussian( duration,Omega,spectrum_amplitude,chirp_sign )
 %CALC_CHIRP It calculates the chirp and the chirped pulse of a Gaussian 
 %pulse based on its duration and bandwidth.
 %
@@ -44,10 +44,12 @@ function  [chirp,chirped_pulse] = Gaussian( duration,omega,spectrum_amplitude,ch
 %
 %   Input:
 %       duration:  FWHM under time domain; ps
-%       omega: the angular frequency column vector (before fftshift); 2*pi*THz
-%       spectrum_amplitude: the spectrum amplitude column vector which is the "Fourier Transform of the electric field".
-%                           It's a complex column vector. Maybe it's not correct to call it "amplitude".
+%       Omega: the offset angular frequency; column vector (before fftshift); 2*pi*THz
+%       spectrum_amplitude: the spectrum amplitude column vector which is the "Fourier transform of the electric field".
+%                           It contains complex-valued column vectors. Maybe it's not correct to call it "amplitude".
 %                           Don't take "fftshift" and "abs()^2" for this input argument.
+%                           Its size is (Nt,x).
+%                           The temporal and spectral profiles are determined by summation over the 2nd dimension.
 %       chirp_sign: add a positive chirp or a negative chirp; 1 or -1
 %
 %   Output:
@@ -58,12 +60,12 @@ function  [chirp,chirped_pulse] = Gaussian( duration,omega,spectrum_amplitude,ch
 duration = duration(1); % in case it's an array
 
 % Spectrum information
-fftshift_omega = fftshift(omega,1);
-abs2_spectrum = abs(fftshift(spectrum_amplitude,1)).^2;
-omega0 = trapz(fftshift_omega,fftshift_omega.*abs2_spectrum)./trapz(fftshift_omega,abs2_spectrum);
+fftshift_Omega = fftshift(Omega,1);
+abs2_spectrum = sum(abs(fftshift(spectrum_amplitude,1)).^2,2);
+omega0 = trapz(fftshift_Omega,fftshift_Omega.*abs2_spectrum)./trapz(fftshift_Omega,abs2_spectrum);
 
 % Gaussian bandwidth
-bandwidth = calc_RMS(fftshift_omega,abs2_spectrum)*sqrt(2)*(2*sqrt(log(2))); % fwhm
+bandwidth = calc_RMS(fftshift_Omega,abs2_spectrum)*sqrt(2)*(2*sqrt(log(2))); % fwhm
 
 t1 = duration/(2*sqrt(log(2))); % ps
 w0 = bandwidth/(2*sqrt(log(2))); % 2*pi*THz
@@ -78,11 +80,11 @@ else
     chirp = 0;
 end
 
-chirped_pulse = fft(spectrum_amplitude.*exp(1i*chirp/2*(omega-omega0).^2));
+chirped_pulse = fft(spectrum_amplitude.*exp(1i*chirp/2*(Omega-omega0).^2));
 
 end
 
-function [chirp,chirped_pulse] = General( duration,omega,spectrum_amplitude,chirp_sign )
+function [chirp,chirped_pulse] = General( duration,Omega,spectrum_amplitude,chirp_sign )
 %GENERAL It calculates the chirp of a spectrum for the desired pulse
 %duration.
 %
@@ -91,10 +93,12 @@ function [chirp,chirped_pulse] = General( duration,omega,spectrum_amplitude,chir
 %
 %   Input:
 %       duration: FWHM under time domain; ps
-%       omega: the angular frequency column vector (before fftshift); 2*pi*THz
-%       spectrum_amplitude: the spectrum amplitude column vector which is the "Fourier Transform of the electric field".
+%       Omega: the offset angular frequency; column vector (before fftshift); 2*pi*THz
+%       spectrum_amplitude: the spectrum amplitude column vector which is the "Fourier transform of the electric field".
 %                           It's a complex column vector. Maybe it's not correct to call it "amplitude".
 %                           Don't take "fftshift" and "abs()^2" for this input argument.
+%                           Its size is (Nt,x).
+%                           The temporal and spectral profiles are determined by summation over the 2nd dimension.
 %       chirp_sign: having positive chirp or a negative chirp eventually; 1, -1, or 0
 %                   This is relative to the transform-limited pulse duration.
 %                   1 means the pulse has a positive chirp to obtain desired pulse duration;
@@ -106,30 +110,30 @@ function [chirp,chirped_pulse] = General( duration,omega,spectrum_amplitude,chir
 %              (2*pi*THz)^(-2), but we usually don't show 2*pi factor in the unit, so it becomes ps^2
 %       chirped_pulse: the electric field column vector for the chirped pulse
 
-Nt = length(omega);
-dt = 2*pi/(max(omega)-min(omega)); % ps
+Nt = length(Omega);
+dt = 2*pi/(max(Omega)-min(Omega)); % ps
 time = (ceil(-Nt/2):ceil(Nt/2-1))*dt; % ps
 
 % Find omega0
-fftshift_omega = fftshift(omega,1);
-abs2_spectrum = abs(fftshift(spectrum_amplitude,1)).^2;
-omega0 = trapz(fftshift_omega,fftshift_omega.*abs2_spectrum)./trapz(fftshift_omega,abs2_spectrum);
+fftshift_Omega = fftshift(Omega,1);
+abs2_spectrum = sum(abs(fftshift(spectrum_amplitude,1)).^2,2);
+omega0 = trapz(fftshift_Omega,fftshift_Omega.*abs2_spectrum)./trapz(fftshift_Omega,abs2_spectrum);
 
 % Kill the background spectral noise, particularly the high-frequency noise
 spectrum_amplitude_thresholded = spectrum_amplitude;
-spectrum_amplitude_thresholded(abs(spectrum_amplitude)<max(abs(spectrum_amplitude))/10) = 0;
+spectrum_amplitude_thresholded(abs(spectrum_amplitude)<max(abs(spectrum_amplitude(:)))/10) = 0;
 
 % Guess the initial chirp by assuming a Gaussian shape
-input_duration = calc_RMS(time,abs(fft(spectrum_amplitude)).^2)*sqrt(2)*(2*sqrt(log(2))); % fwhm
-%input_bandwidth = calc_RMS(fftshift_omega,abs2_spectrum)*sqrt(2)*(2*sqrt(log(2))); % fwhm
-guess_chirp0 = Gaussian( input_duration,omega,spectrum_amplitude,1 );
+input_duration = calc_RMS(time,sum(abs(fft(spectrum_amplitude)).^2,2))*sqrt(2)*(2*sqrt(log(2))); % fwhm
+%input_bandwidth = calc_RMS(fftshift_Omega,abs2_spectrum)*sqrt(2)*(2*sqrt(log(2))); % fwhm
+guess_chirp0 = Gaussian( input_duration,Omega,spectrum_amplitude,1 );
 % Guess the chirp required to obtain the desired duration
-guess_desired_chirp = Gaussian( duration,omega,spectrum_amplitude,chirp_sign );
+guess_desired_chirp = Gaussian( duration,Omega,spectrum_amplitude,chirp_sign );
 
 % Dechirp the pulse first
 options = optimset('TolX',1e-20);
 %options = optimset('PlotFcns',@optimplotfval,'TolX',1e-20); % plot the process of optimization
-find_dechirp = @(C) find_fwhm( C,time,0,omega,omega0,spectrum_amplitude_thresholded );
+find_dechirp = @(C) find_fwhm( C,time,0,Omega,omega0,spectrum_amplitude_thresholded );
 % Because I don't know the input pulse is initially positively or
 % negatively chirped, I run the optimization twice with different initial
 % guess and find the optimum.
@@ -142,17 +146,17 @@ else
 end
 
 % Add the chirp based on chirp_sign
-find_optimal_chirp = @(C) find_fwhm( abs(C)*sign(chirp_sign)+dechirp,time,duration,omega,omega0,spectrum_amplitude_thresholded );
+find_optimal_chirp = @(C) find_fwhm( abs(C)*sign(chirp_sign)+dechirp,time,duration,Omega,omega0,spectrum_amplitude_thresholded );
 stretching_chirp = fminsearch(find_optimal_chirp,guess_desired_chirp,options);
 chirp = abs(stretching_chirp)*sign(chirp_sign) + dechirp;
-chirped_pulse = fft(spectrum_amplitude.*exp(1i*chirp/2*(omega-omega0).^2));
+chirped_pulse = fft(spectrum_amplitude.*exp(1i*chirp/2*(Omega-omega0).^2));
 
 end
 
-function difference = find_fwhm( C,time,duration,omega,omega0,spectrum_amplitude )
+function difference = find_fwhm( C,time,duration,Omega,omega0,spectrum_amplitude )
 %FIND_FWHM
 
-pulse = sum(abs(fft(spectrum_amplitude.*exp(1i*C/2*(omega-omega0).^2))).^2,2);
+pulse = sum(abs(fft(spectrum_amplitude.*exp(1i*C/2*(Omega-omega0).^2))).^2,2);
 
 % Find the FWHM
 pulse(pulse<max(pulse)/50) = 0; % It's important to kill the noise first; otherwise, noise will make calc_RMS return a large value

@@ -15,7 +15,7 @@ function output = build_noisy_MMgaussian(tfwhm, tfwhm_noise, time_window, pulse_
 %   frequency_shift - a cell with two elements:
 %                     the amount of shifted frequency (THz) (default is 0)
 %                     and
-%                     Fourier Transform type: 'fft' or 'ifft' (default is 'ifft')
+%                     Fourier-transform type: 'fft' or 'ifft' (default is 'ifft')
 %   coeffs - the normalized complex amplitude coefficients of the different modes (default is equal across all modes)
 %   center - temporal position of the pulse in the time window (default is 0)
 %   gaussexpo - supergaussian exponent (~exp(-t^(2*gaussexpo))) (default is 1)

@@ -291,7 +291,7 @@ for n_it = 1:sim.MPA.n_tot_max
     gain_term = permute(gain_term,[1,3,2]); % (Nt, M+1, num_modes)
     
     % Apply the convolution for the isotropic Raman:
-    % The convolution using Fourier Transform is faster if both arrays are
+    % The convolution using Fourier transform is faster if both arrays are
     % large. If one of the array is small, "conv" can be faster.
     % Please refer to
     % "https://blogs.mathworks.com/steve/2009/11/03/the-conv-function-and-implementation-tradeoffs/"

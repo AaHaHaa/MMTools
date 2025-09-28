@@ -17,7 +17,8 @@ function foutput = GMMNLSE_propagate_with_adaptive(fiber, initial_condition, sim
 %
 %           SR - SR tensor, in m^-2
 %           L0 - length of fiber, in m
-%           fiber_type - 'silica', 'chalcogenide', or 'ZBLAN' (default: 'silica')
+%           material - 'silica', 'chalcogenide', or 'ZBLAN' (default: 'silica')
+%                      This is used to determine the Raman parameters to use.
 %
 %       Gain properties (for Gaussian-gain model; for rate-eqn gain model, see "gain_info.m") -->
 %
@@ -48,7 +49,7 @@ function foutput = GMMNLSE_propagate_with_adaptive(fiber, initial_condition, sim
 %
 %   "initial_condition" is a structure with the fields:
 %
-%       dt - time step
+%       dt - time step, in ps
 %       fields - initial field, in W^1/2, (N-by-num_modes).
 %                If the size is (N-by-num_modes-by-S), then it will take the last S.
 %
@@ -119,6 +120,13 @@ function foutput = GMMNLSE_propagate_with_adaptive(fiber, initial_condition, sim
 %                        1 = Gaussian-gain model
 %                        2 = Gain-rate-equation model: see "gain_info.m" for details
 %
+%       Scaled Fourier transform -->
+%
+%           cs.cs - scaled ratio (an integer) for narrowband transformation.
+%                   It must be a divisor of Nt.
+%           cs.model - 1 = correct nonlinear phase modulation (for nonlinear phase accumulation in CPA, Raman gain suppression, etc.)
+%                      2 = correct nonlinear amplitude modulation (for Raman gain, etc.)
+%
 %       Others -->
 %
 %           pulse_centering - 1(true) = center the pulse according to the time window, 0(false) = do not
@@ -155,7 +163,7 @@ function foutput = GMMNLSE_propagate_with_adaptive(fiber, initial_condition, sim
 %   foutput.dt - time grid point spacing, to fully identify the field
 %   foutput.z - the propagation length of the saved points
 %   foutput.dz - the (small) step size at each saved points
-%   foutput.betas - the [betas0,betas1] used for the moving frame
+%   foutput.betas - the [betas0;betas1] used for the moving frame
 %   foutput.t_delay - the time delay of each pulse which is centered in the time window during propagation
 %   foutput.seconds - time spent in the main loop
 %
@@ -178,6 +186,15 @@ else % multimode
 end
 
 %% Check the validity of input parameters
+if sim.gpu_yes
+    try
+        gpuDevice;
+    catch
+        error('GMMNLSE_propagate_with_adaptive:GPUError',...
+              'No GPU is detected. Please set "sim.gpu_yes=false".');
+    end
+end
+
 if sim.save_period == 0
     sim.save_period = fiber.L0;
 end
@@ -211,24 +228,36 @@ if sim.gpu_yes
 end
 
 %% Pre-calculate the dispersion term
-% The "omegas" here is actually (omega - omega0), omega: true angular frequency
-%                                                 omega0: central angular frequency (=2*pi*f0)
+% The "Omega" here is offset frequency (omega - omega0), omega: true angular frequency
+%                                                        omega0: central angular frequency (=2*pi*f0)
 if sim.gpu_yes
     dt = gpuArray(initial_condition.dt);
 else
     dt = initial_condition.dt;
 end
-omegas = 2*pi*ifftshift(linspace(-floor(Nt/2), floor((Nt-1)/2), Nt))'/(Nt*dt); % in rad/ps, in the order that the ifft gives
+Omega = 2*pi*ifftshift(linspace(-floor(Nt/2), floor((Nt-1)/2), Nt))'/(Nt*dt); % offset angular frequency; in rad/ps, in the order that the ifft gives
 
 % The dispersion term in the GMMNLSE, in frequency space
-[D_op,sim] = calc_D_op(fiber,sim,Nt,dt,omegas,initial_condition.fields);
+[D_op,sim] = calc_D_op(fiber,sim,Nt,dt,Omega,initial_condition.fields);
+
+%% Create a damped frequency window to prevent aliasing, which will be applied during each RK4IP step
+sim.damped_freq_window = create_damped_freq_window(Nt);
 
 %% Pre-calculate the factor used in GMMNLSE (the nonlinear constant)
 c = 2.99792458e-4; % speed of ligth m/ps
 if ~isfield(fiber,'n2') || isempty(fiber.n2)
     fiber.n2 = 2.3e-20; % m^2/W
 end
-n2_prefactor = 1i*fiber.n2*(omegas+2*pi*sim.f0)/c; % m/W
+n2_prefactor = 1i*fiber.n2*(Omega+2*pi*sim.f0)/c; % m/W
+
+% Incorporate the damped window to the n2 term to remove generation of
+% frequency component near the window edge.
+n2_prefactor = n2_prefactor.*sim.damped_freq_window;
+
+% Scaled nonlinearity due to the narrowband transformation (scaled Fourier transform)
+if sim.cs.cs > 1 && sim.cs.model == 1
+    n2_prefactor = n2_prefactor/sim.cs.cs;
+end
 
 %% Pre-compute the Raman response in frequency space
 if ~isfield(fiber,'material')
@@ -237,13 +266,10 @@ end
 [fiber,haw,hbw] = Raman_model(fiber,sim,Nt,dt);
 
 %% Pre-calculate the Gaussian gain term if necessary
-[G,saturation_parameter] = Gaussian_gain(fiber,sim,omegas);
+[G,saturation_parameter] = Gaussian_gain(fiber,sim,Omega);
 
 %% Work out the overlap tensor details
 [SK_info, SRa_info, SRb_info] = calc_SRSK(fiber,sim,num_spatial_modes);
-
-%% Create a damped frequency window to prevent aliasing
-sim.damped_freq_window = create_damped_freq_window(Nt);
 
 %% Setup the exact save points
 % We will always save the initial condition as well
@@ -272,12 +298,12 @@ if sim.gain_model == 2 % rate-equation-gain model
     
     [A_out,Power,...
      save_z,save_dz,...
-     T_delay_out,...
+     T_delay,...
      N] = SteppingCaller_adaptive_rategain(sim,gain_rate_eqn,...
                                            save_z,save_points,...
                                            initial_condition,...
                                            n2_prefactor,...
-                                           omegas, D_op,...
+                                           Omega, D_op,...
                                            SK_info, SRa_info, SRb_info,...
                                            haw, hbw,...
                                            At_noise);
@@ -285,20 +311,21 @@ if sim.gain_model == 2 % rate-equation-gain model
 else % No gain, Gaussian gain
     [A_out,...
      save_z,save_dz,...
-     T_delay_out] = SteppingCaller_adaptive(sim,...
-                                            G, saturation_parameter,...
-                                            save_z,save_points,...
-                                            initial_condition,...
-                                            n2_prefactor,...
-                                            D_op,...
-                                            SK_info, SRa_info, SRb_info,...
-                                            haw, hbw,...
-                                            At_noise);
+     T_delay] = SteppingCaller_adaptive(sim,...
+                                        G, saturation_parameter,...
+                                        save_z,save_points,...
+                                        initial_condition,...
+                                        n2_prefactor,...
+                                        D_op,...
+                                        SK_info, SRa_info, SRb_info,...
+                                        haw, hbw,...
+                                        At_noise);
 end
 
 % -------------------------------------------------------------------------
 % Just to get an accurate timing, wait before recording the time
 if sim.gpu_yes
+    dt = gather(dt);
     sim.betas = gather(sim.betas);
     At_noise = gather(At_noise);
     wait(sim.gpuDevice.Device);
@@ -309,10 +336,10 @@ fulltime = toc(run_start);
 foutput = struct('z', save_z,...
                  'dz', save_dz,...
                  'fields', A_out,...
-                 'dt', initial_condition.dt,...
+                 'dt', dt,...
                  'betas', sim.betas,...
                  'seconds', fulltime,...
-                 't_delay', T_delay_out,...
+                 't_delay', T_delay,...
                  'shot_noise',At_noise);
 if sim.gain_model == 2
     foutput.Power = Power;

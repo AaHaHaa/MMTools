@@ -77,7 +77,7 @@ gain_rate_eqn = gain_info( fiber_Gain,sim_Gain,gain_rate_eqn,ifftshift(lambda,1)
 % Taylor-series coefficients is only good in narrowband situations.
 
 % Sellmeier coefficients
-material = 'fused silica';
+material = 'silica';
 [a,b] = Sellmeier_coefficients(material);
 Sellmeier_terms = @(lambda,a,b) a.*lambda.^2./(lambda.^2 - b.^2);
 n_from_Sellmeier = @(lambda) sqrt(1+sum(Sellmeier_terms(lambda,a,b),2));
@@ -97,14 +97,14 @@ prop_output = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt, {'ifft',
 
 %% Run the simulation 1
 prop_output = GMMNLSE_propagate(fiber_Gain, prop_output, sim_Gain, gain_rate_eqn);
-[quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characterize_spectral_phase( f,fftshift(ifft(ifftshift(prop_output.fields(:,:,end),1)),1),7,true );
+[quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characterize_spectral_phase( f,prop_output.fields(:,:,end),7,true );
 
 sim_Gain.gain_model = 0;
 fiber_Gain.L0 = 5;
 seed_energy = 1;
 prop_output.fields = prop_output.fields*seed_energy/trapz(t,abs(prop_output.fields(:,:,end)).^2)*1e3;
 prop_output = GMMNLSE_propagate(fiber_Gain, prop_output, sim_Gain, gain_rate_eqn);
-[quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characterize_spectral_phase( f,fftshift(ifft(ifftshift(prop_output.fields(:,:,end),1)),1),7,true );
+[quardratic_phase,cubic_phase,fitted_param,quintic_phase] = characterize_spectral_phase( f,prop_output.fields(:,:,end),7,true );
 
 %% Finish the simulation and save the data
 %N2 = prop_output.N2;

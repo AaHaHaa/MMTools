@@ -77,7 +77,7 @@ gain_rate_eqn = gain_info( fiber,sim,gain_rate_eqn,ifftshift(lambda,1) );
 % Taylor-series coefficients is only good in narrowband situations.
 
 % Sellmeier coefficients
-material = 'fused silica';
+material = 'silica';
 [a,b] = Sellmeier_coefficients(material);
 Sellmeier_terms = @(lambda,a,b) a.*lambda.^2./(lambda.^2 - b.^2);
 n_from_Sellmeier = @(lambda) sqrt(1+sum(Sellmeier_terms(lambda,a,b),2));
@@ -102,7 +102,7 @@ prop_output = GMMNLSE_propagate(fiber, prop_output, sim, gain_rate_eqn);
 % Energy of the output field
 energy = squeeze(sum(trapz(abs(prop_output.fields).^2,1),2)*prop_output.dt/10^3); % energy in nJ
 
-[Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power] = analyze_field( t,f,prop_output.fields(:,:,end),'Treacy-t',pi/6,1e-6 );
+[Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power] = analyze_field( t,f,prop_output.fields(:,:,end),'Treacy-t',pi/180*60,1e-6 );
 
 func = analyze_sim;
 fig_gain = func.analyze_gain(prop_output.z,[],prop_output.Power.pump,prop_output.population);

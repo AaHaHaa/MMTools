@@ -50,20 +50,20 @@ fprintf('\n');
 % compressed by an Offner-type single-grating compressor
 R = 2; % m; radius of curvature of the mirror in an Offner stretcher/compressor
 fprintf('Start compressing with an Offner single-grating compressor...... \n');
-[dechirped_offcenter,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner1',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,-1 );
+[dechirped_offcenter,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner1',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,true,-1 );
 title('Dechirped pulse (single-grating Offner dechirper)');
 fprintf('\n');
 % compressed by an Offner-type double-grating compressor
 %R = 2; % m; radius of curvature of the mirror in an Offner stretcher/compressor
 %compressed_offcenter = 0.8;
 %fprintf('Start compressing with an Offner double-grating compressor...... \n');
-%[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner2',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,compressed_offcenter,true,true,-1 );
+%[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner2',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,compressed_offcenter,true,true,false,-1 );
 %title('Dechirped pulse (double-grating Offner dechirper)');
 %fprintf('\n');
 % compressed by an aberration-free Offner-type double-grating compressor
 R = 2; % m; radius of curvature of the mirror in an Offner stretcher/compressor
 fprintf('Start compressing with an aberration-free Offner double-grating compressor...... \n');
-[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner3',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,-1 );
+[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner3',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,false,-1 );
 title('Dechirped pulse (aberration-free Offner dechirper)');
 fprintf('\n');
 
@@ -91,19 +91,19 @@ fprintf('Finish stretching.\n\n');
 % compressed by an Offner-type single-grating compressor
 R = 2; % m; radius of curvature of the mirror in an Offner stretcher/compressor
 fprintf('Start compressing with an Offner single-grating compressor...... \n');
-[dechirped_offcenter,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner1',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,-1 );
+[dechirped_offcenter,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner1',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,false,-1 );
 title('Dechirped pulse (single-grating Offner dechirper)');
 fprintf('\n');
 % compressed by an Offner-type double-grating compressor
 %R = 2; % m; radius of curvature of the mirror in an Offner stretcher/compressor
 %compressed_offcenter = 0.8;
 %fprintf('Start compressing with an Offner double-grating compressor...... \n');
-%[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner2',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,compressed_offcenter,true,true,-1 );
+%[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner2',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,compressed_offcenter,true,true,false,-1 );
 %title('Dechirped pulse (double-grating Offner dechirper)');
 %fprintf('\n');
 % compressed by an aberration-free Offner-type double-grating compressor
 R = 2; % m; radius of curvature of the mirror in an Offner stretcher/compressor
 fprintf('Start compressing with an aberration-free Offner double-grating compressor...... \n');
-[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner3',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,-1 );
+[dechirped_separation,optimal_FWHM,dechirped_field] = pulse_compressor( 'Offner3',incident_angle*pi/180,wavelength0,t,stretched_field,grating_spacing,R,true,true,false,-1 );
 title('Dechirped pulse (aberration-free Offner dechirper)');
 fprintf('\n');

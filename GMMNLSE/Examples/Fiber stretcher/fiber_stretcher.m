@@ -61,7 +61,7 @@ lambda = c./(f*1e12)*1e9; % nm
 % Taylor-series coefficients is only good in narrowband situations.
 
 % Sellmeier coefficients
-material = 'fused silica';
+material = 'silica';
 [a,b] = Sellmeier_coefficients(material);
 Sellmeier_terms = @(lambda,a,b) a.*lambda.^2./(lambda.^2 - b.^2);
 n_from_Sellmeier = @(lambda) sqrt(1+sum(Sellmeier_terms(lambda,a,b),2));
@@ -78,7 +78,7 @@ initial_pulse = build_MMgaussian(tfwhm, time_window, total_energy, 1, Nt);
 prop_output = GMMNLSE_propagate(fiber,initial_pulse,sim);
 
 %% Find the TOD/GDD of a fiber
-[quardratic_phase,cubic_phase,~,quintic_phase] = characterize_spectral_phase( f,fftshift(ifft(ifftshift(prop_output.fields(:,:,end),1)),1),7 );
+[quardratic_phase,cubic_phase,~,quintic_phase] = characterize_spectral_phase( f,prop_output.fields(:,:,end),7 );
 fprintf('TOD/GDD (fiber) = %6.4f(fs)\n',cubic_phase/quardratic_phase);
 fprintf('FOD/GDD (fiber) = %6.4f(fs^2)\n',quintic_phase/quardratic_phase);
 
@@ -90,7 +90,7 @@ alpha = pi/3;
 alpha = 69.1*pi/180;
 incident_angle = 30; % deg
 grating_spacing = 1e-3/1000; % m
-[dechirped_separation_grism,optimal_FWHM_grism,dechirped_field_grism,grism_height] = pulse_compressor( 'grism2',incident_angle*pi/180,sim.lambda0*1e9,t,prop_output.fields(:,:,end),grating_spacing,alpha,'fused silica',false,true );
+[dechirped_separation_grism,optimal_FWHM_grism,dechirped_field_grism,grism_height] = pulse_compressor( 'grism2',incident_angle*pi/180,sim.lambda0*1e9,t,prop_output.fields(:,:,end),grating_spacing,alpha,'silica',false,true );
 
 %% Dechirped by a Treacy compressor
 incident_angle = 30; % deg

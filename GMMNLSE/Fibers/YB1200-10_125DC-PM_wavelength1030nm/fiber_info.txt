@@ -1,4 +1,4 @@
-Material: fused silica
+Material: silica
 Fiber type: step
 core NA: 0.08000
 clad NA: 0.22000

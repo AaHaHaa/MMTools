@@ -1,8 +1,8 @@
-function [dechirped_field,varargout] = remove_betans( input_field,n_remove,n_all_fit,num_interp_points,t,verbose )
+function [dechirped_field,varargout] = remove_betans( At,n_remove,n_all_fit,num_interp_points,t,verbose )
 %REMOVE_BETANS It gives the dechirped result without specified beta_n.
 %
 % Input:
-%   input_field: (Nt,...); the electric field in time domain (sqrt(W))
+%   At: (Nt,...); the electric field in time domain (sqrt(W))
 %   n_remove: up to the order of betas to remove
 %             0 means to remove the constant (DC) phase
 %             1 means to remove the first-order phase
@@ -48,7 +48,7 @@ switch nargin
         calc_dechirped_duration = true;
 end
 
-sE = size(input_field);
+sE = size(At);
 Nt = sE(1);
 interp_idx = linspace(1,Nt,(num_interp_points+1)*(Nt-1)+1)';
 
@@ -57,20 +57,45 @@ interp_idx = linspace(1,Nt,(num_interp_points+1)*(Nt-1)+1)';
 % numbers isn't correct. It should be done with two interpolations of their
 % absolute values and phases.
 if num_interp_points ~= 0
-    abs_input_field = interp1(abs(input_field),interp_idx);
-    phase_input_field = interp1(unwrap(angle(input_field)),interp_idx);
-    input_field = abs_input_field.*exp(1i*phase_input_field);
+    abs_input_field = interp1(abs(At),interp_idx);
+    phase_input_field = interp1(unwrap(angle(At)),interp_idx);
+    At = abs_input_field.*exp(1i*phase_input_field);
 end
 
-input_field_f = fftshift(ifft(ifftshift(input_field,1)),1);
-tmp_f = (1:size(input_field_f,1))';
-[~,~,fitted_param] = characterize_spectral_phase( (1:size(input_field_f,1))',input_field_f,n_all_fit );
+%% First remove the spectral phase due to temporal offset for correct phase unwrapping
+[~,peak_position] = max(sum(abs(At).^2,2),[],1);
+avg_center = sum((1:Nt)'.*abs(At).^2,[1,2])/sum(abs(At(:)).^2);
+% If two positions are too far away, then it might indicate that the pulse
+% is center at the left edge of the time window such that its other half is
+% at the right edge of the window, due to periodic boundary condition under
+% numerical DFT.
+% If two positions are close, then we pick the avg_center as the pulse
+% center.
+if abs(peak_position - avg_center) > Nt/4
+    fftshift_At = fftshift(At,1);
+    avg_center = sum((1:Nt)'.*abs(fftshift_At).^2,[1,2])/sum(abs(fftshift_At(:)).^2);
+    if avg_center >= floor(Nt/2)+1
+        avg_center = avg_center - floor(Nt/2);
+    else
+        avg_center = avg_center + floor(Nt/2);
+    end
+end
+pulse_center = avg_center;
+
+phase_shift = ifftshift(2*pi*(1:Nt)'/Nt*pulse_center,1); % phase shift due to temporal offset
+
+Aw_noTOffset = fftshift(ifft(At,[],1).*exp(-1i*phase_shift),1);
+
+%% Find the phases with multiple orders and compute the dechirped field without specified orders of phases
+tmp_f = (1:size(Aw_noTOffset,1))';
+[~,~,fitted_param] = characterize_spectral_phase( (1:size(At,1))',At,n_all_fit );
 p = fitted_param{1}; p = [p(1:n_all_fit-n_remove),zeros(1,n_remove+1)];
 s = fitted_param{2};
 mu = fitted_param{3};
 phase_no_betans = polyval(p,2*pi*tmp_f,s,mu);
-dechirped_field = fftshift(fft(ifftshift(abs(input_field_f).*exp(1i*phase_no_betans),1)),1);
+dechirped_field = fft(ifftshift(abs(Aw_noTOffset).*exp(1i*phase_no_betans),1).*exp(1i*phase_shift),[],1); % Compute the time-domain field with the temporal offset
 
+%% Output and plotting
 if calc_dechirped_duration
     % Interpolated time
     t_interp = interp1(t,interp_idx);
@@ -79,8 +104,8 @@ if calc_dechirped_duration
     dechirped_FWHM = zeros([1,sE(2:end)]);
     for i = 1:prod(sE(2:end))
         % Current duration
-        threshold = max(abs(input_field(:,i)).^2)/1.01;
-        [~,~,tmp_pulse_width,~] = findpeaks(abs(input_field(:,i)).^2,t_interp*1e3,'MinPeakHeight',threshold,'WidthReference','halfheight');
+        threshold = max(abs(At(:,i)).^2)/1.01;
+        [~,~,tmp_pulse_width,~] = findpeaks(abs(At(:,i)).^2,t_interp*1e3,'MinPeakHeight',threshold,'WidthReference','halfheight');
         pulse_FWHM(i) = tmp_pulse_width(1);
         
         % Dechirped duration
@@ -105,7 +130,7 @@ if calc_dechirped_duration
         if left < 1, left = 1; end
         if right > Nt*(num_interp_points+1), right = Nt*(num_interp_points+1); end
 
-        [TL,TL_t] = calc_transform_limited(input_field,0,t_interp);
+        [TL,TL_t] = calc_transform_limited(At,0,t_interp);
         figure;
         h = plot(t_interp(left:right)*1e3,abs(dechirped_field(left:right)).^2); set(h,'linewidth',2); hold on;
         h2 = plot(TL_t(left:right)*1e3,abs(TL(left:right)).^2); set(h2,'linewidth',2); hold off;

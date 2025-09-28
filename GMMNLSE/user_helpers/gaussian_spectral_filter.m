@@ -36,7 +36,7 @@ input_field = input.fields;
 Nt = size(input_field, 1);
 dt = input.dt;
 
-f = f0 + ifftshift(linspace(-Nt/2, Nt/2-1, Nt))'/(Nt*dt); % in THz, in the order that the fft gives
+f = f0 + ifftshift(linspace(-floor(Nt/2), floor((Nt-1)/2), Nt))'/(Nt*dt); % in THz, in the order that the fft gives
 
 % Calculate the filter profile in frequency space
 f_small = 299792.458/(center_lambda + bandwidth_lambda/2); % THz

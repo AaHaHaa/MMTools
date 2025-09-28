@@ -128,7 +128,10 @@ err = sum(abs((a4-a5)*(sim.dz/10)).^2,1);
 normA = sum(abs(A1w).^2,1);
 err = sqrt(err./normA);
 err = max(err(normA~=0));
-if isnan(err) % the computation is just so wrong, so we reduce the step size and do it again
+if normA == 0 % all-zero field; this will make err empty, so this condition needs to be determined first
+    opt_dz = 2*sim.dz;
+    success = true;
+elseif isnan(err) % the computation is just so wrong, so we reduce the step size and do it again
     opt_dz = 0.5*sim.dz;
     success = false;
 else
@@ -262,7 +265,7 @@ else
 end
 
 % Calculate h*Ra as F-1(h F(Ra))
-% The convolution using Fourier Transform is faster if both arrays are
+% The convolution using Fourier transform is faster if both arrays are
 % large. If one of the array is small, "conv" can be faster.
 % Please refer to
 % "https://blogs.mathworks.com/steve/2009/11/03/the-conv-function-and-implementation-tradeoffs/"
