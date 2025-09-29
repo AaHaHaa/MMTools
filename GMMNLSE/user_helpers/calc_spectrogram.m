@@ -479,6 +479,8 @@ if pulse_left_edge < ceil(N*(edge_ratio/2-1)/edge_ratio) || pulse_right_edge > c
     t = interp1(1:N,t,1:N*2,'linear','extrap')'; t = t - t(N+1) + t0;
     f = interp1(1:N,f,1:0.5:(N+0.50001),'linear','extrap')';
     field = [zeros(ceil(N/2),1);field;zeros(floor(N/2),1)];
+
+    [t,f,field] = expand_Twindow_with_zeros(t,f,field);
 end
 
 end
