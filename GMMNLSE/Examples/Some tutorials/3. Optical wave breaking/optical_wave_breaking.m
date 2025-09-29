@@ -118,7 +118,7 @@ log_yes = false; % Use "log_yes = true" to see, under log scale, how spectral in
 save_point = size(prop_output.fields,3);
 Frame(save_point) = struct('cdata',[],'colormap',[]);
 for i = 1:save_point
-    [~,~,~,figs,ax] = calc_spectrogram(t,f,prop_output.fields(:,1,i),[-4,4],[940,1120],400,400,true,true,log_yes);
+    [~,~,~,figs,ax] = calc_spectrogram(t,f,prop_output.fields(:,1,i),true,[-4,4],[940,1120],400,400,true,true,log_yes);
     %ax.NextPlot = 'replaceChildren';
 
     Frame(i) = getframe(figs);

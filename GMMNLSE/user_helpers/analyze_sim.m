@@ -608,7 +608,7 @@ ax = gca;
 ax.NextPlot = 'replaceChildren';
 Frame(save_point) = struct('cdata',[],'colormap',[]);
 for i = 1:save_point
-    [psd,t_spectrogram,f_spectrogram] = calc_spectrogram(t,f,fields(:, midx, i),tlim,wavelengthlim,100,100,false);
+    [psd,t_spectrogram,f_spectrogram] = calc_spectrogram(t,f,fields(:, midx, i),true,tlim,wavelengthlim,100,100,false);
     
     wavelength_spectrogram = c./f_spectrogram; % nm
     

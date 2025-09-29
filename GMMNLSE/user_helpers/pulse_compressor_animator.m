@@ -214,7 +214,7 @@ Frame(save_point) = struct('cdata',[],'colormap',[]);
 for si = 1:save_point
     dechirped_field = Treacy_dechirping(compressor_type,separation(si),theta_in,theta_out,wavelength,wavelength_c,time,field_w,grating_spacing,m);
     
-    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
+    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,true,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
     colormap(whitejet_lower(512)); set(cb,'Color','[0 0 0]');
     ax.NextPlot = 'replaceChildren';
     Frame(si) = getframe(fig);
@@ -326,7 +326,7 @@ Frame(save_point) = struct('cdata',[],'colormap',[]);
 for si = 1:save_point
     dechirped_field = prism_dechirping(separation(si),max_theta4,alpha,theta_in,theta2,theta3,theta4,n,wavelength,time,field_w);
     
-    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
+    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,true,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
     colormap(whitejet_lower(512)); set(cb,'Color','[0 0 0]');
     ax.NextPlot = 'replaceChildren';
     Frame(si) = getframe(fig);
@@ -453,7 +453,7 @@ Frame(save_point) = struct('cdata',[],'colormap',[]);
 for si = 1:save_point
     dechirped_field = grism_dechirping(compressor_type,separation(si),max_theta,considered_regime,alpha,beta,theta_in,theta2,theta3,theta4,theta5,theta6,n,wavelength,time,field_w,grating_spacing,m);
     
-    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
+    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,true,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
     colormap(whitejet_lower(512)); set(cb,'Color','[0 0 0]');
     ax.NextPlot = 'replaceChildren';
     Frame(si) = getframe(fig);
@@ -579,7 +579,7 @@ for si = 1:save_point
             dechirped_field = Offner_dechirping_no_aberration(separation(si),theta_in,theta_out,wavelength,field_w,grating_spacing,R,m);
     end
     
-    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
+    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,true,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
     colormap(whitejet_lower(512)); set(cb,'Color','[0 0 0]');
     ax.NextPlot = 'replaceChildren';
     Frame(si) = getframe(fig);
@@ -738,7 +738,7 @@ Frame(save_point) = struct('cdata',[],'colormap',[]);
 for si = 1:save_point
     dechirped_field = Martinez_dechirping(separation(si),theta_in,theta_out,wavelength,field_w,grating_spacing,focal_length,m);
     
-    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
+    [~,~,~,fig,ax,cb] = calc_spectrogram(time,c./wavelength,dechirped_field,true,tlim,wavelengthlim,t_feature,f_feature,true,lambda_or_f);
     colormap(whitejet_lower(512)); set(cb,'Color','[0 0 0]');
     ax.NextPlot = 'replaceChildren';
     Frame(si) = getframe(fig);

@@ -22,6 +22,7 @@ function varargout = calc_spectrogram(t,f,field,varargin)
 %
 %       tlim - (1,2) matrix; the range of the time to plot (ps) (default: [])
 %       wavelengthlim - (1,2) matrix; the range of the wavelength to plot (nm) (default: [])
+%       ignore_temporal_interference - true or false
 %       t_feature - a scalar; the ratio of the tiny pulse structure vs. pulse duration you want to resolve;
 %                   the larger the number, the higher the time resolution (default: 50)
 %       f_feature - a scalar; the ratio of the tiny spectral structure vs. pulse bandwidth you want to revolve
@@ -32,6 +33,8 @@ function varargout = calc_spectrogram(t,f,field,varargin)
 %                     If plot_yes=false, this acts nothing
 %                    (default: true)
 %       log_yes - true or false; log plot for the spectrogram (default: false)
+%       min_needed_bandwidth - minimum bandwidth of the pulse across temporal slices
+%                              This isn't set by the users but is only called internally.
 %
 %   *t_feature is limited by having the maximum window to be N/2 (you can't revolve any time structures smaller than the inverse of this)
 %   *f_feature is limited by having the minimum window to pulse_duration (you can't resolve any frequency structures smaller than the inverse of this)
@@ -80,19 +83,19 @@ function varargout = calc_spectrogram(t,f,field,varargin)
 %% Input arguments
 numvarargin = nargin - 3;
 % Set defaults for optional inputs
-optargs = {[],[],50,50,true,true,false};
+optargs = {[],[],false,50,50,true,true,false,[]};
 % Now put these defaults into the valuesToUse cell array, 
 % and overwrite the ones specified in varargin.
 optargs(1:numvarargin) = varargin;
 % Place optional args in memorable variable names
-[tlim,wavelengthlim,t_feature,f_feature,plot_yes,lambda_or_f,log_yes] = optargs{:};
-if nargin < 3 || nargin > 10
+[ignore_temporal_interference,tlim,wavelengthlim,t_feature,f_feature,plot_yes,lambda_or_f,log_yes] = optargs{:};
+if nargin < 3 || nargin > 11
     error('analyze_sim:InputArgumentsError',...
-          'The number of input arguments doesn''t match the requirements. The minimum of 3 inputs are required.');
+          'The number of input arguments doesn''t match the requirements.\nA minimum of 3 and a maximum of 11 inputs are required.');
 end
 
 %% find the pulse
-[t,f,field] = expand_with_zeros(t,f,field);
+[t,f,field] = expand_Twindow_with_zeros(t,f,field);
 [t,f,field] = useful_part(t,f,field);
 
 %% Some calculations
@@ -165,7 +168,12 @@ tmp = spectrum_f; tmp(tmp<max(tmp)/50) = 0; [bandwidth_f,f0_pulse] = calc_RMS(f_
 % Minimum window determines the minimum sampling rate under the frequency domian
 % A window size smaller than this number is unable to sample spectral features with an enough resolution.
 % Restriction: N/10 points <= window size < N/2 points
-window_size_for_f = max(round(N/10),min(floor(f_feature/bandwidth_f),floor(N/2)));
+if ignore_temporal_interference
+    control_interference = 0; % remove the minimum requirement of window, making it the smallest possible
+else
+    control_interference = 1;
+end
+window_size_for_f = max(round(N/10*control_interference),min(floor(f_feature/bandwidth_f),floor(N/2)));
 
 t_stft = (0:N-1)';
 tmp = intensity; tmp(tmp<max(tmp)/50) = 0; [duration,t0_pulse] = calc_RMS(t_stft,tmp); duration = duration*2*sqrt(2);
@@ -369,7 +377,9 @@ if plot_yes
     else
         pcolor(t_spectrogram,f_spectrogram(positive_wavelength:end),psd(positive_wavelength:end,:))
     end
-    shading interp; colormap(jet);
+    shading interp;
+    % colormap(jet);
+    ccc=whitejet_lower(1024); colormap(ccc); set(gca,'LineWidth',2);
     cb = colorbar('location','south','Color','[1 1 1]');
     if log_yes
         clim([min_colormap_psd,0]);
@@ -443,8 +453,8 @@ end
 
 end
 
-%% helper functions
-function [t,f,field] = expand_with_zeros(t,f,field)
+%% Helper functions
+function [t,f,field] = expand_Twindow_with_zeros(t,f,field)
 % During the computation of spectrograms, the maximum window size used can
 % be N/2. This leaves both edges of the spectrogram full of zeros 
 % eventually. As a result, I add zeros to both temporal edges if the field 
@@ -464,7 +474,8 @@ field_threshold = max(abs(field))/10;
 pulse_left_edge = find(abs(field)>field_threshold,1);
 pulse_right_edge = find(abs(field)>field_threshold,1,'last');
 
-if pulse_left_edge < ceil(N/4) || pulse_right_edge > ceil(N*3/4)
+edge_ratio = 8; % must be even
+if pulse_left_edge < ceil(N*(edge_ratio/2-1)/edge_ratio) || pulse_right_edge > ceil(N*(edge_ratio/2+1)/edge_ratio)
     t = interp1(1:N,t,1:N*2,'linear','extrap')'; t = t - t(N+1) + t0;
     f = interp1(1:N,f,1:0.5:(N+0.50001),'linear','extrap')';
     field = [zeros(ceil(N/2),1);field;zeros(floor(N/2),1)];
@@ -476,8 +487,8 @@ function [t,f,field] = useful_part(t,f,field)
 % The "field" can have too much unuseful information. This function
 % computes the pulse bandwidth and takes only the part that contains the
 % pulse.
-% It also downsamples the field if it's too highly sampled to speed up the
-% spectrogram computation.
+% It also downsamples the field (in time) if it's too highly sampled to 
+% speed up the spectrogram computation.
 
 N = length(f);
 
@@ -532,3 +543,95 @@ T2 = trapz(x,x.^2.*y)./area;
 RMS = sqrt(T2-T1.^2);
 
 end
+
+% =========================================================================
+% =========================================================================
+% =========================================================================
+%% whitejet_lower()
+% This was originally in a separate MATLAB function. Since I would like 
+% this calc_spectrogram() to be independent, I copied the whole function
+% content into here.
+% ----------------------------------------------------------------------- %
+% FUNCTION "whitejet": defines a new colormap with the same colors        %
+% that "jet", but it also replaces the green tones with white ones. This  %
+% useful when a signed metric is depicted, and its null values are useless.
+% The color structure is the following:                                   %
+%                                                                         %
+%           DR  R       Y       G       C       B   W                     %
+%           |---|-------|-------|?------|?------|---|                     %
+%           0  0.1     0.3     0.5     0.7     0.9  1                     %
+% where:                                                                  %
+%       - DR:   Deep Red    (RGB: 0.5 0 0)                                %
+%       - R:    Red         (RGB: 1 0 0)                                  %
+%       - Y:    Yellow      (RGB: 1 1 0)                                  %
+%       - W:    White       (RGB: 1 1 1)                                  %
+%       - C:    Cyan        (RGB: 0 1 1)                                  %
+%       - B:    Blue        (RGB: 0 0 1)                                  %
+%       - DB:   Deep Blue   (RGB: 0 0 0.5)                                %
+%                                                                         %
+%   Input parameters:                                                     %
+%       - m:    Number of points (recommended: m > 64, min value: m = 7). %
+%                                                                         %
+%   Output variables:                                                     %
+%       - J:    Colormap in RGB values (dimensions [mx3]).                %
+% ----------------------------------------------------------------------- %
+%   Example of use:                                                       %
+%       C = 2.*rand(5,100)-1;                                             %
+%       imagesc(C);                                                       %
+%       colormap(whitejet);                                               %
+%       colorbar;                                                         %
+% ----------------------------------------------------------------------- %
+%       - Author:   Víctor Martínez-Cagigal                               %
+%       - Date:     16/05/2018                                            %
+%       - Version:  1.0                                                   %
+%       - E-mail:   victor.martinez (at) gib (dot) tel (dot) uva (dot) es %
+%                                                                         %
+%       Biomedical Engineering Group (University of Valladolid), Spain    %
+% ----------------------------------------------------------------------- %
+function J = whitejet_lower(m)
+
+if nargin < 1
+   f = get(groot,'CurrentFigure');
+   if isempty(f)
+      m = size(get(groot,'DefaultFigureColormap'),1);
+   else
+      m = size(f.Colormap,1);
+   end
+end
+
+% Colors
+color_palette = [1/2 0 0;   % Deep red
+                 1 0 0;     % Red
+                 1 1 0;     % Yellow
+                 1/2 1 1/2; % Green
+                 0 1 1;     % Cyan
+                 0 0 1;     % Blue
+                 1 1 1];    % White
+             
+% Compute distributions along the samples
+color_dist = cumsum([0 1/10 1/5 1/5 1/5 1/5 1/10]);
+color_samples = round((m-1)*color_dist)+1;
+
+% Make the gradients
+J = zeros(m,3);
+J(color_samples,:) = color_palette(1:7,:);
+diff_samples = diff(color_samples)-1;
+for d = 1:1:length(diff_samples)
+    if diff_samples(d)~=0
+        color1 = color_palette(d,:);
+        color2 = color_palette(d+1,:);
+        G = zeros(diff_samples(d),3);
+        for idx_rgb = 1:1:3
+            g = linspace(color1(idx_rgb), color2(idx_rgb), diff_samples(d)+2);
+            g([1, length(g)]) = [];
+            G(:,idx_rgb) = g';
+        end
+        J(color_samples(d)+1:color_samples(d+1)-1,:) = G;
+    end
+end
+J = flipud(J);
+
+end
+% =========================================================================
+% =========================================================================
+% =========================================================================
