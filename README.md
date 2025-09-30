@@ -24,10 +24,10 @@ It is useful for simulating single-mode/multimode mode-locking/oscillators, fibe
    - For rate-equation-gain modeling, all pumping schemes are implemented: co-pumping, counter-pumping, co+counter-pumping, as well as with and without ASE.
    - If ASE is included, the effect of ASE to the coherent signal field is simulated, rather than only a separate "power" variable $P_{\text{ASE}}(\omega)$ from the coherent signal "field" $A(t)$.
    - Rate-equation model supports `Nd`, `Yb`, `Er`, `Tm`, `Ho`. For more details, see `readme.pdf`.
-   - Support ring- and linear-oscillator configurations with fast convergence (with the use of `saved_data`). For linear oscillators, inclusion of influence from pulses of both directions to the gain medium is considered. As an example, please see the numerical section of [our paper](http://josab.osa.org/abstract.cfm?URI=josab-38-3-743) to understand the necessity of this two-pulse saturation effect in a linear oscillator.
+   - Support ring- and linear-oscillator configurations with fast convergence (with the use of `saved_data`). For linear oscillators, inclusion of influence from pulses of both directions to the gain medium is considered. As an example, please see the numerical section of [[4]](#references-our-papers) to understand the necessity of this two-pulse saturation effect in a linear oscillator.
 7. Support noise-seeded processes, such as spontaneous Raman scattering, with [the newly-developed noise model](https://doi.org/10.48550/arXiv.2410.20567).
 8. For multimode, GPU computation (with Nvidia CUDA) is highly recommended. I have written a lot of CUDA files to speed up simulations. It is controlled by `sim.gpu_yes=true/false`.
-9. Support narrowband transformation based on the newly-proposed scaled Fourier transform to speed up modeling such as a CPA [[4]](#references-our-papers).
+9. Support narrowband transformation based on the newly-proposed scaled Fourier transform to speed up modeling such as a CPA [[5]](#references-our-papers).
 
 ## Fourier-Transform tutorial
 Since I've seen many misuse of Fourier Transform, I wrote [this tutorial](https://doi.org/10.48550/arXiv.2412.20698). Please take a look. Briefly speaking for one misuse, it's necessary to use MATLAB's `ifft` for Fourier Transform into the spectral domain.
@@ -47,7 +47,8 @@ Typically MATLAB deals with this, but there are still come steps to follow befor
 1. [Multimode gain](https://doi.org/10.1364/JOSAB.500586)
 2. [Raman scattering](https://doi.org/10.1063/5.0189749)
 3. [Noise modeling](https://doi.org/10.48550/arXiv.2410.20567)
-4. [Transient gain](https://doi.org/10.1364/OPTICA.557373)
+4. [Mamyshev oscillator](http://josab.osa.org/abstract.cfm?URI=josab-38-3-743)
+5. [Transient gain](https://doi.org/10.1364/OPTICA.557373)
 
 ## Demonstrations:
 - **Self-steepening**  
