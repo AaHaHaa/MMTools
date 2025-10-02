@@ -20,9 +20,9 @@ function varargout = calc_spectrogram(t,f,field,varargin)
 %
 %   Optional input arguments (ordered as below):
 %
+%       ignore_temporal_interference - true or false (default: false)
 %       tlim - (1,2) matrix; the range of the time to plot (ps) (default: [])
 %       wavelengthlim - (1,2) matrix; the range of the wavelength to plot (nm) (default: [])
-%       ignore_temporal_interference - true or false (default: false)
 %       t_feature - a scalar; the ratio of the tiny pulse structure vs. pulse duration you want to resolve;
 %                   the larger the number, the higher the time resolution (default: 50)
 %       f_feature - a scalar; the ratio of the tiny spectral structure vs. pulse bandwidth you want to revolve
