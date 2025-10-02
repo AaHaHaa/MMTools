@@ -404,9 +404,11 @@ if plot_yes
         pcolor(t_spectrogram,f_spectrogram(positive_wavelength:end),psd(positive_wavelength:end,:))
     end
     shading interp;
-    % colormap(jet);
-    ccc=whitejet_lower(1024); colormap(ccc); set(gca,'LineWidth',2);
-    cb = colorbar('location','south','Color','[1 1 1]');
+    cb = colorbar('location','south');
+    % colormap(jet); set(cb,'Color',[1,1,1]);
+    ccc=whitejet_lower(1024); colormap(ccc); set(cb,'Color',[0,0,0]);
+    set(gca,'LineWidth',2);
+    
     if log_yes
         clim([min_colormap_psd,0]);
     end
