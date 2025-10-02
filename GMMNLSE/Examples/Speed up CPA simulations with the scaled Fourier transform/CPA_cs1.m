@@ -111,7 +111,7 @@ prop_output = GMMNLSE_propagate(fiber_Gain, prop_stretch, sim_Gain, gain_rate_eq
 % Energy of the output field
 energy = squeeze(sum(trapz(abs(prop_output.fields).^2,1),2)*prop_output.dt/10^3); % energy in nJ
 
-%[~,~,~,~,~,cb] = calc_spectrogram(t,f,prop_output.fields(:,:,end),true,[-1,1]*300,[1000,1250],100,100);
+%[~,~,~,~,~,cb] = calc_spectrogram(t,f,prop_output.fields(:,:,end),false,[-1,1]*300,[1000,1250],100,100);
 %colormap(whitejet_lower(512)); set(cb,'Color','[0 0 0]');
 
 [Strehl_ratio,dechirped_FWHM,transform_limited_FWHM,peak_power] = analyze_field( t,f,prop_output.fields(:,:,end),'Treacy-t',pi/6,1e-6,true,false );

@@ -179,7 +179,8 @@ tmp = spectrum_f; tmp(tmp<max(tmp)/50) = 0; [bandwidth_f,f0_pulse] = calc_RMS(f_
 % transform is applied to the entire time window. This makes visualization
 % of a single pulse difficult. This can be resolved by removing the 
 % requirement on the minimum window size. As the sliding window is small 
-% such that it never covers two pulses, such temporal interference vanishes. 
+% such that it never covers more than two pulses, such temporal 
+% interference vanishes. 
 if ignore_temporal_interference
     control_interference = 0; % remove the minimum requirement of window, making it the smallest possible
 else
@@ -218,27 +219,30 @@ end
 Fs = 1/dt; % the sampling rate
 
 %% Compute the first spectrogram
-% "fft" in Agrawal = "ifft" in MATLAB
+% "fft" in Agrawal's Nonlinear Fiber Optics = "ifft" in MATLAB
 % F[x*]=invF[x]*
 % And "spectrogram" take "fft operation in MATLAB", so we need to
 % transform it into "fft in Agrawal", that is, "ifft in MATLAB".
 nfft = max(256,2^nextpow2(window_size)); % the number of points for fft
+                                         % If nfft ~= window_size, zero-padding will be applied during each sliding fft.
 noverlap = floor(window_size*0.9); % the overlap of the window; I choose to have 90% overlap.
 [~,f_tmp,t_tmp,psd] = spectrogram(conj(field),window_size,noverlap,nfft,Fs,'centered','yaxis'); % specifying 'centered' is required in case that the field is real-valued
 
 if enough_resolution
-    final_df_tmp = Fs/nfft;
+    final_df_spectrogram = Fs/nfft;
     final_f_tmp = f_tmp;
 else
     % The final generated frequency sampling is determined by the largest nfft
-    final_df_tmp = Fs/nfft_highFResolution;
-    final_f_tmp = (-(ceil(nfft_highFResolution/2)-1):floor(nfft_highFResolution/2))'*final_df_tmp;
+    final_df_spectrogram = Fs/nfft_highFResolution;
+    final_f_tmp = (-(ceil(nfft_highFResolution/2)-1):floor(nfft_highFResolution/2))'*final_df_spectrogram;
 end
 
-final_dt_tmp = mean(diff(t_tmp)); % this dt is the finest and is chosen as the final dt in a multi-resolution spectrogram
+final_dt_spectrogram = mean(diff(t_tmp)); % this dt is the finest and is chosen as the final dt in a multi-resolution spectrogram
 
+% psd has the unit following "J/dt_spectrogram/df_spectrogram".
+% df_spectrogram = (Fs/nfft) = 1/(dt*nfft) = 1/sliding_time_window_in_fft
 I_psd = sum(psd,1)*(Fs/nfft);    I_psd(I_psd<max(I_psd)/100) = inf; % intensity from psd
-f_psd = sum(psd,2)*final_dt_tmp; f_psd(f_psd<max(f_psd)/100) = inf; % spectrum from psd
+f_psd = sum(psd,2)*final_dt_spectrogram; f_psd(f_psd<max(f_psd)/100) = inf; % spectrum from psd
 normT_psd = psd./I_psd; % transformed into normalized energy w.r.t. the intensity
 normF_psd = psd./f_psd; % transformed into normalized energy w.r.t. the spectrum
 
@@ -249,14 +253,17 @@ normF_psd = psd./f_psd; % transformed into normalized energy w.r.t. the spectrum
 % (up to >30 GB from my experiences with ultrafast pulses).
 % Hence, it's important to pick only the region that　contains the useful
 % information
+%
+% useful_t follows a convention whose first point is 0
+% tlim follows user's input whose first point is t(1)
 if isempty(tlim)
     useful_t =  (t0_pulse + duration*3*[-1,1])*dt; % time points around the pulse
     
     tlim = useful_t + t(1); tlim(1) = max(t(1),tlim(1)); tlim(2) = min(t(end),tlim(2));
 else
-    useful_t = tlim - t(1) + final_dt_tmp*[-1,1];
+    useful_t = tlim - t(1) + final_dt_spectrogram*[-1,1]; % "-t(1)" is to be conform with MATLAB's output t_tmp which starts from 0
 end
-% the desired region is determined by the user input, wavelengthlim, or
+% The desired region is determined by the user input, wavelengthlim, or
 % automatically selecting points near the pulse
 if isempty(wavelengthlim)
     if lambda_or_f
@@ -282,7 +289,7 @@ if isempty(wavelengthlim)
     end
 else
     flim = c./[wavelengthlim(2),wavelengthlim(1)];
-    useful_f = flim - f(floor(N/2)+1) + final_df_tmp*[-1,1];
+    useful_f = flim - f(floor(N/2)+1) + final_df_spectrogram*[-1,1];
 end
 useful_t_idx = t_tmp>useful_t(1) & t_tmp<useful_t(2);
 useful_f_idx = final_f_tmp>useful_f(1) & final_f_tmp<useful_f(2);
@@ -295,7 +302,7 @@ t_spectrogram = t_tmp + t(1);                  t_spectrogram = t_spectrogram(use
 f_spectrogram = final_f_tmp + f(floor(N/2)+1); f_spectrogram = f_spectrogram(useful_f_idx); % the frequency points of the spectrogram, which corresponds to the input "f"
 
 final_t_tmp = t_tmp(useful_t_idx); % from "spectrogram()"; start with 0
-final_f_tmp = final_f_tmp(useful_f_idx); % from "spectrogram()"; centered with 0
+final_f_tmp = final_f_tmp(useful_f_idx); % from "spectrogram()"; centered at 0
 
 normT_psd = interp2(t_tmp,f_tmp,normT_psd,final_t_tmp,final_f_tmp,'linear',0);
 normF_psd = interp2(t_tmp,f_tmp,normF_psd,final_t_tmp,final_f_tmp,'linear',0);
@@ -332,8 +339,8 @@ if ~enough_resolution
     % Recover back to the correct unit
     I_spectrogram = interp1(t,intensity,t_spectrogram,'linear',0);
     sf_spectrogram = interp1(f,spectrum_f,f_spectrogram,'linear',0);
-    T_psd = (max_normT_psd.*min_normT_psd).*I_spectrogram*final_df_tmp; % use the signal intensity to recover from normalized energy
-    F_psd = (max_normF_psd.*min_normF_psd).*sf_spectrogram*final_dt_tmp; % use the signal spectrum to recover from normalized energy
+    T_psd = (max_normT_psd.*min_normT_psd).*I_spectrogram*final_df_spectrogram; % use the signal intensity to recover from normalized energy
+    F_psd = (max_normF_psd.*min_normF_psd).*sf_spectrogram*final_dt_spectrogram; % use the signal spectrum to recover from normalized energy
     
     % Normalize them for comparison after multiplying max_psd and min_psd
     current_T_psd_energy = sum(sum(T_psd,1),2);
@@ -345,10 +352,10 @@ if ~enough_resolution
     psd = min(cat(3,T_psd,F_psd),[],3);
 else
     I_spectrogram = interp1(t,intensity,t_spectrogram,'linear',0);
-    psd = normT_psd.*I_spectrogram*final_df_tmp; % use the signal intensity to recover from normalized energy
+    psd = normT_psd.*I_spectrogram*final_df_spectrogram; % use the signal intensity to recover from normalized energy
 end
 % Normalized to the total energy
-current_psd_energy = sum(sum(psd,1),2)*final_df_tmp*final_dt_tmp;
+current_psd_energy = sum(sum(psd,1),2)*final_df_spectrogram*final_dt_spectrogram;
 original_energy = sum(abs(field).^2)/Fs;
 calibration_factor = original_energy/current_psd_energy;
 psd = psd*calibration_factor;

@@ -1,6 +1,6 @@
 close all; clearvars;
 
-load('SPM.mat');
+load('SPM_of_positively_chirped_pulse.mat');
 
 %% Plot
 % Time
@@ -53,7 +53,7 @@ log_yes = false; % Use "log_yes = true" to see, under log scale, how spectral in
 save_point = size(prop_output.fields,3);
 Frame1(save_point) = struct('cdata',[],'colormap',[]);
 for i = 1:save_point
-    [~,~,~,figs,ax] = calc_spectrogram(t,f,prop_output.fields(:,1,i),true,[-3,3],[940,1120],400,400,true,true,log_yes);
+    [~,~,~,figs,ax] = calc_spectrogram(t,f,prop_output.fields(:,1,i),false,[-3,3],[940,1120],400,400,true,true,log_yes);
     set(figs,'Color',[1,1,1]);
 
     Frame1(i) = getframe(figs);
