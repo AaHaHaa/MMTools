@@ -112,4 +112,4 @@ Add documentations for 3D-UPPE and Fourier Transform. I realized that the conven
 * 2/9/2025:<br>
 Separate out the 3D-UPPE to another Github repository.
 * 9/28/2025:<br>
-Add narrowband transformation for the ``coherent'' fields based on the scaled Fourier transform [[4]](#references-our-papers).
+Add narrowband transformation for the ``coherent'' fields based on the scaled Fourier transform [[5]](#references-our-papers).
