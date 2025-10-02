@@ -22,7 +22,7 @@ function varargout = calc_spectrogram(t,f,field,varargin)
 %
 %       tlim - (1,2) matrix; the range of the time to plot (ps) (default: [])
 %       wavelengthlim - (1,2) matrix; the range of the wavelength to plot (nm) (default: [])
-%       ignore_temporal_interference - true or false
+%       ignore_temporal_interference - true or false (default: false)
 %       t_feature - a scalar; the ratio of the tiny pulse structure vs. pulse duration you want to resolve;
 %                   the larger the number, the higher the time resolution (default: 50)
 %       f_feature - a scalar; the ratio of the tiny spectral structure vs. pulse bandwidth you want to revolve
@@ -33,8 +33,6 @@ function varargout = calc_spectrogram(t,f,field,varargin)
 %                     If plot_yes=false, this acts nothing
 %                    (default: true)
 %       log_yes - true or false; log plot for the spectrogram (default: false)
-%       min_needed_bandwidth - minimum bandwidth of the pulse across temporal slices
-%                              This isn't set by the users but is only called internally.
 %
 %   *t_feature is limited by having the maximum window to be N/2 (you can't revolve any time structures smaller than the inverse of this)
 %   *f_feature is limited by having the minimum window to pulse_duration (you can't resolve any frequency structures smaller than the inverse of this)
@@ -83,7 +81,7 @@ function varargout = calc_spectrogram(t,f,field,varargin)
 %% Input arguments
 numvarargin = nargin - 3;
 % Set defaults for optional inputs
-optargs = {[],[],false,50,50,true,true,false,[]};
+optargs = {false,[],[],50,50,true,true,false,[]};
 % Now put these defaults into the valuesToUse cell array, 
 % and overwrite the ones specified in varargin.
 optargs(1:numvarargin) = varargin;
@@ -106,8 +104,8 @@ dt = t(2)-t(1); % ps
 factor_correct_unit = (N*dt)^2/1e3; % to make the spectrum of the correct unit "nJ/THz"
                                     % "/1e3" is to make pJ into nJ
 factor = c./wavelength.^2; % change the spectrum from frequency domain into wavelength domain
-spectrum_f = abs(fftshift(ifft(field),1)).^2*factor_correct_unit;
-spectrum_lambda = spectrum_f.*factor;
+spectrum_f = abs(fftshift(ifft(field,[],1),1)).^2*factor_correct_unit; % PSD in frequency
+spectrum_lambda = spectrum_f.*factor; % PSD in wavelength
 intensity = abs(field).^2;
 
 %{
@@ -162,24 +160,44 @@ min_sp = min(spectrum);
 spectrum = (spectrum-min_sp)./(max_sp-min_sp);
 
 %% spectrogram information: window size, nfft, noverlap, Fs
+% -------------------------------------------------------------------------
 % Automatically determine the size of the sliding window of the stft
-f_stft = (-floor(N/2):ceil(N/2)-1)/N';
-tmp = spectrum_f; tmp(tmp<max(tmp)/50) = 0; [bandwidth_f,f0_pulse] = calc_RMS(f_stft,tmp); bandwidth_f = bandwidth_f*2*sqrt(2);
-% Minimum window determines the minimum sampling rate under the frequency domian
-% A window size smaller than this number is unable to sample spectral features with an enough resolution.
+% -------------------------------------------------------------------------
+% **Determine the sliding window size to correctly resolve the field in frequency
+%
+% Minimum window determines the minimum sampling rate (i.e. the maximum frequency sampling period) under the frequency domian
+% A window size smaller than this number is unable to sample spectral features with enough resolution.
 % Restriction: N/10 points <= window size < N/2 points
+%
+% Find the FWHM bandwidth
+f_stft = (-floor(N/2):ceil(N/2)-1)/N'; % in "discrete" unit: -0.5 ~ 0.5 Hz
+tmp = spectrum_f; tmp(tmp<max(tmp)/50) = 0; [bandwidth_f,f0_pulse] = calc_RMS(f_stft,tmp); bandwidth_f = bandwidth_f*2*sqrt(2);
+% In certain scenarios, such as burst-mode operations where there are many
+% pulses in the time window, sometimes we want to see the time-frequency
+% relation of each pulse. However, due to temporal interference (same color
+% at different times), spectrum exhibits strong modulations if Fourier
+% transform is applied to the entire time window. This makes visualization
+% of a single pulse difficult. This can be resolved by removing the 
+% requirement on the minimum window size. As the sliding window is small 
+% such that it never covers two pulses, such temporal interference vanishes. 
 if ignore_temporal_interference
     control_interference = 0; % remove the minimum requirement of window, making it the smallest possible
 else
     control_interference = 1;
 end
+% Find the window size
 window_size_for_f = max(round(N/10*control_interference),min(floor(f_feature/bandwidth_f),floor(N/2)));
 
-t_stft = (0:N-1)';
+% **Determine the sliding window size to correctly resolve the field in time
+%
+% Maximum window determines the minimum scanning rate of stft under the time domian
+% Restriction: 8 points <= window size
+%
+% Find the FWHM duration
+t_stft = (0:N-1)'; % in "discrete" unit; sampling period is 1
 tmp = intensity; tmp(tmp<max(tmp)/50) = 0; [duration,t0_pulse] = calc_RMS(t_stft,tmp); duration = duration*2*sqrt(2);
 clearvars tmp; % remove the unused variable
-% Maximum window determines the minimum scanning of stft under the time domian
-% % Restriction: 8 points <= window size
+% Find the window size
 window_size_for_t = max(8,floor(duration/t_feature));
 
 % window_size_for_t sets the time window to resolute temporal features (the smaller the better)
@@ -190,7 +208,8 @@ window_size_for_t = max(8,floor(duration/t_feature));
 if window_size_for_f <= window_size_for_t
     enough_resolution = true;
     window_size = round((window_size_for_f+window_size_for_t)/2); % the window for the common short-time-Fourier-transform
-else % start with the minimum window size; a multiresolution stft will be applied below
+else % start with the minimum window size
+     % A multiresolution stft will be applied below with sliding window size varying from window_size_for_t to window_size_for_f
     enough_resolution = false;
     window_size = window_size_for_t;
     nfft_highFResolution = 2^nextpow2(window_size_for_f); % the number of points for fft
@@ -326,7 +345,7 @@ if ~enough_resolution
     psd = min(cat(3,T_psd,F_psd),[],3);
 else
     I_spectrogram = interp1(t,intensity,t_spectrogram,'linear',0);
-    psd =normT_psd.*I_spectrogram*final_df_tmp; % use the signal intensity to recover from normalized energy
+    psd = normT_psd.*I_spectrogram*final_df_tmp; % use the signal intensity to recover from normalized energy
 end
 % Normalized to the total energy
 current_psd_energy = sum(sum(psd,1),2)*final_df_tmp*final_dt_tmp;

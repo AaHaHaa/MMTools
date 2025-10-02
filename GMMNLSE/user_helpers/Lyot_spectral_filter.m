@@ -1,5 +1,5 @@
 function [output,fig] = Lyot_spectral_filter(input, f0, target_wavelength, thickness, varargin)
-%LYOT_SPECTRAL_FILTER Apply a spectral edgefilter to a field
+%LYOT_SPECTRAL_FILTER Apply a spectral Lyot filter to a field
 %
 % Input:
 %   input.fields - a (N, num_modes, m) matrix with each mode's field, in the time domain
