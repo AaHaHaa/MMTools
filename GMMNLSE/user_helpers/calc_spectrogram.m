@@ -579,7 +579,7 @@ end
 % =========================================================================
 %% whitejet_lower()
 % This was originally in a separate MATLAB function. Since I would like 
-% this calc_spectrogram() to be independent, I copied the whole function
+% this calc_spectrogram() to be self-contained, I copied the whole function
 % content into here.
 % ----------------------------------------------------------------------- %
 % FUNCTION "whitejet": defines a new colormap with the same colors        %
