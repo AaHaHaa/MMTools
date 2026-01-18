@@ -45,17 +45,9 @@ if size(coeffs,2) == 1
 end
 coeffs = coeffs./sqrt(sum(abs(coeffs).^2)); % normalization
 
-%% Gaussian fields
-t0 = tfwhm/(2*sqrt(log(2)));    % ps; 2*sqrt(log(2))=1.665
-dt = time_window/Nt;  % ps
-t = (-floor(Nt/2):floor((Nt-1)/2))'*dt; % ps
-
-gaussexpo = 1;
-gexpo = 2*gaussexpo;
-
-% Construct a single gaussian electric field envelope, in W^0.5
-time_profile_Gaussian = sqrt(total_energy/(t0*sqrt(pi))*10^3)...
-    *exp(-(t-t_center).^gexpo/(2*t0^gexpo));
+%%
+upsampling_factor = 4;
+Nt = Nt*upsampling_factor;
 
 %% Parabolic fields
 % pulse power = B - A(t-t_center)^2
@@ -63,20 +55,15 @@ C = tfwhm/sqrt(2); % C = sqrt(B/A)
 B = (total_energy*1e3)/(4/3*C); % "*1e3" is make it into pJ
 A = B/C^2;
 
-%dt = time_window/Nt;  % ps
-%t = (-floor(Nt/2):floor((Nt-1)/2))'*dt; % ps
+dt = time_window/Nt;  % ps
+t = (-floor(Nt/2):floor((Nt-1)/2))'*dt; % ps
 
 % Construct a single parabolic electric field envelope, in W^0.5
-time_profile_parabolic = sqrt(B - A*(t-t_center).^2);
-time_profile_parabolic(t<t_center-C | t>t_center+C) = 0;
+time_profile = sqrt(B - A*(t-t_center).^2);
+time_profile(t<t_center-C | t>t_center+C) = 0;
 
 %% Combine both
-% Parabola within tfwhm but Gaussian on both edges
-time_profile_Gaussian = time_profile_Gaussian/max(time_profile_Gaussian);
-time_profile_parabolic = time_profile_parabolic/max(time_profile_parabolic);
-
-time_profile = time_profile_Gaussian;
-time_profile(t>=t_center-tfwhm/2 & t<=t_center+tfwhm/2) = time_profile_parabolic(t>=t_center-tfwhm/2 & t<=t_center+tfwhm/2);
+time_profile = smooth(time_profile/max(time_profile),upsampling_factor*3);
 
 time_profile = time_profile/sqrt(trapz(t,abs(time_profile).^2)/1e3)*sqrt(total_energy);
 
@@ -96,6 +83,6 @@ end
 field = coeffs.*time_profile;
 
 % Output as a struct
-output = struct('fields',field,'dt',dt);
+output = struct('fields',field(1:upsampling_factor:end),'dt',dt*upsampling_factor);
 
 end
