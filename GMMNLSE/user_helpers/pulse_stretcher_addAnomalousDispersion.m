@@ -110,7 +110,7 @@ find_optimum_stretcher_distance = @(s) abs(find_FWHM(s) - desired_duration);
 
 t_fwhm = calc_RMS(time,abs(field).^2)*(2*sqrt(log(2))); % assume Gaussian shape
 omega_fwhm = calc_RMS(freq-freq_c,abs(field_w).^2)*2*pi*(2*sqrt(log(2))); % assume Gaussian shape
-guess_GVD = max((desired_duration-t_fwhm)/omega_fwhm*1e6/2,0);
+guess_GDD = max((desired_duration-t_fwhm)/omega_fwhm*1e6/2,0);
 
 % Run the optimization process to find the optimal distance, grating 
 % separation for Treacy stretchers or l for Martinez stretcher
@@ -121,11 +121,11 @@ switch stretcher_type
     case {'Treacy-r','Treacy-t'}
         min_separation_l = 0;
         %initial_guess = 0;
-        initial_guess = guess_GVD/2/(m^2*wavelength_c^3/(2*pi*c^2*grating_spacing^2)*(1-(-m*(wavelength_c*1e-9)/grating_spacing-sin(theta_in))^2)^(-1.5)*1e-3);
+        initial_guess = guess_GDD/2/(m^2*wavelength_c^3/(2*pi*c^2*grating_spacing^2)*(1-(-m*(wavelength_c*1e-9)/grating_spacing-sin(theta_in))^2)^(-1.5)*1e-3);
     case 'Martinez'
         min_separation_l = focal_length;
         %initial_guess = focal_length*1.1;
-        initial_guess = guess_GVD/2/(m^2*wavelength_c^3/(2*pi*c^2*grating_spacing^2)*(1-(-m*(wavelength_c*1e-9)/grating_spacing-sin(theta_in))^2)^(-1.5)*1e-3) + focal_length;
+        initial_guess = guess_GDD/2/(m^2*wavelength_c^3/(2*pi*c^2*grating_spacing^2)*(1-(-m*(wavelength_c*1e-9)/grating_spacing-sin(theta_in))^2)^(-1.5)*1e-3) + focal_length;
 end
 
 % This is the local optimization I used before which might be stuck at
