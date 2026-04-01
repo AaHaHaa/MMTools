@@ -3,6 +3,11 @@ This is the shared package to simulate, with MATLAB, pulse propagation in a wave
 
 It is useful for simulating single-mode/multimode mode-locking/oscillators, fiber amplifiers, single-mode/vector/multimode solitons, spatial beam cleaning in multimode fibers, fiber optical parametric amplifier (FOPA), and so on. Some typical examples of oscillators include all-normal-dispersion (ANDi) oscillators and Mamyshev oscillators. Amplifiers include linear chirped-pulse amplification (CPA) and gain-managed nonlinear amplification (GMNA).
 
+The code is intended **solely for academic use**, reproducibility, and methodological clarity.
+
+> [!CAUTION]
+> This repository is not under active development, as I finished my postdoc and am leaving academia.
+
 ## Capabilities:
 1. It solves the pulse propagation with
    - [RK4IP](http://www.sciencedirect.com/science/article/pii/S0010465512004262) (Runge-Kutta under the interaction picture) if single-mode.
